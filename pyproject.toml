@@ -1,0 +1,37 @@
+# if poetry update takes forever
+# export PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring
+
+[tool.poetry]
+name = "webtoolkit"
+version = "0.0.1"
+description = "Web Toolkit"
+authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
+license = "GPL3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+feedparser = "^6.0.12"
+python-dateutil = "^2.8.2"
+yt-dlp = "^2025.9.5"
+tldextract = "^5.1.2"
+beautifulsoup4 = "^4.13.5"
+lxml = "5.3.0"
+brutefeedparser="^0.10.5"
+pytz = "^2024.2"
+psutil="*"
+flask="*"
+url-cleaner="*"
+#cleanurl="*"  TODO may change url structure
+
+# Enable and crawlers as needed
+
+# [Requests]
+requests = "^2.32.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
