@@ -1,5 +1,5 @@
 import os
-from webtools import ContentInterface
+from webtoolkit import ContentInterface
 
 from tests.fakeinternet import FakeInternetTestCase
 

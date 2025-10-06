@@ -1,4 +1,4 @@
-from webtools import OpmlPage
+from webtoolkit import OpmlPage
 from tests.fake.opmlfile import opml_file
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
