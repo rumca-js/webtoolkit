@@ -93,38 +93,45 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertTrue(not p.is_link_service())
 
-    def test_get_domain_http(self):
+    def test_get_domain__http(self):
         p = UrlLocation("http://test.com/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "http://test.com")
 
-    def test_get_domain_http_digits(self):
+    def test_get_domain__http_digits(self):
         p = UrlLocation("http://127.0.0.1/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "http://127.0.0.1")
 
-    def test_get_domain_ftp(self):
+    def test_get_domain__ftp(self):
         p = UrlLocation("ftp://test.com/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "ftp://test.com")
 
-    def test_get_domain_smb(self):
+    def test_get_domain__smb(self):
         p = UrlLocation("smb://test.com/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "smb://test.com")
 
-    def test_get_domain_smb_lin(self):
+    def test_get_domain__smb_lin(self):
         p = UrlLocation("//test.com/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "//test.com")
 
-    def test_get_domain_smb_win(self):
+    def test_get_domain__smb_win(self):
         p = UrlLocation("\\\\test.com\\my-site-test")
         # call tested function
         self.assertEqual(p.get_domain(), "\\\\test.com")
 
     def test_get_domain__null(self):
         p = UrlLocation(None)
+        # call tested function
+        self.assertEqual(p.get_domain(), None)
+
+    def test_get_domain__null(self):
+        test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+
+        p = UrlLocation(test_link)
         # call tested function
         self.assertEqual(p.get_domain(), None)
 
@@ -183,6 +190,13 @@ class UrlLocationTest(FakeInternetTestCase):
         p = UrlLocation("http://test.com/my-site-test")
         # call tested function
         self.assertEqual(p.get_domain_only(), "test.com")
+
+    def test_get_domain_only__null(self):
+        test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+
+        p = UrlLocation(test_link)
+        # call tested function
+        self.assertEqual(p.get_domain_only(), None)
 
     def test_get_page_ext_html(self):
         p = UrlLocation("http://mytestpage.com/page.html")
@@ -463,6 +477,17 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(robots, "https://www.youtube.com/robots.txt")
 
+    def test_get_cleaned_link__onion(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, test_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_get_cleaned_link__stupid_google_link(self):
         MockRequestCounter.mock_page_requests = 0
 
@@ -506,3 +531,18 @@ class UrlLocationTest(FakeInternetTestCase):
         self.assertEqual(cleaned_link, "https://corridordigital.com")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_is_onion(self):
+        # True cases
+
+        test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+        url = UrlLocation(test_link)
+
+        self.assertTrue(url.is_onion())
+
+        # False cases
+
+        test_link = "http://linkedin.com"
+        url = UrlLocation(test_link)
+
+        self.assertFalse(url.is_onion())

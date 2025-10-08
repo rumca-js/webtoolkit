@@ -132,16 +132,13 @@ class RemoteServer(object):
             json_obj = json.loads(text)
         except ValueError as E:
             print("Url:{} Remote error. Cannot read response".format(link_call, text))
-            # WebLogger.error(info_text="Url:{} Cannot read response".format(link_call), detail_text=text)
             return
         except TypeError as E:
             print("Url:{} Remote error. Cannot read response".format(link_call, text))
-            # WebLogger.error(info_text="Url:{} Cannot read response".format(link_call), detail_text=text)
             return
 
         if "success" in json_obj and not json_obj["success"]:
             print("Url:{} Remote error. Not a success".format(link_call))
-            # WebLogger.error(json_obj["error"])
             return False
 
         return json_obj
@@ -161,7 +158,6 @@ class RemoteServer(object):
         if "success" in all_properties and not all_properties["success"]:
             # print("Url:{} Remote error. Not a success".format(link))
             print("Remote error. Not a success")
-            # WebLogger.error(all_properties["error"])
             return False
 
         for properties in all_properties:
@@ -191,6 +187,9 @@ class RemoteServer(object):
         return json_data
 
     def get_response(self, all_properties):
+        if not all_properties:
+            return
+
         properties = self.read_properties_section("Properties", all_properties)
         response_data = self.read_properties_section("Response", all_properties)
 
@@ -205,6 +204,12 @@ class RemoteServer(object):
         if binary_data:
             if binary_data["Contents"]:
                 binary = binary_data["Contents"]
+
+        if not properties:
+            return
+
+        if "link" not in properties:
+            return
 
         if not response_data:
             o = PageResponseObject(url=properties["link"], text=text, binary=binary)

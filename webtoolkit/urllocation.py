@@ -62,6 +62,9 @@ class UrlLocation(object):
             return True
         return False
 
+    def is_onion(self):
+        return self.url.endswith(".onion")
+
     def get_protocolless(self):
         protocol_pos = self.url.find("://")
         if protocol_pos >= 0:
@@ -198,6 +201,9 @@ class UrlLocation(object):
         if not self.url:
             return
 
+        if self.is_onion():
+            return
+
         parts = self.parse_url()
 
         wh = parts[2].find(":")
@@ -226,6 +232,12 @@ class UrlLocation(object):
 
         @return domain.com
         """
+        if not self.url:
+            return
+
+        if self.is_onion():
+            return
+
         parts = self.parse_url()
         if parts:
             return parts[2].lower()
@@ -240,6 +252,9 @@ class UrlLocation(object):
 
     def is_domain(self):
         if not self.url:
+            return False
+
+        if self.is_onion():
             return False
 
         url = self.get_full_url()
@@ -289,9 +304,12 @@ class UrlLocation(object):
             url = url[:-1]
 
         p = UrlLocation(url)
+
+        if p.is_onion():
+            return p.url
+
         domain = p.get_domain()
         if not domain:
-            WebLogger.error("Could not obtain domain for:{}".format(url))
             return
 
         domain_lower = domain.lower()

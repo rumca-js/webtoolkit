@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "webtoolkit"
-version = "0.0.3"
+version = "0.0.4"
 description = "Web Toolkit"
 authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
 license = "GPL3"
@@ -11,9 +11,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-feedparser = "^6.0.12"
 python-dateutil = "^2.8.2"
-yt-dlp = "^2025.9.5"
 tldextract = "^5.1.2"
 beautifulsoup4 = "^4.13.5"
 lxml = "^5.4.0"
