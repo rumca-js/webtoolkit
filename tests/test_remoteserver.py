@@ -149,10 +149,8 @@ class RemoteServerTest(FakeInternetTestCase):
         self.disable_web_pages()
 
     def test_get_response(self):
-        server= RemoteServer("")
-
         # call tested function
-        response = server.get_response(all_properties)
+        response = RemoteServer.get_response(all_properties)
 
         self.assertTrue(response)
         self.assertTrue(response.get_text())

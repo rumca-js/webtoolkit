@@ -983,10 +983,16 @@ def get_response_from_bytes(all_bytes):
 
 
 def json_encode_field(byte_property):
+    if not byte_property:
+        return
+
     return base64.b64encode(byte_property).decode("utf-8")
 
 
 def json_decode_field(data):
+    if not data:
+        return
+
     return base64.b64decode(data)
 
 

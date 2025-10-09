@@ -379,7 +379,9 @@ class ContentInterface(object):
             rating.append([1, 1])
 
         domain_only = p.get_domain_only()
-        if domain_only.count(".") == 1:
+        if not domain_only:
+            rating.append([0, 2])
+        elif domain_only.count(".") == 1:
             rating.append([2, 2])
         elif domain_only.count(".") == 2:
             rating.append([1, 2])

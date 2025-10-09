@@ -133,7 +133,7 @@ class UrlLocationTest(FakeInternetTestCase):
 
         p = UrlLocation(test_link)
         # call tested function
-        self.assertEqual(p.get_domain(), None)
+        self.assertEqual(p.get_domain(), "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion")
 
     def test_get_domain__email(self):
         p = UrlLocation("https://user@gmail.com")
@@ -196,7 +196,7 @@ class UrlLocationTest(FakeInternetTestCase):
 
         p = UrlLocation(test_link)
         # call tested function
-        self.assertEqual(p.get_domain_only(), None)
+        self.assertEqual(p.get_domain_only(), "dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion")
 
     def test_get_page_ext_html(self):
         p = UrlLocation("http://mytestpage.com/page.html")
@@ -323,7 +323,7 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         parts = p.split()
 
-        print(parts)
+        # print(parts)
 
         self.assertEqual(len(parts), 6)
 
@@ -355,7 +355,7 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_parse_url(self):
         p = UrlLocation("https://www.youtube.com/test?parameter=True")
         parts = p.parse_url()
-        print(parts)
+        # print(parts)
 
         self.assertEqual(len(parts), 5)
         self.assertEqual(parts[0], "https")
@@ -367,7 +367,7 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_parse_url2(self):
         p = UrlLocation("https://www.youtube.com/test#parameter=True")
         parts = p.parse_url()
-        print(parts)
+        # print(parts)
 
         self.assertEqual(len(parts), 5)
         self.assertEqual(parts[0], "https")
@@ -379,7 +379,7 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_parse_url3(self):
         p = UrlLocation("https://www.youtube.com/test/")
         parts = p.parse_url()
-        print(parts)
+        # print(parts)
 
         self.assertEqual(len(parts), 4)
         self.assertEqual(parts[0], "https")
@@ -390,7 +390,7 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_parse_url__port(self):
         p = UrlLocation("https://www.youtube.com:443/test?parameter=True")
         parts = p.parse_url()
-        print(parts)
+        # print(parts)
 
         self.assertEqual(len(parts), 5)
         self.assertEqual(parts[0], "https")
@@ -398,6 +398,26 @@ class UrlLocationTest(FakeInternetTestCase):
         self.assertEqual(parts[2], "www.youtube.com:443")
         self.assertEqual(parts[3], "/test")
         self.assertEqual(parts[4], "?parameter=True")
+
+    def test_parse_url4(self):
+        p = UrlLocation("something.com")
+        parts = p.parse_url()
+        # print(parts)
+
+        self.assertEqual(len(parts), 3)
+        self.assertEqual(parts[0], "https")
+        self.assertEqual(parts[1], "://")
+        self.assertEqual(parts[2], "something.com")
+
+    def test_parse_url5(self):
+        p = UrlLocation("something.onion")
+        parts = p.parse_url()
+        # print(parts)
+
+        self.assertEqual(len(parts), 3)
+        self.assertEqual(parts[0], "http")
+        self.assertEqual(parts[1], "://")
+        self.assertEqual(parts[2], "something.onion")
 
     def test_is_web_link(self):
         p = UrlLocation("https://www.youtube.com")
@@ -453,6 +473,15 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertEqual(p.get_protocolless(), "www.youtube.com:443/test")
 
+    def test_get_protocol_url(self):
+        p = UrlLocation("https://www.youtube.com:443")
+        # call tested function
+        self.assertEqual(p.get_protocol_url("http"), "http://www.youtube.com:443")
+
+        p = UrlLocation("https://www.youtube.com:443")
+        # call tested function
+        self.assertEqual(p.get_protocol_url("ftp"), "ftp://www.youtube.com:443")
+
     def test_get_port__full_url(self):
         p = UrlLocation("https://www.youtube.com:443/test?parameter=True")
         port = p.get_port()
@@ -467,9 +496,20 @@ class UrlLocationTest(FakeInternetTestCase):
 
     def test_get_robots_txt_url(self):
         p = UrlLocation("https://www.youtube.com")
+
+        # call tested function
         robots = p.get_robots_txt_url()
 
         self.assertEqual(robots, "https://www.youtube.com/robots.txt")
+
+    def test_get_robots_txt_url__onion(self):
+        test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+        p = UrlLocation(test_link)
+
+        # call tested function
+        robots = p.get_robots_txt_url()
+
+        self.assertFalse(robots)
 
     def test_get_robots_txt_url(self):
         p = UrlLocation("https://www.youtube.com:43")

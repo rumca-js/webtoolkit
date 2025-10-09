@@ -63,7 +63,9 @@ class UrlLocation(object):
         return False
 
     def is_onion(self):
-        return self.url.endswith(".onion")
+        domain = self.get_domain()
+        if domain:
+            return domain.endswith(".onion")
 
     def get_protocolless(self):
         protocol_pos = self.url.find("://")
@@ -101,6 +103,8 @@ class UrlLocation(object):
         protocol_pos = self.url.find("://")
         if protocol_pos >= 0:
             return protocol + "://" + self.url[protocol_pos + 3 :]
+        else:
+            return protocol + "://" + self.url
 
         return self.url
 
@@ -122,7 +126,10 @@ class UrlLocation(object):
             return self.parse_netloc("\\\\")
 
         else:
-            return ["https", "://", self.url]
+            if self.url.endswith(".onion"):
+                return ["http", "://", self.url]
+            else:
+                return ["https", "://", self.url]
 
     def parse_protocoled_url(self):
         protocol_pos = self.url.find("://")
@@ -201,9 +208,6 @@ class UrlLocation(object):
         if not self.url:
             return
 
-        if self.is_onion():
-            return
-
         parts = self.parse_url()
 
         wh = parts[2].find(":")
@@ -233,9 +237,6 @@ class UrlLocation(object):
         @return domain.com
         """
         if not self.url:
-            return
-
-        if self.is_onion():
             return
 
         parts = self.parse_url()
@@ -633,6 +634,9 @@ class UrlLocation(object):
         # if not found, we return none
 
     def get_robots_txt_url(self):
+        if self.is_onion():
+            return
+
         return self.get_domain() + "/robots.txt"
 
     def is_link_in_domain(self, address):

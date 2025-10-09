@@ -105,3 +105,21 @@ class ContentInterfacePageTest(FakeInternetTestCase):
         date = p.guess_date()
         self.assertTrue(date)
         self.assertEqual(date.isoformat(), "2024-01-09T00:00:00+00:00")
+
+    def test_get_link_rating__normal(self):
+        p = ContentInterface(
+            "https://linkedin.com/test",
+            wall_street_journal_date_human_date_dot,
+        )
+
+        rating = p.get_link_rating()
+        self.assertTrue(rating)
+
+    def test_get_link_rating__onion(self):
+        p = ContentInterface(
+            "https://testsomethingsomethig.onion",
+            wall_street_journal_date_human_date_dot,
+        )
+
+        rating = p.get_link_rating()
+        self.assertTrue(rating)

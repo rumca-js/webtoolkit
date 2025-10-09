@@ -9,6 +9,7 @@ from .contentinterface import ContentInterface
 from .contentlinkparser import ContentLinkParser
 from .urllocation import UrlLocation
 from .remoteserver import RemoteServer
+from .url import Url
 
 from .pages import (
    DefaultContentPage,

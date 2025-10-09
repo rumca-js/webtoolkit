@@ -3,8 +3,8 @@
 
 [tool.poetry]
 name = "webtoolkit"
-version = "0.0.4"
-description = "Web Toolkit"
+version = "0.0.5"
+description = "Web tools and interfaces for Internet data processing."
 authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
 license = "GPL3"
 readme = "README.md"
@@ -18,7 +18,6 @@ lxml = "^5.4.0"
 brutefeedparser="^0.10.5"
 pytz = "^2024.2"
 psutil="*"
-flask="*"
 url-cleaner="*"
 #cleanurl="*"  TODO may change url structure
 

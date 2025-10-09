@@ -147,11 +147,11 @@ class RemoteServer(object):
         json_obj = self.get_getj(url=url, name=name, settings=settings)
 
         if json_obj:
-            return self.read_properties_section("Properties", json_obj)
+            return RemoteServer.read_properties_section("Properties", json_obj)
 
         return json_obj
 
-    def read_properties_section(self, section_name, all_properties):
+    def read_properties_section(section_name, all_properties):
         if not all_properties:
             return
 
@@ -172,8 +172,8 @@ class RemoteServer(object):
 
         data = json.loads(input_data)
 
-        response = self.read_properties_section("Response", data)
-        contents_data = self.read_properties_section("Contents", data)
+        response = RemoteServer.read_properties_section("Response", data)
+        contents_data = RemoteServer.read_properties_section("Contents", data)
 
         if response:
             json_data["status_code"] = response["status_code"]
@@ -186,24 +186,11 @@ class RemoteServer(object):
 
         return json_data
 
-    def get_response(self, all_properties):
+    def get_response(all_properties):
         if not all_properties:
             return
 
-        properties = self.read_properties_section("Properties", all_properties)
-        response_data = self.read_properties_section("Response", all_properties)
-
-        text_data = self.read_properties_section("Text", all_properties)
-        binary_data = self.read_properties_section("Binary", all_properties)
-
-        text = ""
-        if text_data:
-            text = text_data["Contents"]
-
-        binary = None
-        if binary_data:
-            if binary_data["Contents"]:
-                binary = binary_data["Contents"]
+        properties = RemoteServer.read_properties_section("Properties", all_properties)
 
         if not properties:
             return
@@ -211,13 +198,20 @@ class RemoteServer(object):
         if "link" not in properties:
             return
 
+        response_data = RemoteServer.read_properties_section("Response", all_properties)
+
         if not response_data:
-            o = PageResponseObject(url=properties["link"], text=text, binary=binary)
-            return o
+            return
+
+        streams = RemoteServer.read_properties_section("Streams", all_properties)
 
         response = json_to_response(response_data)
-        response.text = text
-        response.binary = binary
+
+        if "Text" in streams:
+            response.text = streams["Text"]
+
+        if "Binary" in streams:
+            response.binary = streams["Binary"]
 
         url = properties["link"]
 
