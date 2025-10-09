@@ -207,10 +207,10 @@ class RemoteServer(object):
 
         response = json_to_response(response_data)
 
-        if "Text" in streams:
+        if streams and "Text" in streams:
             response.text = streams["Text"]
 
-        if "Binary" in streams:
+        if streams and "Binary" in streams:
             response.binary = streams["Binary"]
 
         url = properties["link"]

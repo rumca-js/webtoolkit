@@ -153,5 +153,13 @@ class RemoteServerTest(FakeInternetTestCase):
         response = RemoteServer.get_response(all_properties)
 
         self.assertTrue(response)
+        self.assertTrue(response.is_valid())
+        self.assertFalse(response.is_invalid())
         self.assertTrue(response.get_text())
         self.assertEqual(response.get_status_code(), 200)
+
+    def test_get_response(self):
+        # call tested function
+        response = RemoteServer.get_response(None)
+
+        self.assertFalse(response)
