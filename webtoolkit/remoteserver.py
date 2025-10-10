@@ -74,6 +74,16 @@ class RemoteServer(object):
 
         return self.perform_remote_call(link, url, settings)
 
+    def get_linkj(self, url, settings=None):
+        """
+        @returns None in case of error
+        """
+
+        link = self.remote_server
+        link = f"{link}/linkj"
+
+        return self.perform_remote_call(link, url, settings)
+
     def get_pingj(self, url, settings=None):
         """
         @returns None in case of error
