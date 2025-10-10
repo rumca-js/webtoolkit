@@ -106,6 +106,9 @@ class Url(ContentInterface):
 
         return self.server.get_feedsj(self.url)
 
+    def get_links(self):
+        return self.server.get_linkj(self.url)
+
     def get_hash(self):
         return self.get_response().hash
 
