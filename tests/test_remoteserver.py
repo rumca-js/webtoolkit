@@ -148,6 +148,17 @@ class RemoteServerTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
 
+    def test_read_properties_section___false(self):
+        all_data = {
+                "success" : False,
+                "error" : "Somethings wrong",
+        }
+
+        # call tested function
+        response = RemoteServer.read_properties_section("Response", all_data)
+
+        self.assertFalse(response)
+
     def test_get_response(self):
         # call tested function
         response = RemoteServer.get_response(all_properties)
@@ -158,7 +169,7 @@ class RemoteServerTest(FakeInternetTestCase):
         self.assertTrue(response.get_text())
         self.assertEqual(response.get_status_code(), 200)
 
-    def test_get_response(self):
+    def test_get_response__none(self):
         # call tested function
         response = RemoteServer.get_response(None)
 
