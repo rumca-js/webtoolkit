@@ -1,4 +1,5 @@
 import hashlib
+
 from webtoolkit import (
    InputContent,
    PageOptions,

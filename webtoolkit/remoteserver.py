@@ -2,9 +2,12 @@ import json
 import requests
 import urllib.parse
 import base64
-from .webtools import (
-    PageResponseObject,
+
+from .statuses import (
     HTTP_STATUS_TOO_MANY_REQUESTS,
+)
+from .response import (
+    PageResponseObject,
     json_to_response,
 )
 
