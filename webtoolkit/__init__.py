@@ -15,13 +15,13 @@ from .remoteserver import RemoteServer
 from .url import Url
 
 from .pages import (
-   DefaultContentPage,
-   HtmlPage,
-   RssPage,
-   RssContentReader,
-   OpmlPage,
-   JsonPage,
-   PageFactory,
+    DefaultContentPage,
+    HtmlPage,
+    RssPage,
+    RssContentReader,
+    OpmlPage,
+    JsonPage,
+    PageFactory,
 )
 
 from .contentmoderation import (

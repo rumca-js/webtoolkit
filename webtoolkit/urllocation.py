@@ -1,5 +1,6 @@
 from url_cleaner import UrlCleaner
-#import cleanurl
+
+# import cleanurl
 
 from urllib.parse import unquote, urlparse, parse_qs
 from .webtools import (
@@ -343,7 +344,7 @@ class UrlLocation(object):
     def get_google_redirect_fix2(url):
         stupid_google_string = "https://www.google.com/amp/s"
         if url.find(stupid_google_string) >= 0:
-            url = url[len(stupid_google_string) + 1:]
+            url = url[len(stupid_google_string) + 1 :]
             return UrlLocation.get_cleaned_link(url)
 
         return url
@@ -367,8 +368,8 @@ class UrlLocation(object):
             c = UrlCleaner()
             cleaned = c.clean(url)
 
-            #cleaned = cleanurl.cleanurl(cleaned)
-            #cleaned = cleaned.url
+            # cleaned = cleanurl.cleanurl(cleaned)
+            # cleaned = cleaned.url
             # changes structure of link
 
             return cleaned

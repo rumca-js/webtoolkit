@@ -11,3 +11,6 @@ publish:
 
 config:
 	poetry config pypi-token.pypi your-token-here
+
+reformat:
+	poetry run black webtoolkit

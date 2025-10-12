@@ -1,6 +1,7 @@
 """
 """
 
+
 class UrlContentsModerator(object):
     def __init__(self, page_object=None, properties=None, blocked_keywords=None):
         self.properties = []

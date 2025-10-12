@@ -14,7 +14,7 @@ class Url(ContentInterface):
         if self.all_properties is None:
             self.all_properties = self.server.get_getj(self.url)
 
-            self.responses = {"Default" : RemoteServer.get_response(self.all_properties)}
+            self.responses = {"Default": RemoteServer.get_response(self.all_properties)}
 
         return self.responses
 
@@ -42,7 +42,9 @@ class Url(ContentInterface):
             if self.all_properties is None:
                 return {}
 
-        properties = RemoteServer.read_properties_section("Properties", self.all_properties)
+        properties = RemoteServer.read_properties_section(
+            "Properties", self.all_properties
+        )
         return properties
 
     def get_canonical_link(self):
@@ -85,7 +87,7 @@ class Url(ContentInterface):
         return self.get_properties().get("tags")
 
     def get_date_published(self):
-        return self.get_properties().get("date_published") # TODO parse?
+        return self.get_properties().get("date_published")  # TODO parse?
 
     def get_status_code(self):
         return self.get_response().status_code
