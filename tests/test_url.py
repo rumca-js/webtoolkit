@@ -3,6 +3,7 @@ from datetime import datetime
 from webtoolkit import UrlLocation, RemoteUrl
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from tests.fakeinternetdata import webpage_with_real_rss_links
 
 
 class UrlTest(FakeInternetTestCase):
@@ -44,3 +45,10 @@ class UrlTest(FakeInternetTestCase):
         response = u.get_response()
 
         self.assertTrue(response.body_hash)
+
+    def test_get_feeds(self):
+        u = RemoteUrl(webpage_with_real_rss_links)
+        response = u.get_response()
+        feeds = u.get_feeds()
+
+        self.assertTrue(len(feeds) > 0)

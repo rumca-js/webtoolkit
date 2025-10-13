@@ -111,6 +111,8 @@ class RemoteUrl(ContentInterface):
         if feeds is None:
             return set()
 
+        return feeds
+
     def get_links(self):
         return self.server.get_linkj(self.url)
 
