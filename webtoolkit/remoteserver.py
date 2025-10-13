@@ -126,9 +126,6 @@ class RemoteServer(object):
 
         try:
             with requests.get(url=link_call, timeout=timeout_s, verify=False) as result:
-                if result.status_code == HTTP_STATUS_TOO_MANY_REQUESTS:
-                    return
-
                 text = result.text
         except Exception as E:
             print("Remote error. " + str(E))

@@ -2,7 +2,7 @@ from .contentinterface import ContentInterface
 from .remoteserver import RemoteServer
 
 
-class Url(ContentInterface):
+class RemoteUrl(ContentInterface):
     def __init__(self, url, remote_server_location=None):
         super().__init__(url=url, contents=None)
         self.remote_server_location = remote_server_location
@@ -104,9 +104,12 @@ class Url(ContentInterface):
         feeds based also on the contents.
         """
         if self.all_properties is not None:
-            return self.get_properties().get("feeds")
+            feeds = self.get_properties().get("feeds")
+        else:
+            feeds = self.server.get_feedsj(self.url)
 
-        return self.server.get_feedsj(self.url)
+        if feeds is None:
+            return set()
 
     def get_links(self):
         return self.server.get_linkj(self.url)
