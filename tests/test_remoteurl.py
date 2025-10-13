@@ -47,7 +47,7 @@ class UrlTest(FakeInternetTestCase):
         self.assertTrue(response.body_hash)
 
     def test_get_feeds(self):
-        u = RemoteUrl(webpage_with_real_rss_links)
+        u = RemoteUrl("https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM")
         response = u.get_response()
         feeds = u.get_feeds()
 
