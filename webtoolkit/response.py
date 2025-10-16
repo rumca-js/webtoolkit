@@ -12,6 +12,7 @@ from .webtools import (
     json_encode_field,
     json_decode_field,
     date_str_to_date,
+    WebLogger,
 )
 from .statuses import *
 from utils.dateutils import DateUtils
