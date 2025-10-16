@@ -16,7 +16,7 @@ Available on [pypi](https://pypi.org/project/webtoolkit).
 
 Clean link from trackers, sanitize
 ```
-UrlLocation.get_cleaned_link
+UrlLocation.get_cleaned_link()
 ```
 
 To obtain domain
@@ -28,12 +28,12 @@ UrlLocation(link).get_domain()
 
 Identification of valid codes
 ```
-PageResponseObject().is_valid
+PageResponseObject().is_valid()
 ```
 
 Identification of invalid codes
 ```
-PageResponseObject().is_invalid
+PageResponseObject().is_invalid()
 ```
 
 Some codes might not indicate that this page is valid, and is not invalid. For example if our crawler is throttled because of too many requests we do not know yet if the page is valid, or not.
@@ -64,4 +64,6 @@ page.get_entries()
 # Interfaces
 
  - RemoteServer - provides means of calling remote crawling systems
- - Url - wrapper for RemoteServer, to obtain ready to use data
+ - RemoteUrl - wrapper for RemoteServer, to obtain ready to use data
+ - CrawlerInterface - Interface for crawlers
+ - HandlerInterface - Allows implementing your own handler

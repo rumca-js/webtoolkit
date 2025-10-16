@@ -4,7 +4,7 @@ import hashlib
 from webtoolkit import RssPage, calculate_hash, RssContentReader
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
-from tests.fakeinternetdata import (
+from tests.fakeinternetcontents import (
     webpage_no_pubdate_rss,
     webpage_old_pubdate_rss,
 )

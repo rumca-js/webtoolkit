@@ -12,6 +12,7 @@ default_user_agent = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
 )
 
+
 default_headers = {
     "User-Agent": default_user_agent,
     "Accept": "text/html,application/xhtml+xml,application/xml,application/rss;q=0.9,*/*;q=0.8",
@@ -22,8 +23,15 @@ default_headers = {
 }
 
 
+class WebToolsTimeoutException(Exception):
+    """Custom exception to indicate a request timeout."""
+
+    def __init__(self, message="The request has timed out."):
+        super().__init__(message)
+
+
 class CrawlerInterface(object):
-    def __init__(self, request=None, url=None, response_file=None, settings=None):
+    def __init__(self, url=None, request=None, settings=None):
         """
         @param response_file If set, response is stored in a file
         @param settings passed settings
@@ -33,84 +41,47 @@ class CrawlerInterface(object):
 
         self.request = request
         self.response = None
-        self.response_file = response_file
-        self.request_headers = None
 
-        if settings:
-            if "settings" not in settings:
-                settings["settings"] = {}
-            self.set_settings(settings)
-        else:
-            self.settings = {"settings": {}}
+        self.set_settings(settings)
 
     def set_settings(self, settings):
+        if not settings:
+            self.settings = {"settings": {}}
+            return
+
         self.settings = settings
 
-        if (
-            self.settings
-            and "headers" in self.settings
-            and self.settings["headers"]
-            and len(self.settings["headers"]) > 0
-        ):
-            self.request_headers = self.settings["headers"]
-        elif (
-            self.request
-            and self.request.request_headers
-            and len(self.request.request_headers) > 0
-        ):
-            self.request_headers = self.request.request_headers
-        else:
-            self.request_headers = default_headers
+        if "settings" not in self.settings:
+            self.settings["settings"] = {}
+
+        self.request.request_headers = self.get_request_headers()
 
         real_settings = {}
         if settings and "settings" in settings:
             real_settings = settings["settings"]
 
-        if self.request.timeout_s and "timeout_s" in real_settings:
-            self.timeout_s = max(self.request.timeout_s, real_settings["timeout_s"])
-        elif self.request.timeout_s:
-            self.timeout_s = self.request.timeout_s
-        elif "timeout_s" in real_settings:
-            self.timeout_s = real_settings["timeout_s"]
-        else:
-            self.timeout_s = 10
+        self.request.timeout_s = self.get_timeout_s()
 
     def set_url(self, url):
         self.request.url = url
-
-    def get_accept_types(self):
-        if "settings" not in self.settings:
-            return
-
-        accept_string = self.settings["settings"].get("accept_content_types", "all")
-
-        semicolon_index = accept_string.find(";")
-        if semicolon_index >= 0:
-            accept_string = accept_string[:semicolon_index]
-
-        result = set()
-        # Split by comma to separate media types
-        media_types = accept_string.split(",")
-        for media in media_types:
-            # Further split each media type by '/' and '+'
-            parts = media.strip().replace("+", "/").split("/")
-            for part in parts:
-                if part:
-                    result.add(part.strip())
-
-        return list(result)
 
     def run(self):
         """
          - does its job
          - sets self.response
-         - clears everything from memory, it created
+         - we should be able to call run several times
 
         if crawler can access web, then should return response (may be invalid)
 
         @return response, None if feature is not available
         """
         return self.response
+
+    def get_default_user_agent(self):
+        return default_user_agent
+
+    def get_default_headers(self):
+        return default_headers
 
     def is_response_valid(self):
         if not self.response:
@@ -123,9 +94,10 @@ class CrawlerInterface(object):
             return False
 
         content_length = self.response.get_content_length()
+        byte_limit = self.get_byte_limit()
 
-        if content_length is not None and "bytes_limit" in self.settings["settings"]:
-            if content_length > self.settings["settings"]["bytes_limit"]:
+        if content_length is not None and byte_limit is not None:
+            if content_length > bytes_limit:
                 self.response.add_error("Page is too big: ".format(content_length))
                 return False
 
@@ -156,3 +128,57 @@ class CrawlerInterface(object):
 
     def close(self):
         pass
+
+    def get_accept_types(self):
+        if "settings" not in self.settings:
+            return
+
+        accept_string = self.settings["settings"].get("accept_content_types")
+        if not accept_string:
+            accept_string = "all"
+
+        semicolon_index = accept_string.find(";")
+        if semicolon_index >= 0:
+            accept_string = accept_string[:semicolon_index]
+
+        result = set()
+        # Split by comma to separate media types
+        media_types = accept_string.split(",")
+        for media in media_types:
+            # Further split each media type by '/' and '+'
+            parts = media.strip().replace("+", "/").split("/")
+            for part in parts:
+                if part:
+                    result.add(part.strip())
+
+        return list(result)
+
+    def get_request_headers(self):
+        real_settings = self.settings["settings"]
+        headers = real_settings.get("request_headers")
+
+        if headers and len(headers) > 0:
+            return headers
+
+        return default_headers
+
+    def get_timeout_s(self):
+        real_settings = self.settings["settings"]
+
+        timeout_s = real_settings.get("timeout_s")
+        if timeout_s is not None:
+            return timeout_s
+
+        return 20
+
+    def get_bytes_limit(self):
+        real_settings = self.settings["settings"]
+
+        bytes_limit = real_settings.get("bytes_limit")
+        return bytes_limit
+
+    def get_response_file(self):
+        real_settings = self.settings["settings"]
+
+        response_file = real_settings.get("response_file")
+        return response_file

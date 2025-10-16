@@ -1,172 +1,874 @@
 """
-This module provides Fake Internet data.
+This module provides replacement for the Internet.
 
-Process:
- - navigate to existing RSS, or page
- - copy contents of RSS
- - pretty print it using https://jsonformatter.org/xml-pretty-print
+ - when test make requests to obtain a page, we return artificial data here
+ - when there is a request to obtain youtube JSON data, we provide artificial data, etc.
 """
+
+import logging
+import unittest
+import traceback
 
 from utils.dateutils import DateUtils
 
-
-webpage_with_real_rss_links = """
-<html>
-<head>
-<link type="application/rss+xml" href="https://www.codeproject.com/WebServices/NewsRSS.aspx" />
-</head>
-
-<body>
-</body>
-</html>
-"""
-
-
-"""
-################################################################################
-RSS data
-"""
-
-
-webpage_simple_rss_page = """
-<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
-<channel>
-    <title><![CDATA[Simple title]]></title>
-    <subtitle><![CDATA[Simple subtitle]]></subtitle>
-    <description><![CDATA[Simple description]]></description>
-    <link>https://odysee.com/@samtime:1</link>
-    <image><url>https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw</url>
-    <title>SAMTIME on Odysee</title>
-    <link>https://odysee.com/@samtime:1</link>
-    </image>
-    <generator>RSS for Node</generator>
-    <lastBuildDate>Tue, 01 Jan 2020 13:57:18 GMT</lastBuildDate>
-    <atom:link href="https://odysee.com/$/rss/@samtime:1" rel="self" type="application/rss+xml"/>
-    <language><![CDATA[ci]]></language>
-    <itunes:author>SAMTIME author</itunes:author><itunes:category text="Leisure"></itunes:category><itunes:image href="https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw"/><itunes:owner><itunes:name>SAMTIME name</itunes:name><itunes:email>no-reply@odysee.com</itunes:email></itunes:owner><itunes:explicit>no</itunes:explicit>
-
-    <item><title><![CDATA[First entry title]]></title><description><![CDATA[First entry description]]></description><link>https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</link><guid isPermaLink="true">https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/youtube-apologises-for-slowing-down/bab8f5ed4fa7bb406264152242bab2558037ee12/1698dc.mp4" length="29028604" type="video/mp4"/><itunes:title>YouTube Apologises For Slowing Down AdBlock Users</itunes:title><itunes:author>SAMTIME x</itunes:author><itunes:image href="https://thumbnails.lbry.com/a51RgbcCutk"/><itunes:duration>161</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[I Installed Android Onto My MacBook]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/WwYo84im3Y0" width="480" alt="thumbnail" title="I Installed Android Onto My MacBook" /></p>Buy UGREEN Nexode 300W Charger ($70 OFF, 11/23-11/27)     https://amzn.to/3FXi6xa<br />UGREEN Nexode 100W Charger   (41% OFF, 11/23-11/27)     https://amzn.to/46oW01m<br />UGREEN Black Friday Deals, Up to 50% OFF    https://amzn.to/3u5gAGo<br />Buy on UGREEN Official Store, Up to 50% OFF    https://bit.ly/47aeWCa<br /><br />I just installed Android onto my wife’s MacBook and… no one is happy.<br /><br />-----------------------------------<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />#Ugreen #UgreenNexode300W<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=WwYo84im3Y0]]></description><link>https://odysee.com/i-installed-android-onto-my-macbook:1975c73f65423692d318b6860950f186277519b9</link><guid isPermaLink="true">https://odysee.com/i-installed-android-onto-my-macbook:1975c73f65423692d318b6860950f186277519b9</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/i-installed-android-onto-my-macbook/1975c73f65423692d318b6860950f186277519b9/e1f8a4.mp4" length="138220717" type="video/mp4"/><itunes:title>I Installed Android Onto My MacBook</itunes:title><itunes:author>SAMTIME y</itunes:author><itunes:image href="https://thumbnails.lbry.com/WwYo84im3Y0"/><itunes:duration>544</itunes:duration><itunes:explicit>no</itunes:explicit>
-    </item><item><title><![CDATA[Apple Reacts to Having to Allow Sideloading]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/RZhVgD2fPZg" width="480" alt="thumbnail" title="Apple Reacts to Having to Allow Sideloading" /></p>Apple will allow iPhone users to install apps from outside their App Store in 2024. Apple ain’t happy about it!<br /><br />Apple Explains Why MacBook Only Has 8GB RAM: https://youtu.be/eKm5-jUTRMM<br /><br />Sideloading Article: https://www.macrumors.com/2023/11/13/eu-iphone-app-sideloading-coming-2024/<br />Craig Federighi Talk: https://www.youtube.com/watch?v=f0Gum8UkyoI<br />Jon Prosser video: https://youtu.be/R1J6Qsi_Fsk?si=rJEnQJpXPw_G5zWb<br />Woman hiding in closet: https://www.reddit.com/r/nightvale/comments/x1whrl/homeless_woman_lived_in_a_mans_closet_for_a_year/<br /><br />-----------------------------------<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />#iPhoneSideloading #DigitalMarketsAct #UnhappyApple<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=RZhVgD2fPZg]]></description><link>https://odysee.com/apple-reacts-to-having-to-allow:c1c7e8b36c1519e260e81ca7b71dc855e8c4a480</link><guid isPermaLink="true">https://odysee.com/apple-reacts-to-having-to-allow:c1c7e8b36c1519e260e81ca7b71dc855e8c4a480</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/apple-reacts-to-having-to-allow/c1c7e8b36c1519e260e81ca7b71dc855e8c4a480/64b55b.mp4" length="53821224" type="video/mp4"/><itunes:title>Apple Reacts to Having to Allow Sideloading</itunes:title><itunes:author>SAMTIME 1</itunes:author><itunes:image href="https://thumbnails.lbry.com/RZhVgD2fPZg"/><itunes:duration>206</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Apple Responds to Crackling iPhone 15 Speaker]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/z06e9QMd60U" width="480" alt="thumbnail" title="Apple Responds to Crackling iPhone 15 Speaker" /></p>Turns out there's another iPhone 15 problem. This time with a rattling earpiece speaker. Now this isn't music to Apple's ears XD<br /><br />MORE iPhone 15 Issues Playlist: https://www.youtube.com/playlist?list=PLHSLJI8oVymwR_Zx8zi_0Ao2iSGSXuytu<br /><br />ARTICLE: https://9to5mac.com/2023/10/03/iphone-15-crackling-sound-speakers/<br /><br />Angry Redditor Clips are Boogie2988: https://www.youtube.com/watch?v=Kwo58m4JqY8<br /><br />-----------------------------------<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=z06e9QMd60U]]></description><link>https://odysee.com/apple-responds-to-crackling-iphone-15:483c58ed5d701eed5622e223803b0736d7cb9c80</link><guid isPermaLink="true">https://odysee.com/apple-responds-to-crackling-iphone-15:483c58ed5d701eed5622e223803b0736d7cb9c80</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/apple-responds-to-crackling-iphone-15/483c58ed5d701eed5622e223803b0736d7cb9c80/e2cad7.mp4" length="44287318" type="video/mp4"/><itunes:title>Apple Responds to Crackling iPhone 15 Speaker</itunes:title><itunes:author>SAMTIME 2</itunes:author><itunes:image href="https://thumbnails.lbry.com/z06e9QMd60U"/><itunes:duration>181</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Apple Explains Why MacBook Pro Only Has 8GB RAM]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/eKm5-jUTRMM" width="480" alt="thumbnail" title="Apple Explains Why MacBook Pro Only Has 8GB RAM" /></p>Apple used their reality distortion field to explain why 8GB RAM on the new MacBook Pro is actually as good as 16GB.<br /><br />ARTICLE: https://www.macrumors.com/2023/11/08/8gb-ram-m3-macbook-pro-like-16-gb-pc/<br /><br />Max Tech 8GB vs 16GB MacBook Pro Test: https://youtu.be/hmWPd7uEYEY?si=pUzg-KFlhXvYoJKb<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />#MacBookPro #MacBookProBlem<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=eKm5-jUTRMM]]></description><link>https://odysee.com/apple-explains-why-macbook-pro-only-has:cf8f2d2c724a2e2dea05cc9e7b819f926d5acc52</link><guid isPermaLink="true">https://odysee.com/apple-explains-why-macbook-pro-only-has:cf8f2d2c724a2e2dea05cc9e7b819f926d5acc52</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/apple-explains-why-macbook-pro-only-has/cf8f2d2c724a2e2dea05cc9e7b819f926d5acc52/da9c24.mp4" length="45292390" type="video/mp4"/><itunes:title>Apple Explains Why MacBook Pro Only Has 8GB RAM</itunes:title><itunes:author>SAMTIME 4</itunes:author><itunes:image href="https://thumbnails.lbry.com/eKm5-jUTRMM"/><itunes:duration>227</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[YouTube is Sorry for Banning AdBlock]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/M_2Sh700w_E" width="480" alt="thumbnail" title="YouTube is Sorry for Banning AdBlock" /></p>YouTube is very sorry that they banned AdBlockers… because it made AdBlockers much more powerful!<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />#YouTube #AdBlock #SadBlock<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=M_2Sh700w_E]]></description><link>https://odysee.com/youtube-is-sorry-for-banning-adblock:61f2c4f92c36c76d7e8caf6a26123e79bf0d49eb</link><guid isPermaLink="true">https://odysee.com/youtube-is-sorry-for-banning-adblock:61f2c4f92c36c76d7e8caf6a26123e79bf0d49eb</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/youtube-is-sorry-for-banning-adblock/61f2c4f92c36c76d7e8caf6a26123e79bf0d49eb/532a85.mp4" length="49293717" type="video/mp4"/><itunes:title>YouTube is Sorry for Banning AdBlock</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/M_2Sh700w_E"/><itunes:duration>174</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[I Try to Fix My Old MacBook]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/l1kCgKwU4Cs" width="480" alt="thumbnail" title="I Try to Fix My Old MacBook" /></p>Get genuine parts to fix your Apple MacBook at https://appleparts.io/<br />Use codeword SAMTIME to get 20% at checkout!!<br /><br />How To Fix Your MacBook Pro on the Cheap: https://youtu.be/C0o5BrBSUSM<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=l1kCgKwU4Cs]]></description><link>https://odysee.com/i-try-to-fix-my-old-macbook:2dd51a62e201d54aa7ce0436e58e20de14f3ddf8</link><guid isPermaLink="true">https://odysee.com/i-try-to-fix-my-old-macbook:2dd51a62e201d54aa7ce0436e58e20de14f3ddf8</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/i-try-to-fix-my-old-macbook/2dd51a62e201d54aa7ce0436e58e20de14f3ddf8/5bd2d1.mp4" length="181789747" type="video/mp4"/><itunes:title>I Try to Fix My Old MacBook</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/l1kCgKwU4Cs"/><itunes:duration>586</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Tim Cook Finally Answers Hard Questions]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/BeHs9eGzsB8" width="480" alt="thumbnail" title="Tim Cook Finally Answers Hard Questions" /></p>I sat down with Tim Cook to finally make him answer the hard questions<br /><br />MORE INTERVIEWS: https://www.youtube.com/playlist?list=PLHSLJI8oVymzqoJi-_RQGI2K55QqF2ZxI<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />#TimCook #TimApple #TheHardQuestions<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=BeHs9eGzsB8]]></description><link>https://odysee.com/tim-cook-finally-answers-hard-questions:9e8ac9f2879e81ebb07c82e3d6f6795a75fa9451</link><guid isPermaLink="true">https://odysee.com/tim-cook-finally-answers-hard-questions:9e8ac9f2879e81ebb07c82e3d6f6795a75fa9451</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/tim-cook-finally-answers-hard-questions/9e8ac9f2879e81ebb07c82e3d6f6795a75fa9451/c6c463.mp4" length="65672356" type="video/mp4"/><itunes:title>Tim Cook Finally Answers Hard Questions</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/BeHs9eGzsB8"/><itunes:duration>271</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[M3 MacBook Pro PARODY - “Taking out the Pro”]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/Z5HkmZp-96k" width="480" alt="thumbnail" title="M3 MacBook Pro PARODY - “Taking out the Pro”" /></p>Introducing the all new Apple M3 MacBook Pros. Now available without the “Pro”!!<br /><br />Microsoft Reacts to Apple's New MacBooks: https://youtu.be/dhnozZ_rVJY<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=Z5HkmZp-96k]]></description><link>https://odysee.com/m3-macbook-pro-parody-%E2%80%9Ctaking-out-the:b9b024a3871cc7ba70d46818cd8530917ba6bbde</link><guid isPermaLink="true">https://odysee.com/m3-macbook-pro-parody-%E2%80%9Ctaking-out-the:b9b024a3871cc7ba70d46818cd8530917ba6bbde</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/m3-macbook-pro-parody-“taking-out-the/b9b024a3871cc7ba70d46818cd8530917ba6bbde/cf42ab.mp4" length="32870166" type="video/mp4"/><itunes:title>M3 MacBook Pro PARODY - “Taking out the Pro”</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/Z5HkmZp-96k"/><itunes:duration>198</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Microsoft Reacts to Apple’s New MacBooks]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/dhnozZ_rVJY" width="480" alt="thumbnail" title="Microsoft Reacts to Apple’s New MacBooks" /></p>Microsoft just bluescreened over Apple’s upcoming M3 MacBook Pros.<br /><br />Subscribe for the Apple M3 event PARODY VIDEO coming this Wednesday!<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=dhnozZ_rVJY]]></description><link>https://odysee.com/microsoft-reacts-to-apple%E2%80%99s-new:95165fbe1687d85ce7e697c652723db677d3d5bd</link><guid isPermaLink="true">https://odysee.com/microsoft-reacts-to-apple%E2%80%99s-new:95165fbe1687d85ce7e697c652723db677d3d5bd</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/microsoft-reacts-to-apple’s-new/95165fbe1687d85ce7e697c652723db677d3d5bd/e019a6.mp4" length="35376274" type="video/mp4"/><itunes:title>Microsoft Reacts to Apple’s New MacBooks</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/dhnozZ_rVJY"/><itunes:duration>161</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Samsung Reacts to OnePlus Folding Phone]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/heZoeirmqgw" width="480" alt="thumbnail" title="Samsung Reacts to OnePlus Folding Phone" /></p>Samsung responds to the new OnePlus Open folding phone. They’re not impressed!<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=heZoeirmqgw]]></description><link>https://odysee.com/samsung-reacts-to-oneplus-folding-phone:1b185b09135e7ed38965642f0f95f2b26e6331ae</link><guid isPermaLink="true">https://odysee.com/samsung-reacts-to-oneplus-folding-phone:1b185b09135e7ed38965642f0f95f2b26e6331ae</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/samsung-reacts-to-oneplus-folding-phone/1b185b09135e7ed38965642f0f95f2b26e6331ae/04d025.mp4" length="46183132" type="video/mp4"/><itunes:title>Samsung Reacts to OnePlus Folding Phone</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/heZoeirmqgw"/><itunes:duration>184</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Apple Introduces Apple Pencil With a Cord]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/-1yi7DqDUr8" width="480" alt="thumbnail" title="Apple Introduces Apple Pencil With a Cord" /></p>Apple just introduced the Apple Pencil USB-C. For when wireless charging is just too dang convenient!<br /><br />Yes, this is a real product: https://www.apple.com/shop/product/MUWA3AM/A/apple-pencil-usb-c<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=-1yi7DqDUr8]]></description><link>https://odysee.com/apple-introduces-apple-pencil-with-a:36a5fad1b47e74d2795b7bb33cf084917089fd76</link><guid isPermaLink="true">https://odysee.com/apple-introduces-apple-pencil-with-a:36a5fad1b47e74d2795b7bb33cf084917089fd76</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/apple-introduces-apple-pencil-with-a/36a5fad1b47e74d2795b7bb33cf084917089fd76/dc4d47.mp4" length="30185132" type="video/mp4"/><itunes:title>Apple Introduces Apple Pencil With a Cord</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/-1yi7DqDUr8"/><itunes:duration>196</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    <item><title><![CDATA[Apple Responds to iPhone 15 Screen Burn In]]></title><description><![CDATA[<p><img src="https://thumbnails.lbry.com/CVUMiyl1GVY" width="480" alt="thumbnail" title="Apple Responds to iPhone 15 Screen Burn In" /></p>Apple responds to the screen burn-in issue on the new iPhone 15 Pro Max. Looks like the phone is turning into an iPhone 15 PROblems!<br /><br />ARTICLE: https://www.dailymail.co.uk/sciencetech/article-12636027/iPhone-15-Pro-Max-screen-burn-issues-image-display-Apple.html<br /><br />Apple Responds to iPhone 15 Pro Bending: https://youtu.be/va9NjxmoyJU<br />Apple Responds to iPhone 15 Pro Overheating: https://youtu.be/75bxg24Od_U<br />Apple Responds to Fine Woven Case Issue: https://youtu.be/eMEahWU4mrM<br /><br />-----------------------------------<br /><br />SUPPORT: https://funkytime.tv/patriot-signup/<br />MERCH: https://funkytime.tv/shop/<br />FUNKY TIME WEBSITE: https://funkytime.tv<br /><br />FACEBOOK: http://www.facebook.com/SamtimeNews<br />TWITTER: http://twitter.com/SamtimeNews<br />INSTAGRAM: http://instagram.com/samtimenews<br /><br />-----------------------------------<br /><br />'Escape the ordinary. Embrace the FUNKY!'<br /><br />-----------------------------------<br /><br />For sponsorship enquiries: samtime@bossmgmtgrp.com<br />For other business enquiries: business@funkytime.tv<br />Copyright FUNKY TIME PRODUCTIONS 2023<br />...<br />https://www.youtube.com/watch?v=CVUMiyl1GVY]]></description><link>https://odysee.com/apple-responds-to-iphone-15-screen-burn:dc3690d028b73fb0026d0610dda41531844d2342</link><guid isPermaLink="true">https://odysee.com/apple-responds-to-iphone-15-screen-burn:dc3690d028b73fb0026d0610dda41531844d2342</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/apple-responds-to-iphone-15-screen-burn/dc3690d028b73fb0026d0610dda41531844d2342/0ef216.mp4" length="31056471" type="video/mp4"/><itunes:title>Apple Responds to iPhone 15 Screen Burn In</itunes:title><itunes:author>SAMTIME</itunes:author><itunes:image href="https://thumbnails.lbry.com/CVUMiyl1GVY"/><itunes:duration>147</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-</channel>
-</rss>
-""".replace(
-    "{}", DateUtils.get_datetime_now_iso()
+from webtoolkit import (
+    json_encode_field,
+    json_decode_field,
+    PageResponseObject,
+    ResponseHeaders,
+    HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
+    HTTP_STATUS_CODE_SERVER_ERROR,
+    HTTP_STATUS_CODE_EXCEPTION,
+    HTTP_STATUS_TOO_MANY_REQUESTS,
+    HTTP_STATUS_USER_AGENT,
 )
 
-webpage_old_pubdate_rss = """
-<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
-<channel>
-    <title><![CDATA[SAMTIME on Odysee]]></title>
-    <subtitle><![CDATA[SAMTIME subtitle]]></subtitle>
-    <description><![CDATA[SAMTIME channel description]]></description>
-    <link>https://odysee.com/@samtime:1</link>
-    <image><url>https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw</url>
-    <title>SAMTIME on Odysee</title>
-    <link>https://odysee.com/@samtime:1</link>
-    </image>
-    <generator>RSS for Node</generator>
-    <lastBuildDate>Tue, 01 Jan 2020 13:57:18 GMT</lastBuildDate>
-    <atom:link href="https://odysee.com/$/rss/@samtime:1" rel="self" type="application/rss+xml"/>
-    <language><![CDATA[ci]]></language>
-    <itunes:author>SAMTIME author</itunes:author><itunes:category text="Leisure"></itunes:category><itunes:image href="https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw"/><itunes:owner><itunes:name>SAMTIME name</itunes:name><itunes:email>no-reply@odysee.com</itunes:email></itunes:owner><itunes:explicit>no</itunes:explicit>
+from tests.fakeinternetcontents import (
+    webpage_with_real_rss_links,
+    webpage_simple_rss_page,
+    webpage_old_pubdate_rss,
+    webpage_no_pubdate_rss,
+    webpage_html_favicon,
+    webpage_with_rss_link_rss_contents,
+    webpage_html_casinos,
+    webpage_html_canonical_1,
+)
+from tests.fake.geekwirecom import (
+    geekwire_feed,
+)
+from tests.fake.youtube import (
+    youtube_robots_txt,
+    youtube_sitemap_sitemaps,
+    youtube_sitemap_product,
+    webpage_youtube_airpano_feed,
+    webpage_samtime_odysee,
+    webpage_samtime_youtube_rss,
+    youtube_channel_html_linus_tech_tips,
+    youtube_channel_rss_linus_tech_tips,
+)
+from tests.fake.robotstxtcom import (
+    robots_txt_example_com_robots,
+)
+from tests.fake.codeproject import (
+    webpage_code_project_rss,
+)
+from tests.fake.opmlfile import (
+    opml_file,
+)
+from tests.fake.hackernews import (
+    webpage_hackernews_rss,
+    hacker_news_item,
+)
+from tests.fake.warhammercommunity import (
+    warhammer_community_rss,
+)
+from tests.fake.thehill import (
+    thehill_rss,
+)
+from tests.fake.reddit import (
+    reddit_rss_text,
+    reddit_entry_json,
+    reddit_subreddit_json,
+)
+from tests.fake.githubcom import (
+    github_json,
+)
+from tests.fake.returndislike import (
+    return_dislike_json,
+)
+from tests.fake.firebog import (
+    firebog_adguard_list,
+    firebog_w3kbl_list,
+    firebog_tick_lists,
+    firebog_malware,
+)
+from tests.fake.instance import (
+    instance_entries_json,
+    instance_sources_json_empty,
+    instance_entries_json_empty,
+    instance_entries_source_100_json,
+    instance_source_100_url,
+    instance_source_100_json,
+    instance_source_101_json,
+    instance_source_102_json,
+    instance_source_103_json,
+    instance_source_104_json,
+    instance_source_105_json,
+    instance_sources_page_1,
+    instance_sources_page_2,
+)
 
-    <item><title><![CDATA[First entry title]]></title><description><![CDATA[First entry description]]></description><link>https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</link><guid isPermaLink="true">https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</guid><pubDate>Mon, 01 Jan 2020 18:50:08 GMT</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/youtube-apologises-for-slowing-down/bab8f5ed4fa7bb406264152242bab2558037ee12/1698dc.mp4" length="29028604" type="video/mp4"/><itunes:title>YouTube Apologises For Slowing Down AdBlock Users</itunes:title><itunes:author>SAMTIME x</itunes:author><itunes:image href="https://thumbnails.lbry.com/a51RgbcCutk"/><itunes:duration>161</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-</channel>
-</rss>
-"""
 
-webpage_no_pubdate_rss = """
-<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
-<channel>
-    <title><![CDATA[SAMTIME on Odysee]]></title>
-    <subtitle><![CDATA[SAMTIME subtitle]]></subtitle>
-    <description><![CDATA[SAMTIME channel description]]></description>
-    <link>https://odysee.com/@samtime:1</link>
-    <image><url>https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw</url>
-    <title>SAMTIME on Odysee</title>
-    <link>https://odysee.com/@samtime:1</link>
-    </image>
-    <generator>RSS for Node</generator>
-    <lastBuildDate>Tue, 01 Jan 2020 13:57:18 GMT</lastBuildDate>
-    <atom:link href="https://odysee.com/$/rss/@samtime:1" rel="self" type="application/rss+xml"/>
-    <language><![CDATA[ci]]></language>
-    <itunes:author>SAMTIME author</itunes:author><itunes:category text="Leisure"></itunes:category><itunes:image href="https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw"/><itunes:owner><itunes:name>SAMTIME name</itunes:name><itunes:email>no-reply@odysee.com</itunes:email></itunes:owner><itunes:explicit>no</itunes:explicit>
+class PageBuilder(object):
+    def __init__(self):
+        self.charset = "UTF-8"
+        self.title = None
+        self.title_meta = None
+        self.description_meta = None
+        self.author = None
+        self.keywords = None
+        self.og_title = None
+        self.og_description = None
+        self.body_text = ""
 
-    <item><title><![CDATA[First entry title]]></title><description><![CDATA[First entry description]]></description><link>https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</link><guid isPermaLink="true">https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</guid><enclosure url="https://player.odycdn.com/api/v3/streams/free/youtube-apologises-for-slowing-down/bab8f5ed4fa7bb406264152242bab2558037ee12/1698dc.mp4" length="29028604" type="video/mp4"/><itunes:title>YouTube Apologises For Slowing Down AdBlock Users</itunes:title><itunes:author>SAMTIME x</itunes:author><itunes:image href="https://thumbnails.lbry.com/a51RgbcCutk"/><itunes:duration>161</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-</channel>
-</rss>
-"""
+    def build_contents(self):
+        html = self.build_html()
+        html = self.build_head(html)
+        html = self.build_body(html)
+        return html
+
+    def build_html(self):
+        return """
+        <html>
+        ${HEAD}
+        ${BODY}
+        </html>"""
+
+    def build_body(self, html):
+        html = html.replace("${BODY}", "<body>{}</body>".format(self.body_text))
+        return html
+
+    def build_head(self, html):
+        # fmt: off
+
+        meta_info = ""
+        if self.title:
+            meta_info += '<title>{}</title>\n'.format(self.title)
+        if self.title_meta:
+            meta_info += '<meta name="title" content="{}">\n'.format(self.title_meta)
+        if self.description_meta:
+            meta_info += '<meta name="description" content="{}">\n'.format(self.description_meta)
+        if self.author:
+            meta_info += '<meta name="author" content="{}">\n'.format(self.author)
+        if self.keywords:
+            meta_info += '<meta name="keywords" content="{}">\n'.format(self.keywords)
+        if self.og_title:
+            meta_info += '<meta property=”og:title” content="{}">\n'.format(self.og_title)
+        if self.og_description:
+            meta_info += '<meta property=”og:description” content="{}">\n'.format(self.og_description)
+
+        # fmt: on
+
+        html = html.replace("${HEAD}", "<head>{}</head>".format(meta_info))
+        return html
 
 
-webpage_html_favicon = """<html>
- <head>
- <link rel="shortcut icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon.ico" type="image/x-icon">
- <link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_32x32.png" sizes="32x32">
- <link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_48x48.png" sizes="48x48">
- <link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_96x96.png" sizes="96x96">
- <link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_144x144.png" sizes="144x144">
- <title>YouTube</title>
+class TestResponseObject(PageResponseObject):
+    """
+    TODO maybe we should inherit from webtools/PageResponseObject?
+    """
 
- </head>
- <body>
- page body
- </body>
-"""
+    def __init__(self, url, headers, timeout):
+        super().__init__(url=url, headers=headers)
 
-webpage_html_casinos = """<html>
- <head>
- <title>Casino casino casino slots bitcoin lottery bingo casino</title>
+        self.status_code = 200
+        self.errors = []
+        self.crawl_time_s = 10
 
- </head>
- <body>
- page body
- </body>
-"""
+        self.url = url
+        self.request_url = url
+
+        encoding = "utf-8"
+        self.apparent_encoding = encoding
+        self.encoding = encoding
+
+        self.set_headers(url)
+        self.set_status(url)
+        self.set_text(url)
+        self.set_binary(url)
+
+    def set_headers(self, url):
+        headers = {}
+        if url == "https://page-with-last-modified-header.com":
+            headers["Last-Modified"] = "Wed, 03 Apr 2024 09:39:30 GMT"
+
+        elif url == "https://page-with-rss-link.com/feed":
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.startswith("https://warhammer-community.com/feed"):
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.startswith("https://thehill.com/feed"):
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.find("instance.com") >= 0 and url.find("json") >= 0:
+            headers["Content-Type"] = "json"
+
+        elif url.startswith("https://binary") and url.find("jpg") >= 0:
+            headers["Content-Type"] = "image/jpg"
+
+        elif url.startswith("https://image"):
+            headers["Content-Type"] = "image/jpg"
+
+        elif url.startswith("https://audio"):
+            headers["Content-Type"] = "audio/midi"
+
+        elif url.startswith("https://video"):
+            headers["Content-Type"] = "video/mp4"
+
+        elif url == "https://rss-page-with-broken-content-type.com/feed":
+            headers["Content-Type"] = "text/html"
+
+        self.headers = ResponseHeaders(headers=headers)
+
+    def set_status(self, url):
+        if url.startswith("https://www.youtube.com/watch?v=666"):
+            self.status_code = 500
+
+        elif url == "https://invalid.rsspage.com/rss.xml":
+            self.status_code = 500
+
+        elif url == "https://page-with-http-status-500.com":
+            self.status_code = 500
+
+        elif url == "https://page-with-http-status-400.com":
+            self.status_code = 400
+
+        elif url == "https://page-with-http-status-300.com":
+            self.status_code = 300
+
+        elif url == "https://page-with-http-status-200.com":
+            self.status_code = 200
+
+        elif url == "https://page-with-http-status-100.com":
+            self.status_code = 100
+
+        elif url == "http://page-with-http-status-500.com":
+            self.status_code = 500
+
+        elif url == "http://page-with-http-status-400.com":
+            self.status_code = 400
+
+        elif url == "http://page-with-http-status-300.com":
+            self.status_code = 300
+
+        elif url == "http://page-with-http-status-200.com":
+            self.status_code = 200
+
+        elif url == "http://page-with-http-status-100.com":
+            self.status_code = 100
+
+        elif url == "https://page-with-https-status-200-http-status-500.com":
+            self.status_code = 200
+
+        elif url == "http://page-with-https-status-200-http-status-500.com":
+            self.status_code = 500
+
+        elif url == "https://page-with-https-status-500-http-status-200.com":
+            self.status_code = 500
+
+        elif url == "http://page-with-https-status-500-http-status-200.com":
+            self.status_code = 200
+
+        elif url == "https://page-with-http-status-500.com/robots.txt":
+            self.status_code = 500
+
+    def set_text(self, url):
+        if url.startswith("https://binary"):
+            self.text = None
+            return
+        elif url.startswith("https://image"):
+            self.text = None
+            return
+        elif url.startswith("https://audio"):
+            self.text = None
+            return
+        elif url.startswith("https://video"):
+            self.text = None
+            return
+
+        text = self.get_text_for_url(url)
+        self.text = text
+
+    def get_text_for_url(self, url):
+        if url.startswith("https://youtube.com/channel/"):
+            return self.get_contents_youtube_channel(url)
+
+        if url.startswith("https://www.youtube.com/watch?v=666"):
+            return webpage_no_pubdate_rss
+
+        if url.startswith("https://www.youtube.com/user/linustechtips"):
+            return youtube_channel_html_linus_tech_tips
+
+        if url == "https://rss-page-with-broken-content-type.com/feed":
+            return youtube_channel_html_linus_tech_tips
+
+        if url.startswith("https://www.geekwire.com/feed"):
+            return geekwire_feed
+
+        if url.startswith("https://www.rss-in-html.com/feed"):
+            return geekwire_feed
+
+        if url.startswith(
+            "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        ):
+            return youtube_channel_rss_linus_tech_tips
+
+        if url.startswith("https://www.youtube.com/feeds"):
+            return webpage_samtime_youtube_rss
+
+        if url == "https://www.reddit.com/r/InternetIsBeautiful/.json":
+            return reddit_subreddit_json
+
+        if url.startswith("https://www.reddit.com/r/") and url.endswith(".rss"):
+            return reddit_rss_text
+
+        if url.startswith("https://www.reddit.com") and url.endswith(".json"):
+            return reddit_entry_json
+
+        if url.startswith("https://api.github.com"):
+            return github_json
+
+        if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId"):
+            return return_dislike_json
+
+        if url == "https://www.youtube.com/robots.txt":
+            return youtube_robots_txt
+
+        if url == "https://www.youtube.com/sitemaps/sitemap.xml":
+            return youtube_sitemap_sitemaps
+
+        if url == "https://www.youtube.com/product/sitemap.xml":
+            return youtube_sitemap_product
+
+        if url.startswith("https://odysee.com/$/rss"):
+            return webpage_samtime_youtube_rss
+
+        if url.startswith("https://hnrss.org"):
+            return webpage_hackernews_rss
+
+        if url.startswith("https://news.ycombinator.com/item?id="):
+            return webpage_samtime_youtube_rss
+
+        if url.startswith("https://hacker-news.firebaseio.com/v0/item/"):
+            return hacker_news_item
+
+        if url.startswith("https://warhammer-community.com/feed"):
+            return warhammer_community_rss
+
+        if url.startswith("https://thehill.com/feed"):
+            return thehill_rss
+
+        if url.startswith("https://isocpp.org/blog/rss/category/news"):
+            return webpage_samtime_youtube_rss
+
+        if url.startswith("https://cppcast.com/feed.rss"):
+            return webpage_samtime_youtube_rss
+
+        elif url == "https://multiple-favicons.com/page.html":
+            return webpage_html_favicon
+
+        elif url == "https://rsspage.com/rss.xml":
+            return webpage_samtime_odysee
+
+        elif url == "https://opml-file-example.com/ompl.xml":
+            return opml_file
+
+        elif url == "https://invalid.rsspage.com/rss.xml":
+            return ""
+
+        elif url == "https://simple-rss-page.com/rss.xml":
+            return webpage_simple_rss_page
+
+        elif url == "https://empty-page.com":
+            return ""
+
+        elif url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
+            return webpage_code_project_rss
+
+        elif url.find("https://api.github.com/repos") >= 0:
+            return """{"stargazers_count" : 5}"""
+
+        elif url.find("https://www.reddit.com/") >= 0 and url.endswith("json"):
+            return """{"upvote_ratio" : 5}"""
+
+        elif url.find("https://returnyoutubedislikeapi.com/votes") >= 0:
+            return """{"likes" : 5,
+                       "dislikes" : 5,
+                       "viewCount" : 5,
+                       "rating": 5}"""
+
+        elif url == "https://page-with-two-links.com":
+            b = PageBuilder()
+            b.title_meta = "Page title"
+            b.description_meta = "Page description"
+            b.og_title = "Page og_title"
+            b.og_description = "Page og_description"
+            b.body_text = """<a href="https://link1.com">Link1</a>
+                     <a href="https://link2.com">Link2</a>"""
+
+            return b.build_contents()
+
+        elif url == "https://page-with-rss-link.com":
+            return """
+              <html>
+                 <head>
+                     <link type="application/rss+xml"  href="https://page-with-rss-link.com/feed"/>
+                 </head>
+                 <body>
+                    no body
+                 </body>
+             </html>
+             """
+
+        elif url == "https://page-with-rss-link.com/feed":
+            return webpage_with_rss_link_rss_contents
+
+        elif url == "https://page-with-canonical-link.com":
+            return webpage_html_canonical_1
+
+        elif url == "https://slot-casino-page.com":
+            return webpage_html_casinos
+
+        elif url == "https://page-with-real-rss-link.com":
+            return webpage_with_real_rss_links
+
+        elif url.startswith("https://instance.com/apps/rsshistory"):
+            return self.get_contents_instance(url)
+
+        elif url == "https://title-in-head.com":
+            b = PageBuilder()
+            b.title = "Page title"
+            b.description_meta = "Page description"
+            b.og_description = "Page og_description"
+            b.body_text = """Something in the way"""
+            return b.build_contents()
+
+        elif url == "https://no-props-page.com":
+            b = PageBuilder()
+            b.title = None
+            b.description_meta = None
+            b.og_description = None
+            b.body_text = """Something in the way"""
+            return b.build_contents()
+
+        elif url == "https://title-in-meta.com":
+            b = PageBuilder()
+            b.title = "Page title"
+            b.description_meta = "Page description"
+            b.og_description = "Page og_description"
+            b.body_text = """Something in the way"""
+            return b.build_contents()
+
+        elif url == "https://title-in-og.com":
+            b = PageBuilder()
+            b.og_title = "Page title"
+            b.description_meta = "Page description"
+            b.og_description = "Page og_description"
+            b.body_text = """Something in the way"""
+            return b.build_contents()
+
+        elif url == "https://linkedin.com":
+            b = PageBuilder()
+            b.title_meta = "Https LinkedIn Page title"
+            b.description_meta = "LinkedIn Page description"
+            b.og_title = "Https LinkedIn Page og:title"
+            b.og_description = "LinkedIn Page og:description"
+            b.body_text = """LinkedIn body"""
+            return b.build_contents()
+
+        elif url == "http://linkedin.com":
+            b = PageBuilder()
+            b.title_meta = "Http LinkedIn Page title"
+            b.description_meta = "LinkedIn Page description"
+            b.og_title = "Http LinkedIn Page og:title"
+            b.og_description = "LinkedIn Page og:description"
+            b.body_text = """LinkedIn body"""
+            return b.build_contents()
+
+        elif url == "https://www.linkedin.com":
+            b = PageBuilder()
+            b.title_meta = "Https www LinkedIn Page title"
+            b.description_meta = "LinkedIn Page description"
+            b.og_title = "Https LinkedIn Page og:title"
+            b.og_description = "LinkedIn Page og:description"
+            b.body_text = """LinkedIn body"""
+            return b.build_contents()
+
+        elif url == "http://www.linkedin.com":
+            b = PageBuilder()
+            b.title_meta = "Http www LinkedIn Page title"
+            b.description_meta = "LinkedIn Page description"
+            b.og_title = "Http www LinkedIn Page og:title"
+            b.og_description = "LinkedIn Page og:description"
+            b.body_text = """LinkedIn body"""
+            return b.build_contents()
+
+        elif url == "https://page-with-last-modified-header.com":
+            return webpage_html_favicon
+
+        elif url == "https://v.firebog.net/hosts/AdguardDNS.txt":
+            return firebog_adguard_list
+
+        elif url == "https://v.firebog.net/hosts/static/w3kbl.txt":
+            return firebog_w3kbl_list
+
+        elif url == "https://v.firebog.net/hosts/lists.php?type=tick":
+            return firebog_tick_lists
+
+        elif url == "https://v.firebog.net/hosts/RPiList-Malware.txt":
+            return firebog_malware
+
+        elif url == "https://robots-txt.com/robots.txt":
+            return robots_txt_example_com_robots
+
+        elif url.endswith("robots.txt"):
+            return """  """
+
+        elif url.endswith("sitemap.xml"):
+            return """<urlset>
+                      </urlset>"""
+
+        b = PageBuilder()
+        b.title_meta = "Page title"
+        b.description_meta = "Page description"
+        b.og_title = "Page og_title"
+        b.og_description = "Page og_description"
+
+        return b.build_contents()
+
+    def set_binary(self, url):
+        self.binary = None
+        if url.startswith("https://binary"):
+            text = url
+            self.binary = text.encode("utf-8")
+        elif url.startswith("https://image"):
+            text = url
+            self.binary = text.encode("utf-8")
+        elif url.startswith("https://audio"):
+            text = url
+            self.binary = text.encode("utf-8")
+        elif url.startswith("https://video"):
+            text = url
+            self.binary = text.encode("utf-8")
+
+    def get_contents_youtube_channel(self, url):
+        if url == "https://youtube.com/channel/samtime/rss.xml":
+            return webpage_samtime_youtube_rss
+
+        elif url == "https://youtube.com/channel/2020-year-channel/rss.xml":
+            return webpage_old_pubdate_rss
+
+        elif url == "https://youtube.com/channel/no-pubdate-channel/rss.xml":
+            return webpage_no_pubdate_rss
+
+        elif url == "https://youtube.com/channel/airpano/rss.xml":
+            return webpage_youtube_airpano_feed
+
+        elif (
+            url
+            == "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        ):
+            return webpage_samtime_youtube_rss
+
+    def get_contents_instance(self, url):
+        if (
+            url
+            == "https://instance.com/apps/rsshistory/entries-json/?query_type=recent"
+        ):
+            return instance_entries_json
+
+        elif (
+            url
+            == "https://instance.com/apps/rsshistory/entries-json/?query_type=recent&source_title=Source100"
+        ):
+            return instance_entries_source_100_json
+
+        elif (
+            url
+            == "https://instance.com/apps/rsshistory/entries-json/?query_type=recent&page=1"
+        ):
+            return """{}"""
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/100":
+            return f'{{ "source": {instance_source_100_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/101":
+            return f'{{ "source": {instance_source_101_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/102":
+            return f'{{ "source": {instance_source_102_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/103":
+            return f'{{ "source": {instance_source_103_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/104":
+            return f'{{ "source": {instance_source_104_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/source-json/105":
+            return f'{{ "source": {instance_source_105_json} }}'
+
+        elif url == "https://instance.com/apps/rsshistory/entry-json/1912018":
+            return """{}"""
+
+        elif url == "https://instance.com/apps/rsshistory/sources-json":
+            return instance_sources_page_1
+
+        elif url == "https://instance.com/apps/rsshistory/sources-json/?page=1":
+            return instance_sources_page_1
+
+        elif url == "https://instance.com/apps/rsshistory/sources-json/?page=2":
+            return instance_sources_page_2
+
+        elif url == "https://instance.com/apps/rsshistory/sources-json/?page=3":
+            return instance_sources_json_empty
+
+        elif "/sources-json/":
+            return instance_sources_json_empty
+
+        elif "/entries-json/":
+            return instance_entries_json_empty
+
+        else:
+            return """{}"""
+
+    def __str__(self):
+        return "TestResponseObject: Url:{} Status code:{} Headers:{}".format(
+            self.url,
+            self.status_code,
+            self.headers,
+        )
 
 
-webpage_with_rss_link_rss_contents = """
-<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
-<channel>
-    <title>Page with RSS link - RSS contents</title>
-    <subtitle><![CDATA[SAMTIME subtitle]]></subtitle>
-    <description><![CDATA[SAMTIME channel description]]></description>
-    <link>https://odysee.com/@samtime:1</link>
-    <image><url>https://thumbnails.lbry.com/UCd6vEDS3SOhWbXZrxbrf_bw</url>
-    <title>SAMTIME on Odysee</title>
-    <link>https://page-with-rss-link.com/feed</link>
-    </image>
-    <generator>RSS for Node</generator>
-    <lastBuildDate>Tue, 01 Jan 2020 13:57:18 GMT</lastBuildDate>
-    <atom:link href="https://odysee.com/$/rss/@samtime:1" rel="self" type="application/rss+xml"/>
-    <language><![CDATA[ci]]></language>
-    <item><title><![CDATA[First entry title]]></title><description><![CDATA[First entry description]]></description><link>https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</link><guid isPermaLink="true">https://odysee.com/youtube-apologises-for-slowing-down:bab8f5ed4fa7bb406264152242bab2558037ee12</guid><pubDate>{}</pubDate><enclosure url="https://player.odycdn.com/api/v3/streams/free/youtube-apologises-for-slowing-down/bab8f5ed4fa7bb406264152242bab2558037ee12/1698dc.mp4" length="29028604" type="video/mp4"/><itunes:title>YouTube Apologises For Slowing Down AdBlock Users</itunes:title><itunes:author>SAMTIME x</itunes:author><itunes:image href="https://thumbnails.lbry.com/a51RgbcCutk"/><itunes:duration>161</itunes:duration><itunes:explicit>no</itunes:explicit></item>
-    </channel>
-</rss>
-"""
+class FakeInternetData(object):
+    def __init__(self, url):
+        self.url = url
+        self.properties = {
+            "link": self.url,
+            "title": "Title",
+            "description": "Description",
+            "date_published": DateUtils.get_datetime_now_iso(),
+            "author": "Description",
+            "language": "Language",
+            "album": "Description",
+            "page_rating": 80,
+            "thumbnail": None,
+        }
 
-webpage_html_canonical_1 = """<html>
- <head>
- <link rel="shortcut icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon.ico" type="image/x-icon"><link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_32x32.png" sizes="32x32"><link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_48x48.png" sizes="48x48"><link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_96x96.png" sizes="96x96"><link rel="icon" href="https://www.youtube.com/s/desktop/e4d15d2c/img/favicon_144x144.png" sizes="144x144">
- <link rel="canonical" href="https://www.page-with-canonical-link.com">
- <title>YouTube</title>
+        self.response = {
+            "status_code": 200,
+            "Content-Length": 200,
+            "Content-Type": "text/html",
+            "body_hash": json_encode_field(b"01001012"),
+            "hash": json_encode_field(b"01001012"),
+            "is_valid": True,
+            "is_invalid": False,
+            "is_allowed": True,
+        }
+        self.text_data = "Something"
+        self.binary_data = None
+        self.entries = []
 
- </head>
- <body>
- page body
- </body>
-"""
+    def get_all_properties(self):
+        data = []
+        data.append({"name": "Properties", "data": self.properties})
+        data.append({"name": "Settings", "data": None})
+        data.append({"name": "Response", "data": self.response})
+        data.append({"name": "Headers", "data": {}})
+        data.append({"name": "Entries", "data": self.entries})
+        data.append({"name": "Streams", "data": {
+            "Text" : self.text_data,
+            "Binary" : json_encode_field(self.binary_data)
+            }})
+
+        return data
+
+    def get_getj(self, name="", settings=None):
+        if self.url == "https://linkedin.com":
+            self.properties["title"] = "Https LinkedIn Page title"
+            self.properties["description"] = "Https LinkedIn Page description"
+        elif self.url == "https://m.youtube.com/watch?v=1234":
+            self.properties["link"] = "https://www.youtube.com/watch?v=1234"
+            self.properties["feeds"] = [
+                "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
+            ]
+            self.properties["title"] = "YouTube 1234 video"
+            self.properties["language"] = None
+        elif self.url == "https://www.youtube.com/watch?v=1234":
+            self.properties["link"] = "https://www.youtube.com/watch?v=1234"
+            self.properties["feeds"] = [
+                "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
+            ]
+            self.properties["title"] = "YouTube 1234 video"
+            self.properties["language"] = None
+        elif self.url == "https://youtu.be/1234":
+            self.properties["link"] = "https://www.youtube.com/watch?v=1234"
+            self.properties["feeds"] = [
+                "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
+            ]
+            self.properties["title"] = "YouTube 1234 video"
+            self.properties["language"] = None
+        elif self.url == "https://www.reddit.com/r/searchengines/":
+            self.properties["feeds"] = ["https://www.reddit.com/r/searchengines/.rss"]
+        elif self.url == "https://www.reddit.com/r/searchengines":
+            self.properties["feeds"] = ["https://www.reddit.com/r/searchengines/.rss"]
+        elif self.url == "https://www.reddit.com/r/searchengines/.rss":
+            self.set_entries(10)
+        elif self.url == "https://page-with-rss-link.com":
+            self.properties["title"] = "Page with RSS link"
+            self.properties["feeds"] = ["https://page-with-rss-link.com/feed"]
+        elif self.url == "https://page-with-rss-link.com/feed":
+            self.set_entries(10)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["title"] = "Page with RSS link - RSS contents"
+        elif self.url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
+            self.set_entries(13)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["thumbnail"] = (
+                "https://www.codeproject.com/App_Themes/Std/Img/logo100x30.gif"
+            )
+        elif self.url == "https://no-props-page.com":
+            self.properties["title"] = None
+            self.properties["description"] = None
+            self.properties["date_published"] = None
+            self.properties["author"] = None
+            self.properties["language"] = None
+            self.properties["album"] = None
+            self.properties["page_rating"] = 0
+            self.properties["thumbnail"] = None
+        elif self.url == "https://page-with-http-status-615.com":
+            self.response["status_code"] = HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS
+        elif self.url == "https://page-with-http-status-614.com":
+            self.response["status_code"] = HTTP_STATUS_CODE_SERVER_ERROR
+        elif self.url == "https://page-with-http-status-600.com":
+            self.response["status_code"] = HTTP_STATUS_CODE_EXCEPTION
+        elif self.url == "https://page-with-http-status-500.com":
+            self.response["status_code"] = 500
+        elif self.url == "https://page-with-http-status-429.com":
+            self.response["status_code"] = HTTP_STATUS_TOO_MANY_REQUESTS
+        elif self.url == "https://page-with-http-status-403.com":
+            self.response["status_code"] = HTTP_STATUS_USER_AGENT
+        elif self.url == "https://page-with-http-status-400.com":
+            self.response["status_code"] = 400
+        elif self.url == "https://page-with-http-status-300.com":
+            self.response["status_code"] = 300
+        elif self.url == "https://page-with-http-status-200.com":
+            self.response["status_code"] = 200
+        elif self.url == "https://page-with-http-status-100.com":
+            self.response["status_code"] = 100
+        elif self.url == "http://page-with-http-status-500.com":
+            self.response["status_code"] = 500
+        elif self.url == "http://page-with-http-status-400.com":
+            self.response["status_code"] = 400
+        elif self.url == "http://page-with-http-status-300.com":
+            self.response["status_code"] = 300
+        elif self.url == "http://page-with-http-status-200.com":
+            self.response["status_code"] = 200
+        elif self.url == "http://page-with-http-status-100.com":
+            self.response["status_code"] = 100
+        elif self.url == "https://www.youtube.com/watch?v=666":
+            self.response["status_code"] = 500
+        elif self.url == "https://invalid.rsspage.com/rss.xml":
+            self.response["status_code"] = 500
+        elif (
+            self.url
+            == "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        ):
+            self.set_entries(13)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["feeds"] = [self.url]
+        elif (
+            self.url
+            == "https://www.youtube.com/feeds/videos.xml?channel_id=NOLANGUAGETIMESAMTIMESAM"
+        ):
+            self.set_entries(13, language=None)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["feeds"] = [self.url]
+            self.properties["language"] = None
+        elif self.url.startswith("https://odysee.com/$/rss"):
+            self.set_entries(13)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["feeds"] = [self.url]
+        elif self.url == "https://www.geekwire.com/feed":
+            self.text_data = geekwire_feed
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["feeds"] = [self.url]
+        elif (
+            self.url
+            == "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id"
+        ):
+            self.set_entries(13)
+            self.response["Content-Type"] = "application/rss+xml"
+            self.properties["feeds"] = [self.url]
+        elif self.url == "https://instance.com/apps/rsshistory/sources-json":
+            self.properties["title"] = "Instance Proxy"
+        elif self.url == "https://v.firebog.net/hosts/AdguardDNS.txt":
+            self.text_data = firebog_adguard_list
+        elif self.url == "https://v.firebog.net/hosts/static/w3kbl.txt":
+            self.text_data = firebog_w3kbl_list
+        elif self.url == "https://v.firebog.net/hosts/lists.php?type=tick":
+            self.text_data = firebog_tick_lists
+        elif self.url == "https://v.firebog.net/hosts/RPiList-Malware.txt":
+            self.text_data = firebog_malware
+        elif self.url == "https://casino.com":
+            self.properties["title"] = "Casino Casino Casino"
+            self.properties["description"] = "Casino Casino Casino"
+        elif self.url == "https://nfsw.com":
+            self.properties["title"] = "AI NSFW girlfriend"
+            self.properties["description"] = "AI NSFW girlfriend"
+        elif self.url == "https://binary.com/file":
+            self.properties["title"] = ""
+            self.properties["description"] = ""
+            self.binary_data = "text".encode()
+
+        if self.url.find("reddit") >= 0:
+            self.properties["language"] = "en"
+
+        if self.response["status_code"] > 200 and self.response["status_code"] < 400:
+            self.response["is_valid"] = True
+            self.response["is_invalid"] = False
+        elif self.response["status_code"] < 200:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = True
+        elif self.response["status_code"] == HTTP_STATUS_USER_AGENT:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = False
+        elif self.response["status_code"] == HTTP_STATUS_TOO_MANY_REQUESTS:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = False
+        elif self.response["status_code"] == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = False
+        elif self.response["status_code"] == HTTP_STATUS_CODE_SERVER_ERROR:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = False
+        elif self.response["status_code"] >= 400:
+            self.response["is_valid"] = False
+            self.response["is_invalid"] = True
+
+        return self.get_all_properties()
+
+    def set_entries(self, number=1, language="en"):
+        for item in range(0, number):
+            properties = {}
+            properties["link"] = self.url + str(item)
+            properties["title"] = "Title" + str(item)
+            properties["description"] = "Description" + str(item)
+            properties["date_published"] = DateUtils.get_datetime_now_iso()
+            properties["author"] = "Description"
+            properties["language"] = language
+            properties["album"] = "Description"
+            properties["page_rating"] = 80
+            properties["thumbnail"] = None
+
+            self.entries.append(properties)
+
+    def get_socialj(self, url):
+        if url.find("youtube.com") >= 0:
+            return {"view_count": 15, "thumbs_up": 1, "thumbs_down": 0}
+        if url.find("github.com") >= 0:
+            return {"stars": 5}
+        if url.find("news.ycombinator.com") >= 0:
+            return {"upvote_diff": 5}
+        if url.find("reddit.com") >= 0:
+            return {"upvote_ratio": 5}
+
+        return None
+
+    def get_feedsj(self, url, settings=None):
+        return []
+
+    def get_pingj(self, url, settings=None):
+        return True
+
+

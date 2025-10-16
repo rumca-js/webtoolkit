@@ -3,7 +3,7 @@ from datetime import datetime
 from webtoolkit import UrlLocation, RemoteUrl
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
-from tests.fakeinternetdata import webpage_with_real_rss_links
+from tests.fakeinternetcontents import webpage_with_real_rss_links
 
 
 class UrlTest(FakeInternetTestCase):
