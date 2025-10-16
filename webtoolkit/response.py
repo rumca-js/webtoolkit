@@ -641,3 +641,22 @@ def json_to_response(json_data, with_streams=False):
     response.body_hash = body_hash
 
     return response
+
+
+def response_to_file(response, file_name):
+    if not response:
+        return
+
+    with open(file_name, "w") as fh:
+        json_data = response_to_json(response)
+        json_text = json.dumps(json_data)
+        
+        fh.write(json_text)
+
+
+def file_to_response(file_name):
+    with open(file_name, "r") as fh:
+        json_text = fh.read()
+        json_data = json.loads(json_text)
+
+        return json_to_response(json_data)

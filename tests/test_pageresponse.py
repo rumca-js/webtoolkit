@@ -1,7 +1,11 @@
+from pathlib import Path
+
 from webtoolkit import (
     PageResponseObject,
     response_to_json,
     json_to_response,
+    response_to_file,
+    file_to_response,
     HTTP_STATUS_CODE_SERVER_ERROR,
     HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
     HTTP_STATUS_CODE_EXCEPTION,
@@ -475,3 +479,26 @@ class JsonToPageResponseTest(FakeInternetTestCase):
 
         response = json_to_response(json_data)
         self.assertEqual(response.get_content_type(), "test/content/type")
+
+    def test__response_to_file(self):
+        json_data = {
+            "status_code" : 200,
+            "url" : "https://test.com",
+            "request_url" : "https://test.com",
+            "text" : "<html></html>",
+            "headers" : {
+                "Content-Type" : "test/content/type",
+            }
+        }
+
+        response = json_to_response(json_data)
+
+        path = Path("test_response.txt")
+        self.assertFalse(path.exists())
+
+        # call tested function
+        response_to_file(response, "test_response.txt")
+
+        self.assertTrue(path.exists())
+
+        path.unlink()
