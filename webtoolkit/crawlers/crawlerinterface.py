@@ -94,7 +94,7 @@ class CrawlerInterface(object):
             return False
 
         content_length = self.response.get_content_length()
-        byte_limit = self.get_byte_limit()
+        byte_limit = self.get_bytes_limit()
 
         if content_length is not None and byte_limit is not None:
             if content_length > bytes_limit:
