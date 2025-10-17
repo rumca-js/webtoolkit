@@ -223,6 +223,11 @@ class RemoteServer(object):
         if streams and "Binary" in streams:
             response.binary = streams["Binary"]
 
+        if len(streams) > 0:
+            for item in streams:
+                if item != "Binary":
+                    response.text = streams[item]
+
         url = properties["link"]
 
         return response
