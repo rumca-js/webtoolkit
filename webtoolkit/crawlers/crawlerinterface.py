@@ -94,9 +94,9 @@ class CrawlerInterface(object):
             return False
 
         content_length = self.response.get_content_length()
-        byte_limit = self.get_bytes_limit()
+        bytes_limit = self.get_bytes_limit()
 
-        if content_length is not None and byte_limit is not None:
+        if content_length is not None and bytes_limit is not None:
             if content_length > bytes_limit:
                 self.response.add_error("Page is too big: ".format(content_length))
                 return False
@@ -156,11 +156,18 @@ class CrawlerInterface(object):
     def get_request_headers(self):
         real_settings = self.settings["settings"]
         headers = real_settings.get("request_headers")
+        custom_user_agent = real_settings.get("User-Agent")
 
-        if headers and len(headers) > 0:
-            return headers
+        if not headers or len(headers) == 0:
+            headers = self.get_default_headers()
 
-        return default_headers
+        if custom_user_agent:
+            headers["User-Agent"] = custom_user_agent
+
+        if "User-Agent" not in headers:
+            headers["User-Agent"] = self.get_default_user_agent()
+
+        return headers
 
     def get_timeout_s(self):
         real_settings = self.settings["settings"]

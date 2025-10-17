@@ -1,4 +1,5 @@
-from webtoolkit import CrawlerInterface
+from webtoolkit import CrawlerInterface, PageResponseObject
+
 from tests.fakeinternet import FakeInternetTestCase
 
 class CrawlerInterfaceTest(FakeInternetTestCase):
@@ -70,6 +71,21 @@ class CrawlerInterfaceTest(FakeInternetTestCase):
 
         self.assertTrue(interface.get_request_headers())
 
+    def test_constructor__get_request_headers_user_agent(self):
+        test_url = "https://example.com"
+        settings = {
+           "name" : "Test name",
+           "crawler" : "Test crawler",
+           "settings" : {
+               "timeout_s" : 666,
+               "request_headers": {"test": "test"},
+               "User-Agent" : "Test-User-Agent"
+           }
+        }
+        interface = CrawlerInterface(test_url, settings=settings)
+
+        self.assertEqual(interface.get_request_headers()["User-Agent"], "Test-User-Agent")
+
     def test_constructor__get_bytes_limit(self):
         test_url = "https://example.com"
         settings = {
@@ -137,3 +153,21 @@ class CrawlerInterfaceTest(FakeInternetTestCase):
         interface = CrawlerInterface(test_url, settings=settings)
 
         self.assertTrue(interface.get_accept_types())
+
+    def test_is_response_valid(self):
+        response = PageResponseObject(status_code=200, text="test")
+        test_url = "https://example.com"
+
+        settings = {
+           "name" : "Test name",
+           "crawler" : "Test crawler",
+           "settings" : {
+               "timeout_s" : 666,
+               "accept_content_types": "text/html"
+           }
+        }
+
+        interface = CrawlerInterface(test_url, settings=settings)
+        interface.response = response
+
+        self.assertTrue(interface.is_response_valid())
