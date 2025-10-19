@@ -600,10 +600,11 @@ def response_to_json(response, with_streams=False):
             for error in response.errors:
                 response_data["errors"].append(error)
 
+        response_data["text"] = response.get_text()
+        response_data["binary"] = json_encode_field(response.get_binary())
+
         if with_streams:
             response_data["streams"] = response.get_streams()
-            response_data["text"] = response.get_text()
-            response_data["binary"] = json_encode_field(response.get_binary())
     else:
         response_data["is_valid"] = False
         response_data["status_code"] = HTTP_STATUS_CODE_EXCEPTION

@@ -385,6 +385,38 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertIn("Charset", json_map)
         self.assertIn("hash", json_map)
         self.assertIn("body_hash", json_map)
+        self.assertIn("text", json_map)
+        self.assertNotIn("streams", json_map)
+
+        self.assertEqual(json_map["is_valid"], True)
+        self.assertEqual(json_map["status_code"], 200)
+        self.assertEqual(json_map["Content-Type"], "text/rss; charset=UTF-8")
+        self.assertEqual(json_map["Recognized-Content-Type"], "text/rss")
+        self.assertEqual(json_map["Charset"], "UTF-8")
+        self.assertNotEqual(json_map["hash"], None)
+        self.assertEqual(json_map["body_hash"], None)
+
+    def test_response_to_json__valid_binary_no_streams(self):
+        headers = {"Content-Type": "text/rss; charset=UTF-8"}
+        response = PageResponseObject(
+            "https://test.com", status_code=200, binary=b"01010", headers=headers
+        )
+
+        # call tested function
+        json_map = response_to_json(response)
+
+        self.assertTrue(json_map)
+        self.assertIn("is_valid", json_map)
+        self.assertIn("status_code", json_map)
+        self.assertIn("status_code_str", json_map)
+        self.assertIn("crawl_time_s", json_map)
+        self.assertIn("Content-Type", json_map)
+        self.assertIn("Recognized-Content-Type", json_map)
+        self.assertIn("Content-Length", json_map)
+        self.assertIn("Charset", json_map)
+        self.assertIn("hash", json_map)
+        self.assertIn("body_hash", json_map)
+        self.assertIn("text", json_map)
         self.assertNotIn("streams", json_map)
 
         self.assertEqual(json_map["is_valid"], True)
@@ -415,6 +447,7 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertIn("Charset", json_map)
         self.assertIn("hash", json_map)
         self.assertIn("body_hash", json_map)
+        self.assertIn("text", json_map)
         self.assertIn("streams", json_map)
 
         self.assertEqual(json_map["is_valid"], True)
