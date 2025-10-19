@@ -169,6 +169,16 @@ class CrawlerInterface(object):
 
         return headers
 
+    def get_user_agent(self):
+        real_settings = self.settings["settings"]
+        headers = real_settings.get("request_headers")
+        custom_user_agent = real_settings.get("User-Agent")
+
+        if custom_user_agent:
+            return custom_user_agent
+
+        return self.get_default_user_agent()
+
     def get_timeout_s(self):
         real_settings = self.settings["settings"]
 

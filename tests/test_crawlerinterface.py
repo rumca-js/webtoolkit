@@ -114,6 +114,33 @@ class CrawlerInterfaceTest(FakeInternetTestCase):
 
         self.assertEqual(interface.get_response_file(), "response_file.txt")
 
+    def test_get_user_agent__default(self):
+        test_url = "https://example.com"
+        settings = {
+           "name" : "Test name",
+           "crawler" : "Test crawler",
+           "settings" : {
+               "timeout_s" : 666,
+           }
+        }
+        interface = CrawlerInterface(test_url, settings=settings)
+
+        self.assertTrue(interface.get_user_agent())
+
+    def test_get_user_agent__not_default(self):
+        test_url = "https://example.com"
+        settings = {
+           "name" : "Test name",
+           "crawler" : "Test crawler",
+           "settings" : {
+               "timeout_s" : 666,
+               "User-Agent" : "Test-User-Agent"
+           }
+        }
+        interface = CrawlerInterface(test_url, settings=settings)
+
+        self.assertEqual(interface.get_user_agent(), "Test-User-Agent")
+
     def test_get_default_user_agent(self):
         test_url = "https://example.com"
         settings = {
