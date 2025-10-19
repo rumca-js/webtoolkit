@@ -141,15 +141,17 @@ class RemoteServer(object):
         try:
             json_obj = json.loads(text)
         except ValueError as E:
-            print("Url:{} Remote error. Cannot read response".format(link_call, text))
+            print("Url:{} Remote error. Value error in response".format(link_call, text))
+            print(str(E))
             return
         except TypeError as E:
-            print("Url:{} Remote error. Cannot read response".format(link_call, text))
+            print("Url:{} Remote error. Type error response".format(link_call, text))
+            print(str(E))
             return
 
         if "success" in json_obj and not json_obj["success"]:
             print("Url:{} Remote error. Not a success".format(link_call))
-            return False
+            return
 
         return json_obj
 
