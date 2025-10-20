@@ -138,7 +138,7 @@ class ContentInterface(object):
 
         return props
 
-    def is_cloudflare_protected(self):
+    def is_captcha_protected(self):
         """
         Should not obtain contents by itself
 
