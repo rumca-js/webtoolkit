@@ -17,20 +17,14 @@ from ..pages import (
     PageFactory,
 )
 from ..urllocation import UrlLocation
-
 from ..request import PageRequestObject, PageOptions
-
 from ..response import PageResponseObject
-
 from ..webtools import *
-
 from ..statuses import *
 from .handlerinterface import HandlerInterface
 
 
 class HttpPageHandler(HandlerInterface):
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0"
-
     def __init__(self, url=None, contents=None, settings=None, url_builder=None):
         super().__init__(
             url=url, contents=contents, settings=settings, url_builder=url_builder
@@ -44,6 +38,7 @@ class HttpPageHandler(HandlerInterface):
 
         if url.startswith("https") or url.startswith("http"):
             return True
+
         return False
 
     def get_contents(self):
@@ -308,7 +303,9 @@ class HttpRequestBuilder(object):
         if self.dead:
             return None
 
-        self.get_response_implementation()
+        WebLogger.debug(f"{self.url}: Obtaining HTTP response")
+        self.response = self.get_response_make_call()
+        WebLogger.debug(f"{self.url}: Obtaining HTTP response DONE")
 
         return self.response
 
@@ -322,16 +319,24 @@ class HttpRequestBuilder(object):
         if response:
             return response.get_binary()
 
-    def get_contents_internal(self):
+    def get_response_make_call(self):
         """ """
         crawler_data = self.settings
 
+        response = PageResponseObject(
+            self.url,
+            text=None,
+            status_code=HTTP_STATUS_CODE_SERVER_ERROR,
+            request_url=self.url,
+        )
+
         if not crawler_data:
-            return
+            response.add_error("No crawler data")
+            return response
 
         if "crawler" not in crawler_data:
-            self.errors.append("Url:{} No crawler in crawler data".format(self.url))
-            return
+            response.add_error("Url:{} No crawler in crawler data".format(self.url))
+            return response
 
         crawler = crawler_data["crawler"]
 
@@ -357,43 +362,4 @@ class HttpRequestBuilder(object):
 
         self.dead = True
         self.errors.append("Url:{} No response from crawler".format(self.url))
-
-        self.response = PageResponseObject(
-            self.url,
-            text=None,
-            status_code=HTTP_STATUS_CODE_SERVER_ERROR,
-            request_url=self.url,
-        )
         return self.response
-
-    def get_response_implementation(self):
-        if self.response and self.response.text:
-            return self.response
-
-        if self.dead:
-            return None
-
-        if not self.is_url_valid():
-            lines = traceback.format_stack()
-            line_text = ""
-            for line in lines:
-                line_text += line
-
-            self.errors.append("Url:{} is invalid. Lines:{}".format(self.url, line_text))
-
-            self.dead = True
-            return None
-
-        self.response = self.get_contents_internal()
-
-        return self.response
-
-    def is_url_valid(self):
-        if self.url == None:
-            return False
-
-        p = UrlLocation(self.url)
-        if not p.is_web_link():
-            return False
-
-        return True

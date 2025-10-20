@@ -2,6 +2,7 @@ from webtoolkit import (
    HtmlPage,
    RssPage,
    HttpPageHandler,
+   HTTP_STATUS_CODE_SERVER_ERROR
 )
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter, MockUrl
@@ -129,3 +130,18 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertIn("settings", MockRequestCounter.request_history[0]["crawler_data"])
         self.assertIn("timeout_s", MockRequestCounter.request_history[0]["crawler_data"]["settings"])
         self.assertEqual(MockRequestCounter.request_history[0]["crawler_data"]["settings"]["timeout_s"], 120)
+
+    def test_get_response__no_settings(self):
+        MockRequestCounter.reset()
+
+        test_link = "https://x.com/feed"
+        settings = MockUrl(test_link).get_init_settings()
+        settings["settings"]["timeout_s"] = 120
+
+        handler = HttpPageHandler(test_link, settings = None, url_builder = MockUrl)
+        response = handler.get_response()
+
+        # no crawler was specified - we don't know what to do
+
+        self.assertEqual(response.get_status_code(), HTTP_STATUS_CODE_SERVER_ERROR)
+        self.assertEqual(len(response.errors), 1)

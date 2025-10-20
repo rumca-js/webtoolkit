@@ -207,16 +207,17 @@ class PageResponseObject(object):
                 self.text = self.binary.decode(self.encoding)
             except Exception as E:
                 WebLogger.exc(
-                    E, "Cannot properly decode ansower from {}".format(self.url)
+                    E, "Cannot properly decode text from {}".format(self.url)
                 )
                 self.text = self.binary.decode(self.encoding, errors="ignore")
+                self.add_error("Cannot properly decode text from {}".format(self.url))
 
         if self.text and not self.binary:
             try:
                 self.binary = self.text.encode(self.encoding)
             except Exception as E:
                 WebLogger.exc(
-                    E, "Cannot properly encode ansower from {}".format(self.url)
+                    E, "Cannot properly encode text from {}".format(self.url)
                 )
                 self.binary = self.text.encode(self.encoding, errors="ignore")
 
