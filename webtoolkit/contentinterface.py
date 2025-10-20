@@ -144,12 +144,29 @@ class ContentInterface(object):
 
         You'd probably be more successful trying to not trigger
         the bot detection in the first place rather than trying to bypass it after the fact.
+
+        https://github.com/ZA1815/caniscrape/blob/main/caniscrape/analyzers/captcha_detector.py
         """
+
+        CAPTCHA_FINGERPRINTS = {
+            "reCAPTCHA": [
+                "google.com/recaptcha", "recaptcha/api.js", "g-recaptcha"
+            ],
+            "hCaptcha": [
+                "hcaptcha.com", "hcaptcha-box", "h-captcha"
+            ],
+            "Cloudflare Turnstile": [
+                "challenges.cloudflare.com/turnstile", "cf-turnstile"
+            ]
+        }
+
         contents = self.contents
 
         if contents:
-            if contents.find("https://challenges.cloudflare.com") >= 0:
-                return True
+            for provider, patterns in CAPTCHA_FINGERPRINTS.items():
+                for pattern in patterns:
+                    if contents.find(pattern) >= 0:
+                        return True
 
         return False
 
