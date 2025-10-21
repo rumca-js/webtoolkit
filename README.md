@@ -11,6 +11,10 @@ Remote crawling interfaces are implmented by [crawler-buddy](https://google.com/
 
 Available on [pypi](https://pypi.org/project/webtoolkit).
 
+Install by
+```
+pip install webtoolkit
+```
 
 # Url parsing
 
@@ -26,28 +30,28 @@ UrlLocation(link).get_domain()
 
 # HTTP processing
 
-Identification of valid codes
+Check for valid HTTP responses:
 ```
 PageResponseObject().is_valid()
 ```
 
-Identification of invalid codes
+Check for invalid HTTP responses:
 ```
 PageResponseObject().is_invalid()
 ```
 
-Some codes might not indicate that this page is valid, and is not invalid. For example if our crawler is throttled because of too many requests we do not know yet if the page is valid, or not.
+Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
 # Page definitions
 
-Easy access to HTML properties
+HTML pages
 ```
 page = HtmlPage(url, contents)
 page.get_title()
 page.get_description()
 ```
 
-Easy access to RSS properties
+RSS pages
 ```
 page = RssPage(url, contents)
 page.get_title()
@@ -55,7 +59,7 @@ page.get_description()
 page.get_entries()
 ```
 
-Easy access to Opml properties
+OPML pages
 ```
 page = OpmlPage(url, contents)
 page.get_entries()
@@ -63,7 +67,7 @@ page.get_entries()
 
 # Interfaces
 
- - RemoteServer - provides means of calling remote crawling systems
- - RemoteUrl - wrapper for RemoteServer, to obtain ready to use data
- - CrawlerInterface - Interface for crawlers
- - HandlerInterface - Allows implementing your own handler
+ - RemoteServer - Interface for calling external crawling systems
+ - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
+ - CrawlerInterface - Standard interface for crawler implementations
+ - HandlerInterface - Allows implementing custom handlers for different use cases
