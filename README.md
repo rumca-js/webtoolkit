@@ -107,10 +107,12 @@ Request HTTP object allows to make HTTP call.
 request = PageRequestObject()
 ```
 
-To send request to any scraping / crawling server just encode it to GET params [TBD]
+To send request to any scraping / crawling server just encode it to GET params
 ```
-encoded_data = encode_request(request)
-request = decode_request(request_data)
+url_data = request_encode(request)
+
+json_data = request_to_json(request)  # json
+request = json_to_request(json_data)  # json
 ```
 
 Check for valid HTTP responses:

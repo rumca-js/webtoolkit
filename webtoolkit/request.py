@@ -52,6 +52,15 @@ def request_to_json(request):
 
     json["url"] = request.url
     json["User-Agent"] = request.user_agent
+    json["request_headers"] = request.request_headers
+    json["timeout_s"] = request.timeout_s
+    json["request_type"] = request.request_type
+    json["ssl_verify"] = request.ssl_verify
+    json["respect_robots"] = request.respect_robots
+    json["settings"] = request.settings
+    json["crawler_name"] = request.crawler_name
+    json["crawler_type"] = request.crawler_type
+
     return json
 
 
@@ -62,6 +71,15 @@ def json_to_request(json_data):
     request = PageRequestObject(json_data["url"])
     request.url = json_data.get("url")
     request.user_agent = json_data.get("User-Agent")
+    request.request_headers = json_data.get("request_headers")
+    request.timeout_s = json_data.get("timeout_s")
+    request.request_type = json_data.get("request_type")
+    request.ssl_verify = json_data.get("ssl_verify")
+    request.respect_robots = json_data.get("respect_robots")
+    request.settings = json_data.get("settings")
+    request.crawler_name = json_data.get("crawler_name")
+    request.crawler_type = json_data.get("crawler_type")
+
     return request
 
 
