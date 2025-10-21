@@ -72,3 +72,9 @@ page.get_entries()
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
  - CrawlerInterface - Standard interface for crawler implementations
  - HandlerInterface - Allows implementing custom handlers for different use cases
+
+# Standard interfaces
+
+Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi.
+
+Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
