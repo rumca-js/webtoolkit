@@ -98,6 +98,12 @@ PageResponseObject().is_invalid()
 
 Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
+The response can be written to json, and back. Useful for ipc communication, implementing scraping servers
+```
+json_data = response_to_json(response)
+response = json_to_response(json_data)
+```
+
 # Remote interfaces
 
  - RemoteServer - Interface for calling external crawling systems
