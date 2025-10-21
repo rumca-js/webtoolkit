@@ -122,5 +122,7 @@ response = json_to_response(json_data)
 
 # Remote interfaces
 
+The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
+
  - RemoteServer - Interface for calling external crawling systems
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
