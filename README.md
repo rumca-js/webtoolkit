@@ -88,6 +88,16 @@ Crawlers are different means of obtaining Internet data. Examples: requests, sel
 
 Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
 
+Default User agents
+```
+webtoolkit.default_user_agents
+```
+
+Default User headers
+```
+webtoolkit.default_headers
+```
+
 # Remote interfaces
 
  - RemoteServer - Interface for calling external crawling systems
