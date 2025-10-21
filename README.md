@@ -136,7 +136,7 @@ json_data = response_to_json(response)
 response = json_to_response(json_data)
 ```
 
-To obtain page contents object:
+To obtain page contents object: [TBD]
 ```
 page = PageResponseObject().get_page()   # for example could be HtmlPage
 ```
