@@ -29,20 +29,6 @@ Extract domain name:
 UrlLocation(link).get_domain()
 ```
 
-# HTTP processing
-
-Check for valid HTTP responses:
-```
-PageResponseObject().is_valid()
-```
-
-Check for invalid HTTP responses:
-```
-PageResponseObject().is_invalid()
-```
-
-Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
-
 # Page definitions
 
 HTML pages
@@ -65,6 +51,20 @@ OPML pages
 page = OpmlPage(url, contents)
 page.get_entries()
 ```
+
+# HTTP processing
+
+Check for valid HTTP responses:
+```
+PageResponseObject().is_valid()
+```
+
+Check for invalid HTTP responses:
+```
+PageResponseObject().is_invalid()
+```
+
+Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
 # Content processing
 
