@@ -208,27 +208,35 @@ class RemoteServer(object):
     def encode(data):
         return urllib.parse.quote(data, safe="")
 
+    def get_infoj(self):
+        link = self.remote_server
+        link = f"{link}/infoj"
 
+        timeout_s = 10
 
-        args = None
+        try:
+            with requests.get(url=link, timeout=timeout_s, verify=False) as result:
+                text = result.text
+        except Exception as E:
+            print("Remote error. " + str(E))
+            return
 
-        if settings:
-            if name != "":
-                settings["name"] = name
+        if not text:
+            print("Remote error. No text")
+            return
 
-            crawler = settings.get("crawler", None)
-            if crawler:
-                settings["crawler"] = str(crawler)
+        # print("Calling:{}".format(link))
 
-            try:
-                crawler_data = json.dumps(settings)
-            except Exception as E:
-                print("Cannot json serialize:{}".format(settings))
-                raise
-
-            encoded_crawler_data = urllib.parse.quote(crawler_data, safe="")
-
-            args = f"crawler_data={encoded_crawler_data}"
-        elif name != "":
-            args = f"name={name}"
+        json_obj = None
+        try:
+            json_obj = json.loads(text)
+            return json_obj
+        except ValueError as E:
+            print("Url:{} Remote error. Value error in response".format(link_call, text))
+            print(str(E))
+            return
+        except TypeError as E:
+            print("Url:{} Remote error. Type error response".format(link_call, text))
+            print(str(E))
+            return
 
