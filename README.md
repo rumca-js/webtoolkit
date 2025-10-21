@@ -52,20 +52,6 @@ page = OpmlPage(url, contents)
 page.get_entries()
 ```
 
-# HTTP processing
-
-Check for valid HTTP responses:
-```
-PageResponseObject().is_valid()
-```
-
-Check for invalid HTTP responses:
-```
-PageResponseObject().is_invalid()
-```
-
-Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
-
 # Content processing
 
 Extracts links from contents
@@ -97,6 +83,20 @@ Default User headers
 ```
 webtoolkit.default_headers
 ```
+
+# HTTP processing
+
+Check for valid HTTP responses:
+```
+PageResponseObject().is_valid()
+```
+
+Check for invalid HTTP responses:
+```
+PageResponseObject().is_invalid()
+```
+
+Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
 # Remote interfaces
 
