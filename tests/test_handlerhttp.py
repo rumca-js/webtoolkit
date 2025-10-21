@@ -5,7 +5,8 @@ from webtoolkit import (
    HTTP_STATUS_CODE_SERVER_ERROR
 )
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter, MockUrl
+from tests.fakeinternet import FakeInternetTestCase
+from tests.mocks import MockRequestCounter, MockUrl
 
 
 class HttpPageHandlerTest(FakeInternetTestCase):
