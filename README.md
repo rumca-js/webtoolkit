@@ -21,12 +21,12 @@ pip install webtoolkit
 
 Sanitize link and remove trackers:
 ```
-UrlLocation.get_cleaned_link()
+link = UrlLocation.get_cleaned_link(link)
 ```
 
 Extract domain name:
 ```
-UrlLocation(link).get_domain()
+domain = UrlLocation(link).get_domain()
 ```
 
 # Page definitions
