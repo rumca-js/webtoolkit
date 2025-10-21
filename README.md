@@ -136,6 +136,11 @@ json_data = response_to_json(response)
 response = json_to_response(json_data)
 ```
 
+To obtain page contents object:
+```
+page = PageResponseObject().get_page()   # for example could be HtmlPage
+```
+
 # Remote interfaces
 
 The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
