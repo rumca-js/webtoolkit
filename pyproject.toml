@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "webtoolkit"
-version = "0.0.32"
+version = "0.0.33"
 description = "Web tools and interfaces for Internet data processing."
 authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
 license = "GPL3"
