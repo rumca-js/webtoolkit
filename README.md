@@ -70,7 +70,7 @@ Two standard interfaces
  - CrawlerInterface - Standard interface for crawler implementations
  - HandlerInterface - Allows implementing custom handlers for different use cases
 
-Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi.
+Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi. This package does not provide them, to make it more clean and neat.
 
 Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
 
