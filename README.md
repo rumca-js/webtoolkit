@@ -93,7 +93,8 @@ request = PageRequestObject()
 
 To send request to any scraping / crawling server just encode it to GET params
 ```
-encode_request(request)
+encoded_data = encode_request(request)
+request = decode_request(request_data)
 ```
 
 Check for valid HTTP responses:
