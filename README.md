@@ -7,7 +7,7 @@ Provides classes and tools for Internet data processing.
  - Page definitions: HtmlPage, RssPage, OpmlPage, Content interfaces
  - Means of calling crawling systems, Crawling interfaces
 
-Remote crawling interfaces are implmented by [crawler-buddy](https://google.com/rumca-js/crawler-buddy).
+Remote crawling is supported via [crawler-buddy](https://google.com/rumca-js/crawler-buddy). Provides various crawlers and handlers using interfaces from this package.
 
 Available on [pypi](https://pypi.org/project/webtoolkit).
 
