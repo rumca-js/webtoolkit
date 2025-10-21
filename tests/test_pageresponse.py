@@ -2,10 +2,14 @@ from pathlib import Path
 
 from webtoolkit import (
     PageResponseObject,
+    RssPage,
+    HtmlPage,
+
     response_to_json,
     json_to_response,
     response_to_file,
     file_to_response,
+
     HTTP_STATUS_CODE_SERVER_ERROR,
     HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
     HTTP_STATUS_CODE_EXCEPTION,
@@ -300,6 +304,54 @@ class PageResponseObjectTest(FakeInternetTestCase):
 
         self.assertTrue(response.get_last_modified())
 
+    def test_is_captcha_protected__false(self):
+        date_str = DateUtils.get_datetime_now_iso()
+
+        headers = {"Content-Type": "text/rss; charset=UTF-8",
+                   "Last-Modified" : date_str}
+
+        response = PageResponseObject(
+            "https://test.com", status_code=200, text="<html></html>", headers=headers
+        )
+
+        self.assertFalse(response.is_captcha_protected())
+
+    def test_is_captcha_protected__true(self):
+        date_str = DateUtils.get_datetime_now_iso()
+
+        headers = {"Content-Type": "text/rss; charset=UTF-8",
+                   "Last-Modified" : date_str}
+
+        response = PageResponseObject(
+            "https://test.com", status_code=200, text="<html>https://recaptcha/api.js</html>", headers=headers
+        )
+
+        self.assertTrue(response.is_captcha_protected())
+
+    def test_get_page__rsspage(self):
+        date_str = DateUtils.get_datetime_now_iso()
+
+        headers = {"Content-Type": "text/rss; charset=UTF-8",
+                   "Last-Modified" : date_str}
+
+        response = PageResponseObject(
+            "https://test.com", status_code=200, text="<rss></rss>", headers=headers
+        )
+
+        self.assertEqual(type(response.get_page()), RssPage)
+
+    def test_get_page__htmlpage(self):
+        date_str = DateUtils.get_datetime_now_iso()
+
+        headers = {"Content-Type": "text/html; charset=UTF-8",
+                   "Last-Modified" : date_str}
+
+        response = PageResponseObject(
+            "https://test.com", status_code=200, text="<html><body></body></html>", headers=headers
+        )
+
+        self.assertEqual(type(response.get_page()), HtmlPage)
+
 
 class PageResponseToJsonTest(FakeInternetTestCase):
     def setUp(self):
@@ -512,30 +564,6 @@ class JsonToPageResponseTest(FakeInternetTestCase):
 
         response = json_to_response(json_data)
         self.assertEqual(response.get_content_type(), "test/content/type")
-
-    def test_is_captcha_protected__false(self):
-        json_data = {
-            "request_url" : "https://test.com",
-            "text" : "<html></html>",
-            "headers" : {
-                "Content-Type" : "test/content/type",
-            }
-        }
-
-        response = json_to_response(json_data)
-        self.assertFalse(response.is_captcha_protected())
-
-    def test_is_captcha_protected__true(self):
-        json_data = {
-            "request_url" : "https://test.com",
-            "text" : "<html>https://recaptcha/api.js</html>",
-            "headers" : {
-                "Content-Type" : "test/content/type",
-            }
-        }
-
-        response = json_to_response(json_data)
-        self.assertTrue(response.is_captcha_protected())
 
     def test__response_to_file(self):
         json_data = {

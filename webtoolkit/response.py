@@ -15,6 +15,7 @@ from .webtools import (
     WebLogger,
 )
 from .contentinterface import ContentInterface
+from .pages import PageFactory
 from .statuses import *
 from utils.dateutils import DateUtils
 
@@ -493,6 +494,9 @@ class PageResponseObject(object):
     def is_captcha_protected(self):
         interface = ContentInterface(url=self.url, contents = self.get_text())
         return interface.is_captcha_protected()
+
+    def get_page(self):
+        return PageFactory.get(self, self.get_text())
 
 
 def response_to_json(response, with_streams=False):

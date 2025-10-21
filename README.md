@@ -123,7 +123,7 @@ Check for invalid HTTP responses:
 PageResponseObject().is_invalid()
 ```
 
-To check if response is captcha protected [TBD]
+To check if response is captcha protected
 ```
 PageResponseObject().is_captcha_protected()
 ```
@@ -136,7 +136,7 @@ json_data = response_to_json(response)
 response = json_to_response(json_data)
 ```
 
-To obtain page contents object: [TBD]
+To obtain page contents object:
 ```
 page = PageResponseObject().get_page()   # for example could be HtmlPage
 ```
