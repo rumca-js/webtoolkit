@@ -91,7 +91,7 @@ Request HTTP object allows to make HTTP call.
 request = PageRequestObject()
 ```
 
-To send request to any scraping / crawling server just encode it to GET params
+To send request to any scraping / crawling server just encode it to GET params [TBD]
 ```
 encoded_data = encode_request(request)
 request = decode_request(request_data)
@@ -107,7 +107,7 @@ Check for invalid HTTP responses:
 PageResponseObject().is_invalid()
 ```
 
-To check if response is captcha protected
+To check if response is captcha protected [TBD]
 ```
 PageResponseObject().is_captcha_protected()
 ```
