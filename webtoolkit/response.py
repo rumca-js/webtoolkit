@@ -14,6 +14,7 @@ from .webtools import (
     date_str_to_date,
     WebLogger,
 )
+from .contentinterface import ContentInterface
 from .statuses import *
 from utils.dateutils import DateUtils
 
@@ -488,6 +489,10 @@ class PageResponseObject(object):
         binary = self.get_binary()
         if binary:
             return calculate_hash_binary(binary)
+
+    def is_captcha_protected(self):
+        interface = ContentInterface(url=self.url, contents = self.get_text())
+        return interface.is_captcha_protected()
 
 
 def response_to_json(response, with_streams=False):

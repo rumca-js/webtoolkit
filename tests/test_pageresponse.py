@@ -513,6 +513,30 @@ class JsonToPageResponseTest(FakeInternetTestCase):
         response = json_to_response(json_data)
         self.assertEqual(response.get_content_type(), "test/content/type")
 
+    def test_is_captcha_protected__false(self):
+        json_data = {
+            "request_url" : "https://test.com",
+            "text" : "<html></html>",
+            "headers" : {
+                "Content-Type" : "test/content/type",
+            }
+        }
+
+        response = json_to_response(json_data)
+        self.assertFalse(response.is_captcha_protected())
+
+    def test_is_captcha_protected__true(self):
+        json_data = {
+            "request_url" : "https://test.com",
+            "text" : "<html>https://recaptcha/api.js</html>",
+            "headers" : {
+                "Content-Type" : "test/content/type",
+            }
+        }
+
+        response = json_to_response(json_data)
+        self.assertTrue(response.is_captcha_protected())
+
     def test__response_to_file(self):
         json_data = {
             "status_code" : 200,
