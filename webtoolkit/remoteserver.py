@@ -21,43 +21,19 @@ class RemoteServer(object):
         self.remote_server = remote_server
         self.timeout_s = timeout_s
 
-    def get_getj(self, url, name="", settings=None):
+    def get_getj(self, request):
         """
         @returns None in case of error
         """
+        url = request.url
         url = url.strip()
-        encoded_url = urllib.parse.quote(url, safe="")
 
         link = self.remote_server
         link = f"{link}/getj"
 
-        args = None
+        return self.perform_remote_call(link_call=link, request=request)
 
-        if settings:
-            if name != "":
-                settings["name"] = name
-
-            crawler = settings.get("crawler", None)
-            if crawler:
-                settings["crawler"] = str(crawler)
-
-            try:
-                crawler_data = json.dumps(settings)
-            except Exception as E:
-                print("Cannot json serialize:{}".format(settings))
-                raise
-
-            encoded_crawler_data = urllib.parse.quote(crawler_data, safe="")
-
-            args = f"crawler_data={encoded_crawler_data}"
-        elif name != "":
-            args = f"name={name}"
-
-        return self.perform_remote_call(
-            link_call=link, url=url, settings=settings, args=args
-        )
-
-    def get_feedsj(self, url, settings=None):
+    def get_feedsj(self, request):
         """
         @returns None in case of error
         """
@@ -65,9 +41,9 @@ class RemoteServer(object):
         link = self.remote_server
         link = f"{link}/feedsj"
 
-        return self.perform_remote_call(link, url, settings)
+        return self.perform_remote_call(link, request)
 
-    def get_socialj(self, url, settings=None):
+    def get_socialj(self, request):
         """
         @returns None in case of error
         """
@@ -75,9 +51,9 @@ class RemoteServer(object):
         link = self.remote_server
         link = f"{link}/socialj"
 
-        return self.perform_remote_call(link, url, settings)
+        return self.perform_remote_call(link, request)
 
-    def get_linkj(self, url, settings=None):
+    def get_linkj(self, request):
         """
         @returns None in case of error
         """
@@ -85,9 +61,9 @@ class RemoteServer(object):
         link = self.remote_server
         link = f"{link}/linkj"
 
-        return self.perform_remote_call(link, url, settings)
+        return self.perform_remote_call(link, request)
 
-    def get_pingj(self, url, settings=None):
+    def get_pingj(self, request):
         """
         @returns None in case of error
         """
@@ -95,32 +71,27 @@ class RemoteServer(object):
         link = self.remote_server
         link = f"{link}/pingj"
 
-        json = self.perform_remote_call(link, url, settings)
+        json = self.perform_remote_call(link, request)
         if json:
             return json.get("status")
 
-    def perform_remote_call(self, link_call, url, settings=None, args=None):
+    def perform_remote_call(self, link_call, request):
         """
         @param link_call Remote server endpoint
         @param url Url for which we call Remote server
         """
-        url = url.strip()
-        encoded_url = urllib.parse.quote(url, safe="")
+        url = request.url
 
-        link_call = f"{link_call}?url={encoded_url}"
+        encoded_request = request_encode(request)
 
-        if args:
-            link_call = f"{link_call}&{args}"
+        link_call = f"{link_call}?{encoded_request}"
 
         text = None
 
         timeout_s = 50
-        if settings:
-            if "settings" in settings:
-                real_settings = settings.get("settings", {})
-                timeout_s = real_settings.get("timeout_s", 50)
-                timeout_s += real_settings.get("delay_s", 0)
-                timeout_s += 5
+        if request.timeout_s is not None:
+            timeout_s = request.timeout_s
+            timeout_s += 5
 
         print(f"Remote server: Calling {link_call}")
 
@@ -233,3 +204,31 @@ class RemoteServer(object):
         url = properties["link"]
 
         return response
+
+    def encode(data):
+        return urllib.parse.quote(data, safe="")
+
+
+
+        args = None
+
+        if settings:
+            if name != "":
+                settings["name"] = name
+
+            crawler = settings.get("crawler", None)
+            if crawler:
+                settings["crawler"] = str(crawler)
+
+            try:
+                crawler_data = json.dumps(settings)
+            except Exception as E:
+                print("Cannot json serialize:{}".format(settings))
+                raise
+
+            encoded_crawler_data = urllib.parse.quote(crawler_data, safe="")
+
+            args = f"crawler_data={encoded_crawler_data}"
+        elif name != "":
+            args = f"name={name}"
+

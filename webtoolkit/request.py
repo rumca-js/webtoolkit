@@ -24,9 +24,9 @@ class PageRequestObject(object):
         user_agent=None,
         request_headers=None,
         timeout_s=None,
-        request_type=False,
-        ssl_verify=True,
-        respect_robots=True,
+        request_type=None,
+        ssl_verify=None,
+        respect_robots=None,
         settings=None,
         crawler_name=None,
         crawler_type=None,
@@ -51,17 +51,32 @@ def request_to_json(request):
     json = {}
 
     json["url"] = request.url
-    json["User-Agent"] = request.user_agent
-    json["request_headers"] = request.request_headers
-    json["timeout_s"] = request.timeout_s
-    json["request_type"] = request.request_type
-    json["ssl_verify"] = request.ssl_verify
-    json["respect_robots"] = request.respect_robots
-    json["settings"] = request.settings
-    json["crawler_name"] = request.crawler_name
-    json["crawler_type"] = request.crawler_type
+
+    if request.user_agent:
+        json["User-Agent"] = request.user_agent
+    if request.request_headers:
+        json["request_headers"] = request.request_headers
+    if request.timeout_s is not None:
+        json["timeout_s"] = request.timeout_s
+    if request.request_type:
+        json["request_type"] = request.request_type
+    if request.ssl_verify is not None:
+        json["ssl_verify"] = request.ssl_verify
+    if request.respect_robots is not None:
+        json["respect_robots"] = request.respect_robots
+    if request.settings:
+        json["settings"] = request.settings
+    if request.crawler_name:
+        json["crawler_name"] = request.crawler_name
+    if request.crawler_type:
+        json["crawler_type"] = request.crawler_type
 
     return json
+
+
+def encode_field(data):
+    if data:
+        return urllib.parse.quote(data, safe="")
 
 
 def json_to_request(json_data):
@@ -86,5 +101,11 @@ def json_to_request(json_data):
 def request_encode(request):
     """TODO"""
     json_data = request_to_json(request)
+    return urllib.parse.urlencode(json_data)
 
-    return urllib.parse.quote(crawler_data, safe="")
+
+def request_quote(request):
+    """TODO"""
+    json_data = request_to_json(request)
+
+    return urllib.parse.quote(json_data, safe="")
