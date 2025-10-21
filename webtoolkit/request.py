@@ -5,7 +5,6 @@ import html
 import json
 
 from .webtools import date_str_to_date
-from .ipc import string_to_command
 
 
 
