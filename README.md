@@ -31,7 +31,9 @@ domain = UrlLocation(link).get_domain()
 
 Parse link, returns parts of the link [TBD]. It should return .scheme .domain .location .args
 ```
-parsed_data = UrlLocation(link).parse_url()
+location = UrlLocation(link)
+parsed_data = location.parse_url()
+link = location.join(parsed_data) - joins back parsed data into a link
 ```
 
 Go up in link structure. First to parent location, then to domain, then to domain super.
