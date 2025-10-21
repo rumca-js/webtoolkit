@@ -91,6 +91,11 @@ Request HTTP object allows to make HTTP call.
 request = PageRequestObject()
 ```
 
+To send request to any scraping / crawling server just encode it to GET params
+```
+encode_request(request)
+```
+
 Check for valid HTTP responses:
 ```
 PageResponseObject().is_valid()
@@ -103,7 +108,7 @@ PageResponseObject().is_invalid()
 
 Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
-The response can be written to json, and back. Useful for ipc communication, implementing scraping servers
+Response communication is done via JSON
 ```
 json_data = response_to_json(response)
 response = json_to_response(json_data)
