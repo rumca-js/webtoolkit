@@ -111,7 +111,7 @@ class MockCrawler(CrawlerInterface):
 
         MockRequestCounter.requested(request.url, crawler_data=self.settings)
 
-        self.response = TestResponseObject(request.url, request.headers, request.timeout_s)
+        self.response = TestResponseObject(request.url, request.request_headers, request.timeout_s)
 
         return self.response
 

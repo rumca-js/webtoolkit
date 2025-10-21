@@ -17,7 +17,7 @@ from ..pages import (
     PageFactory,
 )
 from ..urllocation import UrlLocation
-from ..request import PageRequestObject, PageOptions
+from ..request import PageRequestObject
 from ..response import PageResponseObject
 from ..webtools import *
 from ..statuses import *

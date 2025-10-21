@@ -1,100 +1,12 @@
 """
 """
 
-import html
-import json
-
-from .webtools import date_str_to_date
+import urllib.parse
 
 
-
-class PageOptions(object):
-    """
-    Page request options. Serves more like request API.
-
-    API user defines if headless browser is required.
-    WebTools can be configured to use a script, port, or whatever
-
-    Fields:
-     - ping - only check status code, and headers of page. Does not download contents
-     - browser promotions - if requests cannot receive response we can try with headless or full browser
-     - user_agent - not supported by all crawlers. Selenium, stealth requests uses their own agents
-     - mode_mapping - configuration of modes
-    """
-
-    def __init__(self):
-        self.ssl_verify = True
-        self.ping = False
-        self.use_browser_promotions = (
-            True  # tries next mode if normal processing does not work
-        )
-
-        self.mode_mapping = {}
-
-        self.user_agent = None  # passed if you wish certain user agent to be used
-
-    def is_mode_mapping(self):
-        if self.mode_mapping and len(self.mode_mapping) > 0:
-            return True
-
-    def copy_config(self, other_config):
-        # if we have mode mapping - use it
-        self.mode_mapping = other_config.mode_mapping
-        self.ssl_verify = other_config.ssl_verify
-
-    def __str__(self):
-        if self.mode_mapping and len(self.mode_mapping) > 0:
-            return "Browser:{} P:{} SSL:{} PR:{}".format(
-                self.mode_mapping[0],
-                self.ping,
-                self.ssl_verify,
-                self.use_browser_promotions,
-            )
-        else:
-            return "Browser:None P:{} SSL:{} PR:{}".format(
-                self.ping,
-                self.ssl_verify,
-                self.use_browser_promotions,
-            )
-
-    def get_str(self):
-        return str(self)
-
-    def get_crawler(self, name):
-        for mode_data in self.mode_mapping:
-            if "enabled" in mode_data:
-                if mode_data["name"] == name and mode_data["enabled"] == True:
-                    return mode_data
-            else:
-                if mode_data["name"] == name:
-                    return mode_data
-
-    def bring_to_front(self, input_data):
-        result = [input_data]
-        for mode_data in self.mode_mapping:
-            if mode_data == input_data:
-                continue
-
-            result.append(mode_data)
-
-        self.mode_mapping = result
-
-    def get_timeout(self, timeout_s):
-        if not self.mode_mapping or len(self.mode_mapping) == 0:
-            return timeout_s
-
-        first_mode = self.mode_mapping[0]
-
-        if "settings" not in first_mode:
-            return timeout_s
-
-        settings = first_mode["settings"]
-
-        if "timeout_s" in settings:
-            timeout_crawler = settings["timeout_s"]
-            return timeout_crawler
-
-        return timeout_s
+REQUEST_TYPE_PING="ping"
+REQUEST_TYPE_HEAD="head"
+REQUEST_TYPE_FULL="full"
 
 
 class PageRequestObject(object):
@@ -109,23 +21,52 @@ class PageRequestObject(object):
     def __init__(
         self,
         url,
-        headers=None,
         user_agent=None,
         request_headers=None,
-        timeout_s=10,
-        ping=False,
+        timeout_s=None,
+        request_type=False,
         ssl_verify=True,
+        respect_robots=True,
+        settings=None,
+        crawler_name=None,
+        crawler_type=None,
     ):
         self.url = url
-
         self.user_agent = user_agent
-
-        self.timeout_s = timeout_s
-        self.ping = ping
-        self.headers = headers
         self.request_headers = request_headers
-
-        self.ssl_verify = True
+        self.timeout_s = timeout_s
+        self.request_type=request_type
+        self.ssl_verify = respect_robots
+        self.respect_robots = respect_robots
+        self.settings=settings
+        self.crawler_name = crawler_name
+        self.crawler_type = crawler_type
 
     def __str__(self):
-        return "Url:{} Timeout:{} Ping:{}".format(self.url, self.timeout_s, self.ping)
+        return "Url:{} Timeout:{} Type:{}".format(self.url, self.timeout_s, self.request_type)
+
+
+def request_to_json(request):
+    """TODO"""
+    json = {}
+
+    json["url"] = request.url
+    json["User-Agent"] = request.user_agent
+    return json
+
+
+def json_to_request(json_data):
+    if "url" not in json_data:
+        return
+
+    request = PageRequestObject(json_data["url"])
+    request.url = json_data.get("url")
+    request.user_agent = json_data.get("User-Agent")
+    return request
+
+
+def request_encode(request):
+    """TODO"""
+    json_data = request_to_json(request)
+
+    return urllib.parse.quote(crawler_data, safe="")
