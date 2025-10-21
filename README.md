@@ -1,11 +1,12 @@
 # webtoolkit
 
-Provides classes and tools for Internet data processing.
+webtoolkit provides utilities and interfaces for processing and managing Internet data, including URL parsing, HTTP status handling, page type recognition (HTML, RSS, OPML), and support for integrating crawling systems.
 
- - Url parsing
- - HTTP status codes identification
- - Page definitions: HtmlPage, RssPage, OpmlPage, Content interfaces
- - Means of calling crawling systems, Crawling interfaces
+Features
+ - URL parsing and cleaning
+ - HTTP status code classification
+ - Page abstraction interfaces (HtmlPage, RssPage, OpmlPage, etc.)
+ - Interfaces for integrating with crawling systems
 
 Remote crawling is supported via [crawler-buddy](https://google.com/rumca-js/crawler-buddy). Provides various crawlers and handlers using interfaces from this package.
 
