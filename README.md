@@ -29,6 +29,20 @@ Extract domain name:
 domain = UrlLocation(link).get_domain()
 ```
 
+Parse link, returns parts of the link [TBD]. It should return .scheme .domain .location .args
+```
+parsed_data = UrlLocation(link).parse_url()
+```
+
+Go up in link structure. First to parent location, then to domain, then to domain super.
+```
+location = UrlLocation(link).up()
+```
+
+```
+UrlLocation(link).is_onion()
+```
+
 # Page definitions
 
 HTML pages
