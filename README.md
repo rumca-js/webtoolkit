@@ -18,12 +18,12 @@ pip install webtoolkit
 
 # Url parsing
 
-Clean link from trackers, sanitize
+Sanitize link and remove trackers:
 ```
 UrlLocation.get_cleaned_link()
 ```
 
-To obtain domain
+Extract domain name:
 ```
 UrlLocation(link).get_domain()
 ```
