@@ -143,7 +143,7 @@ page = PageResponseObject().get_page()   # for example could be HtmlPage
 
 # Remote interfaces
 
-The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
+You can implement scraping servers yourself. The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
 
  - RemoteServer - Interface for calling external crawling systems
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
