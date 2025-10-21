@@ -86,6 +86,11 @@ webtoolkit.default_headers
 
 # HTTP processing
 
+Request HTTP object allows to make HTTP call.
+```
+request = PageRequestObject()
+```
+
 Check for valid HTTP responses:
 ```
 PageResponseObject().is_valid()
