@@ -21,12 +21,28 @@ pip install webtoolkit
 
 Sanitize link and remove trackers:
 ```
-UrlLocation.get_cleaned_link()
+link = UrlLocation.get_cleaned_link(link)
 ```
 
 Extract domain name:
 ```
-UrlLocation(link).get_domain()
+domain = UrlLocation(link).get_domain()
+```
+
+Parse link, returns parts of the link [TBD]. It should return .scheme .domain .location .args
+```
+location = UrlLocation(link)
+parsed_data = location.parse_url()
+link = location.join(parsed_data) - joins back parsed data into a link
+```
+
+Go up in link structure. First to parent location, then to domain, then to domain super.
+```
+location = UrlLocation(link).up()
+```
+
+```
+UrlLocation(link).is_onion()
 ```
 
 # Page definitions
@@ -120,9 +136,14 @@ json_data = response_to_json(response)
 response = json_to_response(json_data)
 ```
 
+To obtain page contents object: [TBD]
+```
+page = PageResponseObject().get_page()   # for example could be HtmlPage
+```
+
 # Remote interfaces
 
-The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
+You can implement scraping servers yourself. The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
 
  - RemoteServer - Interface for calling external crawling systems
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
