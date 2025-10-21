@@ -107,6 +107,11 @@ Check for invalid HTTP responses:
 PageResponseObject().is_invalid()
 ```
 
+To check if response is captcha protected
+```
+PageResponseObject().is_captcha_protected()
+```
+
 Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
 
 Response communication is done via JSON
