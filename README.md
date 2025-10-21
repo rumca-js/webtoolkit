@@ -66,15 +66,29 @@ page = OpmlPage(url, contents)
 page.get_entries()
 ```
 
-# Interfaces
+# Content processing
 
- - RemoteServer - Interface for calling external crawling systems
- - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
- - CrawlerInterface - Standard interface for crawler implementations
- - HandlerInterface - Allows implementing custom handlers for different use cases
+Extracts links from contents
+```
+ContentLinkParser().get_links()
+```
+
+Check if contents if captcha protected
+```
+ContentInterface().is_captcha_protected()
+```
 
 # Standard interfaces
+
+Two standard interfaces
+ - CrawlerInterface - Standard interface for crawler implementations
+ - HandlerInterface - Allows implementing custom handlers for different use cases
 
 Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi.
 
 Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
+
+# Remote interfaces
+
+ - RemoteServer - Interface for calling external crawling systems
+ - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
