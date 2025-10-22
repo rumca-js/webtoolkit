@@ -2,12 +2,11 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 from utils.dateutils import DateUtils
-from utils.serializers import YouTubeJson
 
 from ..contentinterface import ContentInterface
 from ..response import PageResponseObject
 from ..urllocation import UrlLocation
-from ..pages import HtmlPage
+from ..pages import HtmlPage, YouTubeVideoJson
 from ..webtools import WebLogger
 from .defaulturlhandler import DefaultUrlHandler
 
@@ -163,7 +162,7 @@ class YouTubeHtmlHandler(HtmlPage, YouTubeVideoHandler):
         return True
 
 
-class YouTubeJsonHandler(YouTubeVideoHandler):
+class YouTubeVideoJsonHandler(YouTubeVideoHandler):
     """
     TODO Use if above in youtube.h
     """
@@ -440,7 +439,7 @@ class YouTubeJsonHandler(YouTubeVideoHandler):
         if self.yt_ob is not None:
             return True
 
-        self.yt_ob = YouTubeJson()
+        self.yt_ob = YouTubeVideoJson()
 
         if self.yt_text and not self.yt_ob.loads(self.yt_text):
             return False
