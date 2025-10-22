@@ -8,6 +8,7 @@ from .statuses import (
 )
 from .request import (
     request_encode,
+    PageRequestObject,
 )
 from .response import (
     PageResponseObject,
@@ -24,52 +25,87 @@ class RemoteServer(object):
         self.remote_server = remote_server
         self.timeout_s = timeout_s
 
-    def get_getj(self, request):
+    def get_getj(self, request=None, url=None):
         """
         @returns None in case of error
         """
-        url = request.url
-        url = url.strip()
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
 
         link = self.remote_server
         link = f"{link}/getj"
 
         return self.perform_remote_call(link_call=link, request=request)
 
-    def get_feedsj(self, request):
+    def get_feedsj(self, request=None, url=None):
         """
         @returns None in case of error
         """
+
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
 
         link = self.remote_server
         link = f"{link}/feedsj"
 
         return self.perform_remote_call(link, request)
 
-    def get_socialj(self, request):
+    def get_socialj(self, request=None, url=None):
         """
         @returns None in case of error
         """
+
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
 
         link = self.remote_server
         link = f"{link}/socialj"
 
         return self.perform_remote_call(link, request)
 
-    def get_linkj(self, request):
+    def get_linkj(self, request=None, url=None):
         """
         @returns None in case of error
         """
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
 
         link = self.remote_server
         link = f"{link}/linkj"
 
         return self.perform_remote_call(link, request)
 
-    def get_pingj(self, request):
+    def get_pingj(self, request=None, url=None):
         """
         @returns None in case of error
         """
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
 
         link = self.remote_server
         link = f"{link}/pingj"
@@ -129,8 +165,8 @@ class RemoteServer(object):
 
         return json_obj
 
-    def get_properties(self, url, name="", settings=None):
-        json_obj = self.get_getj(url=url, name=name, settings=settings)
+    def get_properties(self, url=None, request=None):
+        json_obj = self.get_getj(url=url, request=request)
 
         if json_obj:
             return RemoteServer.read_properties_section("Properties", json_obj)
