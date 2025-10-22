@@ -24,6 +24,7 @@ class PageRequestObject(object):
         user_agent=None,
         request_headers=None,
         timeout_s=None,
+        delay_s=None,
         request_type=None,
         ssl_verify=None,
         respect_robots=None,
@@ -35,6 +36,7 @@ class PageRequestObject(object):
         self.user_agent = user_agent
         self.request_headers = request_headers
         self.timeout_s = timeout_s
+        self.delay_s = delay_s
         self.request_type=request_type
         self.ssl_verify = respect_robots
         self.respect_robots = respect_robots
@@ -58,6 +60,8 @@ def request_to_json(request):
         json["request_headers"] = request.request_headers
     if request.timeout_s is not None:
         json["timeout_s"] = request.timeout_s
+    if request.delay_s is not None:
+        json["delay_s"] = request.delay_s
     if request.request_type:
         json["request_type"] = request.request_type
     if request.ssl_verify is not None:
@@ -88,6 +92,7 @@ def json_to_request(json_data):
     request.user_agent = json_data.get("User-Agent")
     request.request_headers = json_data.get("request_headers")
     request.timeout_s = json_data.get("timeout_s")
+    request.delay_s = json_data.get("delay_s")
     request.request_type = json_data.get("request_type")
     request.ssl_verify = json_data.get("ssl_verify")
     request.respect_robots = json_data.get("respect_robots")
