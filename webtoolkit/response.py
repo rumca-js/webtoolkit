@@ -17,7 +17,7 @@ from .webtools import (
 from .contentinterface import ContentInterface
 from .pages import PageFactory
 from .statuses import *
-from utils.dateutils import DateUtils
+from .utils.dateutils import DateUtils
 
 
 class ResponseHeaders(object):

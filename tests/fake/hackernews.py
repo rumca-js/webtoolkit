@@ -1,4 +1,4 @@
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 
 webpage_hackernews_rss = """
 <rss version="2.0">

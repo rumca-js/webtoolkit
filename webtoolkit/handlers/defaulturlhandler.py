@@ -1,7 +1,5 @@
-from utils.dateutils import DateUtils
-
-from webtoolkit import DefaultContentPage
-
+from ..utils.dateutils import DateUtils
+from ..pages import DefaultContentPage
 from .handlerhttppage import HttpPageHandler
 
 

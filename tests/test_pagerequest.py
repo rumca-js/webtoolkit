@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from webtoolkit.utils.dateutils import DateUtils
+
 from webtoolkit import (
     PageRequestObject,
     RssPage,
@@ -13,7 +15,6 @@ from webtoolkit import (
     HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
     HTTP_STATUS_CODE_EXCEPTION,
 )
-from utils.dateutils import DateUtils
 
 from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 

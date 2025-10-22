@@ -5,7 +5,7 @@ Provides interface and page types Html, RSS, JSON etc.
 import re
 import html
 
-from utils.dateutils import DateUtils
+from .utils.dateutils import DateUtils
 
 from .webtools import (
     WebLogger,

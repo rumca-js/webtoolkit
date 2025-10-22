@@ -9,7 +9,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 from datetime import timedelta
 
-from utils.dateutils import DateUtils
+from ..utils.dateutils import DateUtils
 
 from ..pages import (
     HtmlPage,

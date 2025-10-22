@@ -9,7 +9,7 @@ import logging
 import unittest
 import traceback
 
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 from webtoolkit import (
     PageResponseObject,
     WebLogger,

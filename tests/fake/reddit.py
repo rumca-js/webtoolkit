@@ -1,4 +1,4 @@
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 
 
 reddit_rss_text = """<?xml version="1.0" encoding="UTF-8"?>

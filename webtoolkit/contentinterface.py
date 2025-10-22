@@ -7,7 +7,7 @@ import re
 from datetime import datetime
 from dateutil import parser
 
-from utils.dateutils import DateUtils
+from .utils.dateutils import DateUtils
 
 from .webtools import (
     calculate_hash,

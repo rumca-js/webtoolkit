@@ -1,8 +1,7 @@
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
-from utils.dateutils import DateUtils
-
+from ..utils.dateutils import DateUtils
 from ..contentinterface import ContentInterface
 from ..response import PageResponseObject
 from ..urllocation import UrlLocation

@@ -45,7 +45,7 @@ from dateutil import parser
 import urllib.request, urllib.error, urllib.parse
 from bs4 import BeautifulSoup
 
-from utils.dateutils import DateUtils
+from .utils.dateutils import DateUtils
 
 __version__ = "0.0.5"
 

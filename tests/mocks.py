@@ -5,7 +5,7 @@ This module provides replacement for the Internet.
  - when there is a request to obtain youtube JSON data, we provide artificial data, etc.
 """
 
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
    CrawlerInterface,

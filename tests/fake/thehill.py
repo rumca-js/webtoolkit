@@ -1,4 +1,5 @@
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
+
 
 thehill_rss = """
 <?xml version="1.0" encoding="UTF-8"?><rss version="2.0"

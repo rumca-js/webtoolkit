@@ -9,7 +9,7 @@ from brutefeedparser import BruteFeedParser
 import html
 import lxml.etree as ET
 
-from utils.dateutils import DateUtils
+from .utils.dateutils import DateUtils
 
 from .webtools import (
     calculate_hash,
