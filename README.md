@@ -149,3 +149,9 @@ You can implement scraping servers yourself. The communication between remotes u
 
  - RemoteServer - Interface for calling external crawling systems
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
+
+# Testing
+
+Provides data and facilities that will aid you in testing.
+
+Do you want to implement new RSS parser? Go ahead, use the data.
