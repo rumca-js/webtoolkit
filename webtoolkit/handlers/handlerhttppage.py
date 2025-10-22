@@ -156,7 +156,8 @@ class HttpPageHandler(HandlerInterface):
             self.get_response()
 
         if not self.p:
-            return self.url
+            return
+
         return self.p.get_canonical_url()
 
     def get_properties(self):
