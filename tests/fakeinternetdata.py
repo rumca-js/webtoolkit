@@ -417,6 +417,9 @@ class TestResponseObject(PageResponseObject):
         elif url == "https://page-with-canonical-link.com":
             return webpage_html_canonical_1
 
+        elif url == "https://page-without-canonical-link.com":
+            return webpage_with_real_rss_links
+
         elif url == "https://slot-casino-page.com":
             return webpage_html_casinos
 

@@ -2,7 +2,8 @@ from webtoolkit import (
    HtmlPage,
    RssPage,
    HttpPageHandler,
-   HTTP_STATUS_CODE_SERVER_ERROR
+   HTTP_STATUS_CODE_SERVER_ERROR,
+   HTTP_STATUS_OK,
 )
 
 from tests.fakeinternet import FakeInternetTestCase
@@ -146,3 +147,27 @@ class HttpPageHandlerTest(FakeInternetTestCase):
 
         self.assertEqual(response.get_status_code(), HTTP_STATUS_CODE_SERVER_ERROR)
         self.assertEqual(len(response.errors), 1)
+
+    def test_canonical_url__valid(self):
+        MockRequestCounter.reset()
+
+        test_link = "https://page-with-canonical-link.com"
+        settings = MockUrl(test_link).get_init_settings()
+
+        handler = HttpPageHandler(test_link, settings = settings, url_builder = MockUrl)
+        response = handler.get_response()
+
+        self.assertEqual(response.get_status_code(), HTTP_STATUS_OK)
+        self.assertEqual(handler.get_canonical_url(), "https://www.page-with-canonical-link.com")
+
+    def test_canonical_url__nocanonical(self):
+        MockRequestCounter.reset()
+
+        test_link = "https://page-without-canonical-link.com"
+        settings = MockUrl(test_link).get_init_settings()
+
+        handler = HttpPageHandler(test_link, settings = settings, url_builder = MockUrl)
+        response = handler.get_response()
+
+        self.assertEqual(response.get_status_code(), HTTP_STATUS_OK)
+        self.assertFalse(handler.get_canonical_url())

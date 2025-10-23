@@ -1,7 +1,7 @@
 import json
 import requests
 import urllib.parse
-import base64
+import os
 
 from .statuses import (
     HTTP_STATUS_TOO_MANY_REQUESTS,
@@ -21,8 +21,14 @@ class RemoteServer(object):
     Crawler buddy communication class
     """
 
-    def __init__(self, remote_server, timeout_s=30):
+    def __init__(self, remote_server=None, timeout_s=30):
         self.remote_server = remote_server
+        if not self.remote_server:
+            CRAWLER_BUDDY_SERVER = os.environ.get("CRAWLER_BUDDY_SERVER")
+            CRAWLER_BUDDY_PORT = os.environ.get("CRAWLER_BUDDY_PORT")
+            if CRAWLER_BUDDY_SERVER and CRAWLER_BUDDY_PORT:
+                self.remote_server = f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
+
         self.timeout_s = timeout_s
 
     def get_getj(self, request=None, url=None):

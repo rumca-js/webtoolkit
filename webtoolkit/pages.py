@@ -1010,8 +1010,6 @@ class HtmlPage(ContentInterface):
                 return canonical_link[:-1]
             return canonical_link
 
-        return self.url
-
     def get_og_title(self):
         return self.get_og_field("title")
 
