@@ -165,7 +165,7 @@ class PageResponseObject(object):
         self.url = url
         self.request_url = request_url
         self.status_code = status_code
-        self.crawler_data = None
+        self.request = None
         self.crawl_time_s = None
         self.recognized_content_type = None
         self.body_hash = None
@@ -246,9 +246,8 @@ class PageResponseObject(object):
     def get_body_hash(self):
         return self.body_hash
 
-    def set_crawler(self, crawler_data):
-        self.crawler_data = dict(crawler_data)
-        self.crawler_data["crawler"] = type(self.crawler_data["crawler"]).__name__
+    def set_request(self, request):
+        self.request = request
 
     def get_content_type(self):
         content_type = self.headers.get_content_type()

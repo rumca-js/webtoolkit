@@ -28,6 +28,8 @@ class PageRequestObject(object):
         request_type=None,
         ssl_verify=None,
         respect_robots=None,
+        accept_types=None,
+        bytes_limit=None,
         settings=None,
         crawler_name=None,
         crawler_type=None,
@@ -41,10 +43,15 @@ class PageRequestObject(object):
         self.request_type=request_type
         self.ssl_verify = respect_robots
         self.respect_robots = respect_robots
+        self.accept_types = accept_types
+        self.bytes_limit = bytes_limit
         self.settings=settings
         self.crawler_name = crawler_name
         self.crawler_type = crawler_type
         self.handler_type = handler_type
+
+        if not self.settings:
+            self.settings = {}
 
     def __str__(self):
         return "Url:{} Timeout:{} Type:{}".format(self.url, self.timeout_s, self.request_type)
@@ -70,7 +77,11 @@ def request_to_json(request):
         json["ssl_verify"] = request.ssl_verify
     if request.respect_robots is not None:
         json["respect_robots"] = request.respect_robots
-    if request.settings:
+    if request.accept_types is not None:
+        json["accept_types"] = request.accept_types
+    if request.bytes_limit is not None:
+        json["bytes_limit"] = request.bytes_limit
+    if len(request.settings) > 0:
         json["settings"] = request.settings
     if request.crawler_name:
         json["crawler_name"] = request.crawler_name
@@ -100,10 +111,15 @@ def json_to_request(json_data):
     request.request_type = json_data.get("request_type")
     request.ssl_verify = json_data.get("ssl_verify")
     request.respect_robots = json_data.get("respect_robots")
+    request.accept_types = json_data.get("accept_types")
+    request.bytes_limit = json_data.get("bytes_limit")
     request.settings = json_data.get("settings")
     request.crawler_name = json_data.get("crawler_name")
     request.crawler_type = json_data.get("crawler_type")
     request.handler_type = json_data.get("handler_type")
+
+    if not request.settings:
+        request.settings = {}
 
     return request
 

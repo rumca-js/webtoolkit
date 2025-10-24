@@ -31,7 +31,7 @@ class WebToolsTimeoutException(Exception):
 
 
 class CrawlerInterface(object):
-    def __init__(self, url=None, request=None, settings=None):
+    def __init__(self, url=None, request=None):
         """
         @param response_file If set, response is stored in a file
         @param settings passed settings
@@ -42,28 +42,18 @@ class CrawlerInterface(object):
         self.request = request
         self.response = None
 
-        self.set_settings(settings)
-
-    def set_settings(self, settings):
-        if not settings:
-            self.settings = {"settings": {}}
-            return
-
-        self.settings = settings
-
-        if "settings" not in self.settings:
-            self.settings["settings"] = {}
-
-        self.request.request_headers = self.get_request_headers()
-
-        real_settings = {}
-        if settings and "settings" in settings:
-            real_settings = settings["settings"]
-
-        self.request.timeout_s = self.get_timeout_s()
+    def update_request(self):
+        #self.request.request_headers = self.get_request_headers()
+        #self.request.timeout_s = self.get_timeout_s()
+        # TODO
+        # Fill fields not set by default
+        pass
 
     def set_url(self, url):
         self.request.url = url
+
+    def make_request(self, request):
+        self.request = request
 
     def run(self):
         """
@@ -130,10 +120,7 @@ class CrawlerInterface(object):
         pass
 
     def get_accept_types(self):
-        if "settings" not in self.settings:
-            return
-
-        accept_string = self.settings["settings"].get("accept_content_types")
+        accept_string = self.request.accept_types
         if not accept_string:
             accept_string = "all"
 
@@ -154,9 +141,8 @@ class CrawlerInterface(object):
         return list(result)
 
     def get_request_headers(self):
-        real_settings = self.settings["settings"]
-        headers = real_settings.get("request_headers")
-        custom_user_agent = real_settings.get("User-Agent")
+        headers = self.request.request_headers
+        custom_user_agent = self.request.user_agent
 
         if not headers or len(headers) == 0:
             headers = self.get_default_headers()
@@ -170,9 +156,8 @@ class CrawlerInterface(object):
         return headers
 
     def get_user_agent(self):
-        real_settings = self.settings["settings"]
-        headers = real_settings.get("request_headers")
-        custom_user_agent = real_settings.get("User-Agent")
+        headers = self.request.request_headers
+        custom_user_agent = self.request.user_agent
 
         if custom_user_agent:
             return custom_user_agent
@@ -180,22 +165,20 @@ class CrawlerInterface(object):
         return self.get_default_user_agent()
 
     def get_timeout_s(self):
-        real_settings = self.settings["settings"]
+        timeout_s = self.request.timeout_s
 
-        timeout_s = real_settings.get("timeout_s")
         if timeout_s is not None:
             return timeout_s
 
         return 20
 
     def get_bytes_limit(self):
-        real_settings = self.settings["settings"]
-
-        bytes_limit = real_settings.get("bytes_limit")
+        bytes_limit = self.request.bytes_limit
         return bytes_limit
 
     def get_response_file(self):
-        real_settings = self.settings["settings"]
+        if self.request.settings:
+            real_settings = self.request.settings
 
-        response_file = real_settings.get("response_file")
-        return response_file
+            response_file = real_settings.get("response_file")
+            return response_file

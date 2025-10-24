@@ -11,9 +11,9 @@ from .defaulturlhandler import DefaultUrlHandler
 
 
 class YouTubeVideoHandler(DefaultUrlHandler):
-    def __init__(self, url=None, contents=None, settings=None, url_builder=None):
+    def __init__(self, url=None, contents=None, settings=None, request=None, url_builder=None):
         super().__init__(
-            url=url, contents=contents, settings=settings, url_builder=url_builder
+            url=url, contents=contents, settings=settings, request=request, url_builder=url_builder
         )
 
         if not self.is_handled_by():
@@ -126,8 +126,8 @@ class YouTubeVideoHandler(DefaultUrlHandler):
 
 
 class YouTubeHtmlHandler(HtmlPage, YouTubeVideoHandler):
-    def __init__(self, url, settings=None):
-        super().__init__(url, settings=settings)
+    def __init__(self, url, settings=None, request=None, url_builder=None):
+        super().__init__(url, settings=settings, request=request, url_builder=url_builder)
 
     def is_valid(self):
         """
@@ -166,11 +166,11 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
     TODO Use if above in youtube.h
     """
 
-    def __init__(self, url, settings=None, url_builder=None):
+    def __init__(self, url, settings=None, request=None, url_builder=None):
         """
         TODO We should , most probably call the parnet constructor
         """
-        super().__init__(url=url, settings=settings, url_builder=url_builder)
+        super().__init__(url=url, settings=settings, request=request, url_builder=url_builder)
 
         self.social_data = {}
         self.yt_text = None

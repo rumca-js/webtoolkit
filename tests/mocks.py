@@ -9,6 +9,7 @@ from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
    CrawlerInterface,
+   PageRequestObject,
 )
 
 from tests.fakeinternetdata import TestResponseObject
@@ -46,6 +47,12 @@ class MockUrl(object):
 
     def get_init_settings(self):
         return MockCrawler.get_default_crawler(self.url)
+
+    def get_init_request(self):
+        request = PageRequestObject(self.url)
+        request.crawler_name = "MockCrawler"
+        request.crawler_type = MockCrawler(url=self.url)
+        return request
 
     def get_handlers():
         return []
@@ -104,12 +111,12 @@ class MockCrawler(CrawlerInterface):
     def run(self):
         request = self.request
 
-        if self.settings:
-            print("FakeInternet:Url:{} Crawler:{}".format(request.url, self.settings["name"]))
+        if self.request:
+            print("FakeInternet:Url:{} Crawler:{}".format(request.url, self.request.crawler_name))
         else:
             print("FakeInternet:Url:{}".format(self.request.url))
 
-        MockRequestCounter.requested(request.url, crawler_data=self.settings)
+        MockRequestCounter.requested(request.url, crawler_data=self.request)
 
         self.response = TestResponseObject(request.url, request.request_headers, request.timeout_s)
 

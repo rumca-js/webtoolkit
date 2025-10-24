@@ -25,13 +25,12 @@ from .handlerinterface import HandlerInterface
 
 
 class HttpPageHandler(HandlerInterface):
-    def __init__(self, url=None, contents=None, settings=None, url_builder=None):
+    def __init__(self, url=None, contents=None, settings=None, request=None, url_builder=None):
         super().__init__(
-            url=url, contents=contents, settings=settings, url_builder=url_builder
+            url=url, contents=contents, settings=settings, request=request, url_builder=url_builder
         )
         self.p = None
         self.response = None
-        self.settings = settings
 
     def is_handled_by(self):
         url = self.url
@@ -84,7 +83,7 @@ class HttpPageHandler(HandlerInterface):
 
         if self.is_handled_by():
             if not dap.is_media():
-                builder = HttpRequestBuilder(url=url, settings=self.settings)
+                builder = HttpRequestBuilder(url=url, settings=self.settings, request=self.request)
                 self.response = builder.get_response()
 
                 if not self.response:
@@ -268,7 +267,7 @@ class HttpRequestBuilder(object):
     Should not contain any HTML/RSS content processing.
     """
 
-    def __init__(self, url=None, settings=None):
+    def __init__(self, url=None, settings=None, request=None):
         """
         @param url URL
         @param contents URL page contents
@@ -277,6 +276,7 @@ class HttpRequestBuilder(object):
         self.response = None
         self.url = url
         self.settings = settings
+        self.request = request
         self.errors = []
 
         # Flag to not retry same contents requests for things we already know are dead
@@ -322,8 +322,6 @@ class HttpRequestBuilder(object):
 
     def get_response_make_call(self):
         """ """
-        crawler_data = self.settings
-
         response = PageResponseObject(
             self.url,
             text=None,
@@ -331,18 +329,23 @@ class HttpRequestBuilder(object):
             request_url=self.url,
         )
 
-        if not crawler_data:
-            response.add_error("No crawler data")
+        if not self.request:
+            response.add_error("No request")
             return response
 
-        if "crawler" not in crawler_data:
+        if not self.request.url:
+            response.add_error("No request url")
+            return response
+
+        if not self.request.crawler_type:
             response.add_error("Url:{} No crawler in crawler data".format(self.url))
             return response
 
-        crawler = crawler_data["crawler"]
+        crawler = self.request.crawler_type
 
-        crawler.set_url(self.url)
-        crawler.set_settings(crawler_data)
+        crawler.make_request(self.request)
+        #crawler.set_url(self.url) # TODO
+        #crawler.set_settings(crawler_data)
 
         start_time = time.time()
         crawler.run()
@@ -350,7 +353,7 @@ class HttpRequestBuilder(object):
 
         response = crawler.get_response()
         if response:
-            response.set_crawler(crawler_data)
+            response.set_request(self.request)
             if response.errors:
                 for error in response.errors:
                     self.errors.append(error)
