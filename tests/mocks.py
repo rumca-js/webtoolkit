@@ -40,9 +40,10 @@ class MockRequestCounter(object):
 
 
 class MockUrl(object):
-    def __init__(self, url=None, settings=None, url_builder=None):
+    def __init__(self, url=None, settings=None, request=None, url_builder=None):
         self.url = url
         self.settings = settings
+        self.request = request
         self.url_builder = url_builder
 
     def get_init_settings(self):

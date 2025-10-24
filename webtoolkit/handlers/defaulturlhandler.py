@@ -1,27 +1,43 @@
+import copy
+
 from ..utils.dateutils import DateUtils
 from ..pages import DefaultContentPage
+from ..request import PageRequestObject
 from .handlerhttppage import HttpPageHandler
 
 
 class DefaultUrlHandler(HttpPageHandler):
     """
-    This handler works as HTML page handler, mostly
     """
 
-    def __init__(self, url=None, contents=None, settings=None, url_builder=None):
-        super().__init__(url, settings=settings, url_builder=url_builder)
+    def __init__(self, url=None, contents=None, settings=None, request=None, url_builder=None):
+        super().__init__(url, settings=settings, request=request, url_builder=url_builder)
         self.code = self.input2code(url)
 
     def get_page_url(self, url, crawler_name=None):
-        settings = {}
-        settings["handler_class"] = HttpPageHandler
+        """
+        Obtains a custom, another URL using a crawler
+        Necessary for more advanced handlers that in order to provide necessary data
+        check multiple source of data.
+        """
+        if self.request:
+            request = copy.copy(self.request)
+        else:
+            request = PageRequestObject(url)
+
+        request.url = url
+        request.handler_type = HttpPageHandler
 
         if crawler_name:
-            settings["name"] = crawler_name
+            request.crawler_name = crawler_name
 
-        url = self.url_builder(url=url, settings=settings)
-        return url
+        if self.url_builder:
+            url = self.url_builder(url=url, request=request)
+            return url
 
 
 class DefaultChannelHandler(DefaultUrlHandler):
+    """
+    Default handler for channels
+    """
     pass

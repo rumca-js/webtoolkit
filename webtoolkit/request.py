@@ -54,7 +54,23 @@ class PageRequestObject(object):
             self.settings = {}
 
     def __str__(self):
-        return "Url:{} Timeout:{} Type:{}".format(self.url, self.timeout_s, self.request_type)
+        string = ""
+        if self.url:
+            string += f"Url: {self.url}"
+
+        if self.timeout_s:
+            string += f", timeout_s: {self.timeout_s}"
+
+        if self.request_type:
+            string += f", request_type: {self.request_type}"
+
+        if self.crawler_name:
+            string += f", crawler_name: {self.crawler_name}"
+
+        if self.handler_type:
+            string += f", handler_type: {self.handler_type}"
+
+        return string
 
 
 def request_to_json(request):
