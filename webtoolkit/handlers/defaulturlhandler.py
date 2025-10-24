@@ -30,9 +30,10 @@ class DefaultUrlHandler(HttpPageHandler):
 
         if crawler_name:
             request.crawler_name = crawler_name
+        request.crawler_type = None
 
         if self.url_builder:
-            url = self.url_builder(url=url, request=request)
+            url = self.url_builder(url=url, request=request, url_builder=self.url_builder)
             return url
 
 
