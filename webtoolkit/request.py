@@ -31,6 +31,7 @@ class PageRequestObject(object):
         settings=None,
         crawler_name=None,
         crawler_type=None,
+        handler_type=None,
     ):
         self.url = url
         self.user_agent = user_agent
@@ -43,6 +44,7 @@ class PageRequestObject(object):
         self.settings=settings
         self.crawler_name = crawler_name
         self.crawler_type = crawler_type
+        self.handler_type = handler_type
 
     def __str__(self):
         return "Url:{} Timeout:{} Type:{}".format(self.url, self.timeout_s, self.request_type)
@@ -74,6 +76,8 @@ def request_to_json(request):
         json["crawler_name"] = request.crawler_name
     if request.crawler_type:
         json["crawler_type"] = request.crawler_type
+    if request.handler_type:
+        json["handler_type"] = request.handler_type
 
     return json
 
@@ -99,6 +103,7 @@ def json_to_request(json_data):
     request.settings = json_data.get("settings")
     request.crawler_name = json_data.get("crawler_name")
     request.crawler_type = json_data.get("crawler_type")
+    request.handler_type = json_data.get("handler_type")
 
     return request
 
