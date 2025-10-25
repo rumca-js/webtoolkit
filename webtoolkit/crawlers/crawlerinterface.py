@@ -2,25 +2,33 @@ import json
 import os
 import base64
 from pathlib import Path
+import ua_generator
 
 from webtoolkit import (
     PageRequestObject,
 )
 
 
-default_user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
-)
+def get_default_headers(device=None, browser=None):
+    if not device:
+        device = 'desktop'
+    if not browser:
+        browser = ['chrome', 'edge']
+
+    ua = ua_generator.generate(device=device, browser=browser)
+    headers = ua.headers.get()
+
+    if "user-agent" in headers:
+        headers["User-Agent"] = headers["user-agent"]
+        del headers["user-agent"]
+
+    return headers
 
 
-default_headers = {
-    "User-Agent": default_user_agent,
-    "Accept": "text/html,application/xhtml+xml,application/xml,application/rss;q=0.9,*/*;q=0.8",
-    "Accept-Charset": "utf-8,ISO-8859-1;q=0.7,*;q=0.3",
-    "Accept-Encoding": "none",
-    "Accept-Language": "en-US,en;q=0.8",
-    "Connection": "keep-alive",
-}
+def get_default_user_agent(device=None, browser=None):
+    headers = get_default_headers(device, browser)
+    if "User-Agent" in headers:
+        return headers["User-Agent"]
 
 
 class WebToolsTimeoutException(Exception):
@@ -68,10 +76,10 @@ class CrawlerInterface(object):
         return self.response
 
     def get_default_user_agent(self):
-        return default_user_agent
+        return get_default_user_agent()
 
     def get_default_headers(self):
-        return default_headers
+        return get_default_headers()
 
     def is_response_valid(self):
         if not self.response:

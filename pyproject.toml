@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "webtoolkit"
-version = "0.0.56"
+version = "0.0.57"
 description = "Web tools and interfaces for Internet data processing."
 authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
 license = "GPL3"
@@ -20,6 +20,7 @@ pytz = "^2024.2"
 psutil="*"
 url-cleaner="*"
 #cleanurl="*"  TODO may change url structure
+ua-generator="^2.0.17"
 
 # Enable and crawlers as needed
 

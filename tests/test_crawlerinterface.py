@@ -1,6 +1,14 @@
-from webtoolkit import CrawlerInterface, PageResponseObject, PageRequestObject
+from webtoolkit import (
+   CrawlerInterface,
+   PageResponseObject,
+   PageRequestObject,
+   get_default_user_agent,
+   get_default_headers,
+)
+
 
 from tests.fakeinternet import FakeInternetTestCase
+
 
 class CrawlerInterfaceTest(FakeInternetTestCase):
     def test_constructor__url(self):
@@ -148,3 +156,22 @@ class CrawlerInterfaceTest(FakeInternetTestCase):
         interface.response = response
 
         self.assertTrue(interface.is_response_valid())
+
+
+class FunctionsTest(FakeInternetTestCase):
+    def test_get_default_headers(self):
+
+        # call tested function
+        headers = get_default_headers()
+
+        self.assertTrue(headers)
+        self.assertTrue(len(headers) > 0)
+
+        self.assertIn("User-Agent", headers)
+
+    def test_get_default_user_agent(self):
+
+        # call tested function
+        user_agent = get_default_user_agent()
+
+        self.assertTrue(user_agent)
