@@ -123,12 +123,18 @@ def json_to_request(json_data):
     request.user_agent = json_data.get("User-Agent")
     request.request_headers = json_data.get("request_headers")
     request.timeout_s = json_data.get("timeout_s")
+    if request.timeout_s is not None:
+        request.timeout_s = int(request.timeout_s)
     request.delay_s = json_data.get("delay_s")
+    if request.delay_s is not None:
+        request.delay_s = int(request.delay_s)
     request.request_type = json_data.get("request_type")
     request.ssl_verify = json_data.get("ssl_verify")
     request.respect_robots = json_data.get("respect_robots")
     request.accept_types = json_data.get("accept_types")
     request.bytes_limit = json_data.get("bytes_limit")
+    if request.bytes_limit is not None:
+        request.bytes_limit = int(request.bytes_limit)
     request.settings = json_data.get("settings")
     request.crawler_name = json_data.get("crawler_name")
     request.crawler_type = json_data.get("crawler_type")
