@@ -80,6 +80,12 @@ Check if contents if captcha protected
 ContentInterface().is_captcha_protected()
 ```
 
+Obtain text ready for display
+```
+ContentText(text).htmlify()  # returns text, where http links are turned into HTML links
+ContentText(text).noattrs()  # removes HTML attributes
+```
+
 # Standard interfaces
 
 Two standard interfaces
