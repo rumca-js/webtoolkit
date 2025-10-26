@@ -10,6 +10,7 @@ from .request import *
 
 from .contentinterface import ContentInterface
 from .contentlinkparser import ContentLinkParser
+from .contenttext import ContentText
 from .urllocation import UrlLocation
 from .remoteserver import RemoteServer
 from .remoteurl import RemoteUrl

@@ -23,7 +23,7 @@ class ContentText(object):
 
         @return text with https links changed into real links
         """
-        self.text = self.strip_html_attributes()
+        self.text = self.noattrs()
         self.text = self.linkify()
         return self.text
 
