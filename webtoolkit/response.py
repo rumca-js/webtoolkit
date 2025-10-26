@@ -559,6 +559,8 @@ def json_to_response(json_data, with_streams=False):
     text = json_data.get("text")
     binary = json_data.get("binary")
     status_code = json_data.get("status_code")
+    if status_code is not None:
+        status_code = int(status_code)
     encoding = json_data.get("Charset")
     headers = json_data.get("headers")
     body_hash = json_data.get("body_hash")
