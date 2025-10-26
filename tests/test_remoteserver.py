@@ -2,7 +2,7 @@ from webtoolkit import (
     RemoteServer,
 )
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 all_properties = [

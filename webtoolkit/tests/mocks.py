@@ -12,7 +12,7 @@ from webtoolkit import (
    PageRequestObject,
 )
 
-from tests.fakeinternetdata import TestResponseObject
+from webtoolkit.tests.fakeresponse import TestResponseObject
 
 
 class MockRequestCounter(object):

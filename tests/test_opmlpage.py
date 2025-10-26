@@ -1,7 +1,6 @@
 from webtoolkit import OpmlPage
-from tests.fake.opmlfile import opml_file
-
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fake.opmlfile import opml_file
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 class OmplPageTest(FakeInternetTestCase):

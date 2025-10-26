@@ -1,0 +1,3 @@
+"""
+contains various life-examples
+"""

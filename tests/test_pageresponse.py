@@ -17,7 +17,7 @@ from webtoolkit import (
     HTTP_STATUS_CODE_EXCEPTION,
 )
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 class PageResponseObjectTest(FakeInternetTestCase):

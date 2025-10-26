@@ -3,7 +3,7 @@ from webtoolkit import (
    HtmlPage,
    UrlAgeModerator
 )
-from .fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 class UrlAgeModeratorTest(FakeInternetTestCase):

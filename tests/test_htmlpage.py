@@ -1,6 +1,6 @@
 from webtoolkit import HtmlPage, calculate_hash
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 webpage_no_lang = """<html>
     <body>

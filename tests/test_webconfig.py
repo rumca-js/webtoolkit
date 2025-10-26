@@ -2,7 +2,7 @@ from webtoolkit import (
     WebConfig,
 )
 
-from .fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 class WebConfigTest(FakeInternetTestCase):

@@ -6,8 +6,8 @@ from webtoolkit import (
    HTTP_STATUS_OK,
 )
 
-from tests.fakeinternet import FakeInternetTestCase
-from tests.mocks import MockRequestCounter, MockUrl
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.mocks import MockRequestCounter, MockUrl
 
 
 class HttpPageHandlerTest(FakeInternetTestCase):

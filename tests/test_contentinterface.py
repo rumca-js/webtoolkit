@@ -1,7 +1,7 @@
 import os
 from webtoolkit import ContentInterface
 
-from tests.fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 wall_street_journal_date_full_date = """

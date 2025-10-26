@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
@@ -16,7 +15,7 @@ from webtoolkit import (
     HTTP_STATUS_CODE_EXCEPTION,
 )
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 class PageRequestObjectToJsonTest(FakeInternetTestCase):

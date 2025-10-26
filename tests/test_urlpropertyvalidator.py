@@ -2,7 +2,7 @@ from webtoolkit import (
     UrlPropertyValidator,
 )
 
-from .fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 class UrlPropertyValidatoTest(FakeInternetTestCase):

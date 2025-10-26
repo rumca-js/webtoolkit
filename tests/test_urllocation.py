@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from webtoolkit import UrlLocation
-
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
 
 class UrlLocationTest(FakeInternetTestCase):

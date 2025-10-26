@@ -26,8 +26,8 @@ from webtoolkit import (
     HTTP_STATUS_USER_AGENT,
 )
 
-from tests.fakeinternetdata import FakeInternetData, TestResponseObject
-from tests.mocks import MockRequestCounter
+from webtoolkit.tests.fakeresponse import FakeInternetData, TestResponseObject
+from webtoolkit.tests.mocks import MockRequestCounter
 
 
 class FakeInternetTestCase(unittest.TestCase):

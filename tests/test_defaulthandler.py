@@ -1,7 +1,6 @@
 from webtoolkit import PageRequestObject, DefaultUrlHandler, HttpPageHandler
-
-from tests.fakeinternet import FakeInternetTestCase
-from tests.mocks import MockUrl, MockRequestCounter
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.mocks import MockUrl, MockRequestCounter
 
 
 class DefaultUrlHandlerTest(FakeInternetTestCase):

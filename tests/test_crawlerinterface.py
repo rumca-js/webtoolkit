@@ -7,7 +7,7 @@ from webtoolkit import (
 )
 
 
-from tests.fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 class CrawlerInterfaceTest(FakeInternetTestCase):

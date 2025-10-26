@@ -1,9 +1,8 @@
 from datetime import datetime
 
 from webtoolkit import UrlLocation, RemoteUrl
-
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
-from tests.fakeinternetcontents import webpage_with_real_rss_links
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
 
 
 class UrlTest(FakeInternetTestCase):

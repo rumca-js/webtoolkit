@@ -1,6 +1,6 @@
 from webtoolkit import ContentLinkParser
 
-from tests.fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 contents_with_links = """

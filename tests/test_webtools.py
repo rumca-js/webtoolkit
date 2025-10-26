@@ -6,7 +6,7 @@ from webtoolkit import (
    status_code_to_text,
 )
 
-from .fakeinternet import FakeInternetTestCase
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
 
 webpage_no_lang = """<html>

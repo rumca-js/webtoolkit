@@ -3,25 +3,25 @@ import hashlib
 
 from webtoolkit import RssPage, calculate_hash, RssContentReader
 
-from tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
-from tests.fakeinternetcontents import (
+from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
+from webtoolkit.tests.fakeinternetcontents import (
     webpage_no_pubdate_rss,
     webpage_old_pubdate_rss,
 )
-from tests.fake.youtube import (
+from webtoolkit.tests.fake.youtube import (
     webpage_samtime_youtube_rss,  # you
     youtube_channel_rss_linus_tech_tips,  # uses feed
 )
-from tests.fake.geekwirecom import (
+from webtoolkit.tests.fake.geekwirecom import (
     geekwire_feed,
 )
-from tests.fake.warhammercommunity import (
+from webtoolkit.tests.fake.warhammercommunity import (
     warhammer_community_rss,
 )
-from tests.fake.hackernews import (
+from webtoolkit.tests.fake.hackernews import (
     webpage_hackernews_rss,
 )
-from tests.fake.reddit import (
+from webtoolkit.tests.fake.reddit import (
     reddit_rss_text,
 )
 
