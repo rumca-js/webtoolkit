@@ -669,10 +669,15 @@ class FakeInternetData(object):
         data.append({"name": "Response", "data": self.response})
         data.append({"name": "Headers", "data": {}})
         data.append({"name": "Entries", "data": self.entries})
-        data.append({"name": "Streams", "data": {
-            "Text" : self.text_data,
-            "Binary" : json_encode_field(self.binary_data)
-            }})
+        data.append(
+            {
+                "name": "Streams",
+                "data": {
+                    "Text": self.text_data,
+                    "Binary": json_encode_field(self.binary_data),
+                },
+            }
+        )
 
         return data
 
@@ -875,3 +880,31 @@ class FakeInternetData(object):
         return True
 
 
+class FlaskArgs(object):
+    def __init__(self):
+        self._map = {}
+
+    def get(self, key):
+        if key in self._map:
+            return self._map[key]
+
+    def set(self, key, value):
+        self._map[key] = value
+
+    def __contains__(self, key):
+        return key in self._map
+
+    def __getitem__(self, key):
+        return self._map[key]
+
+
+class FlaskRequest(object):
+    """
+    Used to mock flask requests
+    """
+    def __init__(self, host):
+        self.host = host
+        self.args = FlaskArgs()
+
+    def set(self, key, value):
+        self.args.set(key, value)

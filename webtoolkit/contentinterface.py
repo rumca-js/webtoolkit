@@ -149,15 +149,12 @@ class ContentInterface(object):
         """
 
         CAPTCHA_FINGERPRINTS = {
-            "reCAPTCHA": [
-                "google.com/recaptcha", "recaptcha/api.js", "g-recaptcha"
-            ],
-            "hCaptcha": [
-                "hcaptcha.com", "hcaptcha-box", "h-captcha"
-            ],
+            "reCAPTCHA": ["google.com/recaptcha", "recaptcha/api.js", "g-recaptcha"],
+            "hCaptcha": ["hcaptcha.com", "hcaptcha-box", "h-captcha"],
             "Cloudflare Turnstile": [
-                "challenges.cloudflare.com/turnstile", "cf-turnstile"
-            ]
+                "challenges.cloudflare.com/turnstile",
+                "cf-turnstile",
+            ],
         }
 
         contents = self.contents

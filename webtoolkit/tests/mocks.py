@@ -8,8 +8,8 @@ This module provides replacement for the Internet.
 from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
-   CrawlerInterface,
-   PageRequestObject,
+    CrawlerInterface,
+    PageRequestObject,
 )
 
 from webtoolkit.tests.fakeresponse import TestResponseObject
@@ -23,11 +23,13 @@ class MockRequestCounter(object):
         """
         Info can be a dict
         """
-        MockRequestCounter.request_history.append({"url": url, "info" : info, "crawler_data": crawler_data})
+        MockRequestCounter.request_history.append(
+            {"url": url, "info": info, "crawler_data": crawler_data}
+        )
         MockRequestCounter.mock_page_requests += 1
 
         print(f"Requested: {url}")
-        #MockRequestCounter.debug_lines()
+        # MockRequestCounter.debug_lines()
 
     def reset():
         MockRequestCounter.mock_page_requests = 0
@@ -113,13 +115,19 @@ class MockCrawler(CrawlerInterface):
         request = self.request
 
         if self.request:
-            print("FakeInternet:Url:{} Crawler:{}".format(request.url, self.request.crawler_name))
+            print(
+                "FakeInternet:Url:{} Crawler:{}".format(
+                    request.url, self.request.crawler_name
+                )
+            )
         else:
             print("FakeInternet:Url:{}".format(self.request.url))
 
         MockRequestCounter.requested(request.url, crawler_data=self.request)
 
-        self.response = TestResponseObject(request.url, request.request_headers, request.timeout_s)
+        self.response = TestResponseObject(
+            request.url, request.request_headers, request.timeout_s
+        )
 
         return self.response
 
@@ -129,9 +137,7 @@ class MockCrawler(CrawlerInterface):
     def get_default_crawler(url):
         data = {}
         data["name"] = "MockCrawler"
-        data["crawler"] = MockCrawler(url = url)
-        data["settings"] = {"timeout_s" : 20}
+        data["crawler"] = MockCrawler(url=url)
+        data["settings"] = {"timeout_s": 20}
 
         return data
-
-

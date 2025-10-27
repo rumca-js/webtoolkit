@@ -27,7 +27,9 @@ class RemoteServer(object):
             CRAWLER_BUDDY_SERVER = os.environ.get("CRAWLER_BUDDY_SERVER")
             CRAWLER_BUDDY_PORT = os.environ.get("CRAWLER_BUDDY_PORT")
             if CRAWLER_BUDDY_SERVER and CRAWLER_BUDDY_PORT:
-                self.remote_server = f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
+                self.remote_server = (
+                    f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
+                )
 
         self.timeout_s = timeout_s
 
@@ -157,7 +159,9 @@ class RemoteServer(object):
         try:
             json_obj = json.loads(text)
         except ValueError as E:
-            print("Url:{} Remote error. Value error in response".format(link_call, text))
+            print(
+                "Url:{} Remote error. Value error in response".format(link_call, text)
+            )
             print(str(E))
             return
         except TypeError as E:
@@ -277,11 +281,12 @@ class RemoteServer(object):
             json_obj = json.loads(text)
             return json_obj
         except ValueError as E:
-            print("Url:{} Remote error. Value error in response".format(link_call, text))
+            print(
+                "Url:{} Remote error. Value error in response".format(link_call, text)
+            )
             print(str(E))
             return
         except TypeError as E:
             print("Url:{} Remote error. Type error response".format(link_call, text))
             print(str(E))
             return
-

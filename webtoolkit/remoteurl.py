@@ -106,7 +106,7 @@ class RemoteUrl(ContentInterface):
         if self.all_properties is not None:
             feeds = self.get_properties().get("feeds")
         else:
-            feeds_json = self.server.get_feedsj(url = self.url)
+            feeds_json = self.server.get_feedsj(url=self.url)
             feeds = feeds_json.get("feeds")
 
         if feeds is None:

@@ -4,9 +4,9 @@
 import urllib.parse
 
 
-REQUEST_TYPE_PING="ping"
-REQUEST_TYPE_HEAD="head"
-REQUEST_TYPE_FULL="full"
+REQUEST_TYPE_PING = "ping"
+REQUEST_TYPE_HEAD = "head"
+REQUEST_TYPE_FULL = "full"
 
 
 class PageRequestObject(object):
@@ -40,12 +40,12 @@ class PageRequestObject(object):
         self.request_headers = request_headers
         self.timeout_s = timeout_s
         self.delay_s = delay_s
-        self.request_type=request_type
+        self.request_type = request_type
         self.ssl_verify = respect_robots
         self.respect_robots = respect_robots
         self.accept_types = accept_types
         self.bytes_limit = bytes_limit
-        self.settings=settings
+        self.settings = settings
         self.crawler_name = crawler_name
         self.crawler_type = crawler_type
         self.handler_type = handler_type
@@ -115,6 +115,8 @@ def encode_field(data):
 
 
 def json_to_request(json_data):
+    if not json_data:
+        return
     if "url" not in json_data:
         return
 

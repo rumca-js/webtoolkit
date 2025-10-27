@@ -18,6 +18,7 @@ from .contentinterface import ContentInterface
 from .pages import PageFactory
 from .statuses import *
 from .utils.dateutils import DateUtils
+from .request import request_to_json, json_to_request
 
 
 class ResponseHeaders(object):
@@ -140,7 +141,6 @@ class ResponseHeaders(object):
             return self.headers["Location"]
 
 
-
 class PageResponseObject(object):
     STATUS_CODE_OK = 200
     STATUS_CODE_ERROR = 500
@@ -208,9 +208,7 @@ class PageResponseObject(object):
             try:
                 self.text = self.binary.decode(self.encoding)
             except Exception as E:
-                WebLogger.exc(
-                    E, "Cannot properly decode text from {}".format(self.url)
-                )
+                WebLogger.exc(E, "Cannot properly decode text from {}".format(self.url))
                 self.text = self.binary.decode(self.encoding, errors="ignore")
                 self.add_error("Cannot properly decode text from {}".format(self.url))
 
@@ -218,9 +216,7 @@ class PageResponseObject(object):
             try:
                 self.binary = self.text.encode(self.encoding)
             except Exception as E:
-                WebLogger.exc(
-                    E, "Cannot properly encode text from {}".format(self.url)
-                )
+                WebLogger.exc(E, "Cannot properly encode text from {}".format(self.url))
                 self.binary = self.text.encode(self.encoding, errors="ignore")
 
     def set_headers(self, headers):
@@ -327,48 +323,10 @@ class PageResponseObject(object):
         return self.headers.get_redirect_url()
 
     def is_this_status_ok(self):
-        if self.status_code is None:
-            return False
-
-        if self.status_code == HTTP_STATUS_UNKNOWN:
-            return False
-
-        # 300 are redirects - we don't know if these are valid
-
-        return self.status_code >= 200 and self.status_code < 400
+        return is_status_code_valid(self.status_code)
 
     def is_this_status_nok(self):
-        """
-        This function informs that status code is so bad, that further communication does not make any sense
-        """
-        if self.status_code is None:
-            return True
-
-        if self.status_code == HTTP_STATUS_UNKNOWN:
-            # we do not know status of page yet
-            return False
-
-        if self.status_code == HTTP_STATUS_USER_AGENT:
-            # if current agent is rejected, does not mean page (source) is invalid
-            return False
-
-        if self.status_code == HTTP_STATUS_TOO_MANY_REQUESTS:
-            # too many requests - we don't know what the page is
-            return False
-
-        if self.status_code == HTTP_STATUS_CODE_SERVER_ERROR:
-            # server error - we don't know what the page is
-            return False
-
-        if self.status_code == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
-            # too many requests - we don't know what the page is
-            return False
-
-        if self.status_code < 200:
-            return True
-
-        if self.status_code >= 400:
-            return True
+        return is_status_code_invalid(self.status_code)
 
     def is_this_status_redirect(self):
         """
@@ -491,7 +449,7 @@ class PageResponseObject(object):
             return calculate_hash_binary(binary)
 
     def is_captcha_protected(self):
-        interface = ContentInterface(url=self.url, contents = self.get_text())
+        interface = ContentInterface(url=self.url, contents=self.get_text())
         return interface.is_captcha_protected()
 
     def get_page(self):
@@ -499,8 +457,7 @@ class PageResponseObject(object):
 
 
 def response_to_json(response, with_streams=False):
-    """
-    """
+    """ """
     response_data = OrderedDict()
 
     if response:
@@ -519,7 +476,9 @@ def response_to_json(response, with_streams=False):
 
         response_data["crawl_time_s"] = response.crawl_time_s
         response_data["Content-Type"] = response.get_content_type()
-        response_data["Recognized-Content-Type"] = response.get_recognized_content_type()
+        response_data["Recognized-Content-Type"] = (
+            response.get_recognized_content_type()
+        )
         response_data["Content-Length"] = response.get_content_length()
         response_data["Last-Modified"] = response.get_last_modified()
         response_data["Charset"] = response.get_encoding()
@@ -547,7 +506,11 @@ def response_to_json(response, with_streams=False):
     else:
         response_data["is_valid"] = False
         response_data["status_code"] = HTTP_STATUS_CODE_EXCEPTION
-        response_data["status_code_str"] = status_code_to_text(HTTP_STATUS_CODE_EXCEPTION)
+        response_data["status_code_str"] = status_code_to_text(
+            HTTP_STATUS_CODE_EXCEPTION
+        )
+
+        response_data["request"] = request_to_json(response.request)
 
     return response_data
 
@@ -582,6 +545,9 @@ def json_to_response(json_data, with_streams=False):
 
     response.body_hash = body_hash
 
+    request_data = json_data.get("request")
+    response.set_request(json_to_request(request_data))
+
     return response
 
 
@@ -592,7 +558,7 @@ def response_to_file(response, file_name):
     with open(file_name, "w") as fh:
         json_data = response_to_json(response)
         json_text = json.dumps(json_data)
-        
+
         fh.write(json_text)
 
 

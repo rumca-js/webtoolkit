@@ -11,9 +11,15 @@ from .defaulturlhandler import DefaultUrlHandler
 
 
 class YouTubeVideoHandler(DefaultUrlHandler):
-    def __init__(self, url=None, contents=None, settings=None, request=None, url_builder=None):
+    def __init__(
+        self, url=None, contents=None, settings=None, request=None, url_builder=None
+    ):
         super().__init__(
-            url=url, contents=contents, settings=settings, request=request, url_builder=url_builder
+            url=url,
+            contents=contents,
+            settings=settings,
+            request=request,
+            url_builder=url_builder,
         )
 
         if not self.is_handled_by():
@@ -127,7 +133,9 @@ class YouTubeVideoHandler(DefaultUrlHandler):
 
 class YouTubeHtmlHandler(HtmlPage, YouTubeVideoHandler):
     def __init__(self, url, settings=None, request=None, url_builder=None):
-        super().__init__(url, settings=settings, request=request, url_builder=url_builder)
+        super().__init__(
+            url, settings=settings, request=request, url_builder=url_builder
+        )
 
     def is_valid(self):
         """
@@ -170,7 +178,9 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
         """
         TODO We should , most probably call the parnet constructor
         """
-        super().__init__(url=url, settings=settings, request=request, url_builder=url_builder)
+        super().__init__(
+            url=url, settings=settings, request=request, url_builder=url_builder
+        )
 
         self.social_data = {}
         self.yt_text = None
@@ -348,7 +358,9 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
         if not self.yt_ob:
             self.download_details_youtube()
         if self.yt_ob is None:
-            WebLogger.error("Url:{}:Could not download youtube details".format(self.url))
+            WebLogger.error(
+                "Url:{}:Could not download youtube details".format(self.url)
+            )
             return
 
         view_count = None
@@ -371,7 +383,9 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
         if not self.rd_ob:
             self.download_details_return_dislike()
         if not self.rd_ob:
-            WebLogger.error("Url:{}:Could not download return dislike details".format(self.url))
+            WebLogger.error(
+                "Url:{}:Could not download return dislike details".format(self.url)
+            )
             return
 
         view_count = None
@@ -473,7 +487,11 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
 
         from .handlers import ReturnDislike
 
-        dislike = ReturnDislike(video_code=self.get_video_code(), url_builder=self.url_builder, settings=self.settings)
+        dislike = ReturnDislike(
+            video_code=self.get_video_code(),
+            url_builder=self.url_builder,
+            settings=self.settings,
+        )
         response = dislike.get_response()
         if response is None or not response.is_valid():
             return False

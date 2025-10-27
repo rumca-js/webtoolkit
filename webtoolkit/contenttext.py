@@ -11,6 +11,7 @@ class ContentText(object):
 
     TODO should this be a part of HtmlPage?
     """
+
     def __init__(self, text):
         self.text = text
 

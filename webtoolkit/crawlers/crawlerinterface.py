@@ -11,9 +11,9 @@ from webtoolkit import (
 
 def get_default_headers(device=None, browser=None):
     if not device:
-        device = 'desktop'
+        device = "desktop"
     if not browser:
-        browser = ['chrome', 'edge']
+        browser = ["chrome", "edge"]
 
     ua = ua_generator.generate(device=device, browser=browser)
     headers = ua.headers.get()
@@ -51,8 +51,8 @@ class CrawlerInterface(object):
         self.response = None
 
     def update_request(self):
-        #self.request.request_headers = self.get_request_headers()
-        #self.request.timeout_s = self.get_timeout_s()
+        # self.request.request_headers = self.get_request_headers()
+        # self.request.timeout_s = self.get_timeout_s()
         # TODO
         # Fill fields not set by default
         pass

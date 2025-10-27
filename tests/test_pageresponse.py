@@ -588,3 +588,19 @@ class JsonToPageResponseTest(FakeInternetTestCase):
         self.assertTrue(path.exists())
 
         path.unlink()
+
+    def test__response_with_request(self):
+        json_data = {
+            "text" : "<html></html>",
+            "request" : {
+                "url" : "https://page-request.com",
+                "crawler_name" : "PageRequestCrawler",
+            }
+        }
+
+        response = json_to_response(json_data)
+        self.assertEqual(response.text, "<html></html>")
+
+        self.assertTrue(response.request)
+        self.assertTrue(response.request.url, "https://page-request.com")
+        self.assertTrue(response.request.crawler_name, "PageRequestCrawler")

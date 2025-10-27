@@ -1,5 +1,6 @@
 """
 """
+#fmt: off
 
 HTTP_STATUS_UNKNOWN = 0
 
@@ -88,3 +89,45 @@ def status_code_to_text(status_code):
     }
 
     return status_texts.get(status_code, f"STATUS_CODE({status_code})")
+#fmt: on
+
+
+def is_status_code_valid(status_code):
+    if status_code is None:
+        return False
+
+    return status_code >= 200 and status_code < 400
+
+
+def is_status_code_invalid(status_code):
+    """
+    This function informs that status code is so bad, that further communication does not make any sense
+    """
+    if status_code is None:
+        return True
+
+    if status_code == HTTP_STATUS_UNKNOWN:
+        # we do not know status of page yet
+        return False
+
+    if status_code == HTTP_STATUS_USER_AGENT:
+        # if current agent is rejected, does not mean page (source) is invalid
+        return False
+
+    if status_code == HTTP_STATUS_TOO_MANY_REQUESTS:
+        # too many requests - we don't know what the page is
+        return False
+
+    if status_code == HTTP_STATUS_CODE_SERVER_ERROR:
+        # server error - we don't know what the page is
+        return False
+
+    if status_code == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
+        # too many requests - we don't know what the page is
+        return False
+
+    if status_code < 200:
+        return True
+
+    if status_code >= 400:
+        return True

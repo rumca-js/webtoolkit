@@ -25,9 +25,15 @@ from .handlerinterface import HandlerInterface
 
 
 class HttpPageHandler(HandlerInterface):
-    def __init__(self, url=None, contents=None, settings=None, request=None, url_builder=None):
+    def __init__(
+        self, url=None, contents=None, settings=None, request=None, url_builder=None
+    ):
         super().__init__(
-            url=url, contents=contents, settings=settings, request=request, url_builder=url_builder
+            url=url,
+            contents=contents,
+            settings=settings,
+            request=request,
+            url_builder=url_builder,
         )
         self.p = None
         self.response = None
@@ -83,7 +89,9 @@ class HttpPageHandler(HandlerInterface):
 
         if self.is_handled_by():
             if not dap.is_media():
-                builder = HttpRequestBuilder(url=url, settings=self.settings, request=self.request)
+                builder = HttpRequestBuilder(
+                    url=url, settings=self.settings, request=self.request
+                )
                 self.response = builder.get_response()
 
                 if not self.response:
@@ -344,8 +352,8 @@ class HttpRequestBuilder(object):
         crawler = self.request.crawler_type
 
         crawler.make_request(self.request)
-        #crawler.set_url(self.url) # TODO
-        #crawler.set_settings(crawler_data)
+        # crawler.set_url(self.url) # TODO
+        # crawler.set_settings(crawler_data)
 
         start_time = time.time()
         crawler.run()
