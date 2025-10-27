@@ -352,8 +352,6 @@ class HttpRequestBuilder(object):
         crawler = self.request.crawler_type
 
         crawler.make_request(self.request)
-        # crawler.set_url(self.url) # TODO
-        # crawler.set_settings(crawler_data)
 
         start_time = time.time()
         crawler.run()
