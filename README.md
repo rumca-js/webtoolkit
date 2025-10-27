@@ -86,6 +86,12 @@ ContentText(text).htmlify()  # returns text, where http links are turned into HT
 ContentText(text).noattrs()  # removes HTML attributes
 ```
 
+Status analysis. Note that from some status we cannot know if page is OK, or not.
+```
+is_status_code_valid(status_code)   # provides information if input status code indicates the page is OK
+is_status_code_invalid(status_code) # provides information if input status code indicates the page is invalid
+```
+
 # Standard interfaces
 
 Two standard interfaces
@@ -98,12 +104,12 @@ Handlers are classes that allows automatic deduction of links, places, video cod
 
 Default User agents
 ```
-webtoolkit.default_user_agents
+webtoolkit.get_default_user_agent()
 ```
 
 Default User headers
 ```
-webtoolkit.default_headers
+webtoolkit.get_default_headers()
 ```
 
 # HTTP processing
