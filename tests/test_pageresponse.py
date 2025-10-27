@@ -1,8 +1,10 @@
+import json
 from pathlib import Path
 
 from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
+    PageRequestObject,
     PageResponseObject,
     RssPage,
     HtmlPage,
@@ -510,6 +512,31 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertEqual(json_map["Charset"], "UTF-8")
         self.assertNotEqual(json_map["hash"], None)
         self.assertEqual(json_map["body_hash"], None)
+
+    def test_response_to_json__with_request(self):
+        test_link = "https://test.com"
+
+        headers = {"Content-Type": "text/rss; charset=UTF-8"}
+        response = PageResponseObject(
+            url=test_link, status_code=200, text="test", headers=headers,
+        )
+        request = PageRequestObject(url=test_link)
+        response.set_request(request)
+
+        # call tested function
+        json_map = response_to_json(response, with_streams=True)
+
+        self.assertTrue(json_map)
+        self.assertIn("is_valid", json_map)
+        self.assertIn("request", json_map)
+
+        self.assertEqual(json_map["is_valid"], True)
+        self.assertEqual(json_map["request"]["url"], test_link)
+
+        # check if is serializable
+
+        string = json.dumps(json_map)
+        self.assertTrue(string)
 
 
 class JsonToPageResponseTest(FakeInternetTestCase):

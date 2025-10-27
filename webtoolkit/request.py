@@ -105,9 +105,9 @@ def request_to_json(request):
     if request.crawler_name:
         json["crawler_name"] = request.crawler_name
     if request.crawler_type:
-        json["crawler_type"] = request.crawler_type
+        json["crawler_type"] = str(request.crawler_type)
     if request.handler_type:
-        json["handler_type"] = request.handler_type
+        json["handler_type"] = str(request.handler_type)
 
     return json
 
