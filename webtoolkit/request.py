@@ -75,6 +75,9 @@ class PageRequestObject(object):
 
 def request_to_json(request):
     """TODO"""
+    if not request:
+        return
+
     json = {}
 
     json["url"] = request.url

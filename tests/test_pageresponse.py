@@ -567,6 +567,8 @@ class JsonToPageResponseTest(FakeInternetTestCase):
         self.assertEqual(response.get_content_type(), "test/content/type")
 
     def test__response_to_file(self):
+        path = Path("test_response.txt")
+
         json_data = {
             "status_code" : 200,
             "url" : "https://test.com",
@@ -579,7 +581,9 @@ class JsonToPageResponseTest(FakeInternetTestCase):
 
         response = json_to_response(json_data)
 
-        path = Path("test_response.txt")
+        if path.exists():
+            path.unlink()
+
         self.assertFalse(path.exists())
 
         # call tested function
@@ -591,6 +595,7 @@ class JsonToPageResponseTest(FakeInternetTestCase):
 
     def test__response_with_request(self):
         json_data = {
+            "url" : "https://test.com",
             "text" : "<html></html>",
             "request" : {
                 "url" : "https://page-request.com",

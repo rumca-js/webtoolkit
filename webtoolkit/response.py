@@ -510,7 +510,7 @@ def response_to_json(response, with_streams=False):
             HTTP_STATUS_CODE_EXCEPTION
         )
 
-        response_data["request"] = request_to_json(response.request)
+    response_data["request"] = request_to_json(response.request)
 
     return response_data
 
