@@ -516,6 +516,9 @@ def response_to_json(response, with_streams=False):
 
 
 def json_to_response(json_data, with_streams=False):
+    if not json_data:
+        return
+
     url = json_data.get("url")
     request_url = json_data.get("request_url")
     streams = json_data.get("streams")
