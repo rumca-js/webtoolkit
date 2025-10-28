@@ -9,11 +9,13 @@ class RemoteUrl(ContentInterface):
         self.server = RemoteServer(remote_server_location)
         self.all_properties = None
         self.social_properties = None
+        self.responses = None
 
     def get_responses(self):
         if self.all_properties is None:
             self.all_properties = self.server.get_getj(self.url)
 
+        if not self.responses:
             self.responses = {"Default": RemoteServer.get_response(self.all_properties)}
 
         return self.responses
