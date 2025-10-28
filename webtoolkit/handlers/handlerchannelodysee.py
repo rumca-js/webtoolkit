@@ -7,12 +7,11 @@ from .handlerhttppage import HttpPageHandler
 class OdyseeChannelHandler(DefaultChannelHandler):
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )

@@ -11,7 +11,7 @@ class HandlerInterface(DefaultContentPage):
     """
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url,
@@ -22,7 +22,6 @@ class HandlerInterface(DefaultContentPage):
         self.streams = {}
         self.dead = None
         self.code = None  # social media handle, ID of channel, etc.
-        self.settings = settings
         self.request = request
         self.handler = None  # for example rss UrlHandler
         self.url_builder = url_builder

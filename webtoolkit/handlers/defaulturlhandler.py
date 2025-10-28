@@ -10,10 +10,10 @@ class DefaultUrlHandler(HttpPageHandler):
     """ """
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
-            url, settings=settings, request=request, url_builder=url_builder
+            url, request=request, url_builder=url_builder
         )
         self.code = self.input2code(url)
 

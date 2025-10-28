@@ -12,12 +12,11 @@ from .defaulturlhandler import DefaultUrlHandler
 
 class YouTubeVideoHandler(DefaultUrlHandler):
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -132,9 +131,9 @@ class YouTubeVideoHandler(DefaultUrlHandler):
 
 
 class YouTubeHtmlHandler(HtmlPage, YouTubeVideoHandler):
-    def __init__(self, url, settings=None, request=None, url_builder=None):
+    def __init__(self, url, request=None, url_builder=None):
         super().__init__(
-            url, settings=settings, request=request, url_builder=url_builder
+            url, request=request, url_builder=url_builder
         )
 
     def is_valid(self):
@@ -174,12 +173,12 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
     TODO Use if above in youtube.h
     """
 
-    def __init__(self, url, settings=None, request=None, url_builder=None):
+    def __init__(self, url, request=None, url_builder=None):
         """
         TODO We should , most probably call the parnet constructor
         """
         super().__init__(
-            url=url, settings=settings, request=request, url_builder=url_builder
+            url=url, request=request, url_builder=url_builder
         )
 
         self.social_data = {}
@@ -490,7 +489,6 @@ class YouTubeVideoJsonHandler(YouTubeVideoHandler):
         dislike = ReturnDislike(
             video_code=self.get_video_code(),
             url_builder=self.url_builder,
-            settings=self.settings,
         )
         response = dislike.get_response()
         if response is None or not response.is_valid():

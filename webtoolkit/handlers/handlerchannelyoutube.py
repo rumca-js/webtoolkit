@@ -1,4 +1,5 @@
 import traceback
+import copy
 
 from ..response import PageResponseObject
 from ..urllocation import UrlLocation
@@ -14,7 +15,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
     """
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         self.html_url = None  # channel html page contains useful info
         self.rss_url = None
@@ -23,7 +24,6 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         super().__init__(
             url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -206,8 +206,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
     def get_html_url(self):
         if False:
             # TODO disabled
-            crawler_name = self.settings.get("name")
-            self.html_url = self.get_page_url(self.url, crawler_name=crawler_name)
+            self.html_url = self.get_page_url(self.url)
             self.html_url.get_response()
             return self.html_url
 
@@ -274,7 +273,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
     def get_json_data(self):
         entries = self.get_entries()
         for entry in entries:
-            u = self.url_builder(url=entry["link"], settings=self.settings)
+            u = self.get_page_url(entry["link"])
             u.get_response()
             h = u.get_handler()
             if h:

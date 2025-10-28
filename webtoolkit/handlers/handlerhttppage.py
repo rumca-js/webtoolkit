@@ -26,12 +26,11 @@ from .handlerinterface import HandlerInterface
 
 class HttpPageHandler(HandlerInterface):
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -90,7 +89,7 @@ class HttpPageHandler(HandlerInterface):
         if self.is_handled_by():
             if not dap.is_media():
                 builder = HttpRequestBuilder(
-                    url=url, settings=self.settings, request=self.request
+                    url=url, request=self.request
                 )
                 self.response = builder.get_response()
 
@@ -275,7 +274,7 @@ class HttpRequestBuilder(object):
     Should not contain any HTML/RSS content processing.
     """
 
-    def __init__(self, url=None, settings=None, request=None):
+    def __init__(self, url=None, request=None):
         """
         @param url URL
         @param contents URL page contents
@@ -283,7 +282,6 @@ class HttpRequestBuilder(object):
         """
         self.response = None
         self.url = url
-        self.settings = settings
         self.request = request
         self.errors = []
 

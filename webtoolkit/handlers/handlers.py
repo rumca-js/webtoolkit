@@ -18,7 +18,7 @@ class RedditUrlHandler(DefaultUrlHandler):
     """
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         self.post_id = None
         self.subreddit = None
@@ -27,7 +27,6 @@ class RedditUrlHandler(DefaultUrlHandler):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -70,10 +69,8 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         url_link = self.get_json_url()
         if url_link:
-
-            settings = {}
-            settings["handler_class"] = HttpPageHandler
-            url = self.url_builder(url=url_link, settings=settings)
+            request=copy.copy(self.request)
+            url = self.url_builder(url=url_link, request=request)
             contents = url.get_contents()
 
             if contents:
@@ -164,14 +161,13 @@ class RedditUrlHandler(DefaultUrlHandler):
 class GitHubUrlHandler(DefaultUrlHandler):
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         self.social_data = {}
 
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -236,9 +232,7 @@ class GitHubUrlHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            settings = {}
-            settings["handler_class"] = HttpPageHandler
-            url = self.url_builder(url=url_link, settings=settings)
+            url = self.get_page_url(url_link)
             contents = url.get_contents()
 
             if contents:
@@ -276,7 +270,6 @@ class ReturnDislike(DefaultUrlHandler):
         video_code=None,
         url=None,
         contents=None,
-        settings=None,
         request=None,
         url_builder=None,
     ):
@@ -288,7 +281,6 @@ class ReturnDislike(DefaultUrlHandler):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -345,13 +337,12 @@ class ReturnDislike(DefaultUrlHandler):
 class HackerNewsHandler(DefaultUrlHandler):
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         self.social_data = {}
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -391,9 +382,7 @@ class HackerNewsHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            settings = {}
-            settings["handler_class"] = HttpPageHandler
-            url = self.url_builder(url=url_link, settings=settings)
+            url = self.get_page_url(url_link)
             contents = url.get_contents()
 
             if contents:
@@ -427,9 +416,9 @@ class HackerNewsHandler(DefaultUrlHandler):
 
 
 class InternetArchive(DefaultUrlHandler):
-    def __init__(self, url, settings=None, request=None, url_builder=None):
+    def __init__(self, url, request=None, url_builder=None):
         super().__init__(
-            url=url, settings=settings, request=request, url_builder=url_builder
+            url=url, request=request, url_builder=url_builder
         )
 
     def is_handled_by(self):
@@ -448,12 +437,11 @@ class InternetArchive(DefaultUrlHandler):
 
 class FourChanChannelHandler(DefaultChannelHandler):
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
@@ -497,12 +485,11 @@ class FourChanChannelHandler(DefaultChannelHandler):
 class TwitterUrlHandler(DefaultUrlHandler):
 
     def __init__(
-        self, url=None, contents=None, settings=None, request=None, url_builder=None
+        self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
             url=url,
             contents=contents,
-            settings=settings,
             request=request,
             url_builder=url_builder,
         )
