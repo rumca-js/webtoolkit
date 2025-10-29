@@ -25,6 +25,9 @@ from .handlerinterface import HandlerInterface
 
 
 class HttpPageHandler(HandlerInterface):
+    """
+    Just generic HTTP handler
+    """
     def __init__(
         self, url=None, contents=None, request=None, url_builder=None
     ):
@@ -44,18 +47,6 @@ class HttpPageHandler(HandlerInterface):
             return True
 
         return False
-
-    def get_contents(self):
-        """
-        Obtains only contents
-        """
-        if self.response and self.response.get_text():
-            return self.response.get_text()
-
-        self.get_response_implementation()
-
-        if self.response and self.response.get_text():
-            return self.response.get_text()
 
     def get_response(self):
         """
@@ -95,6 +86,18 @@ class HttpPageHandler(HandlerInterface):
 
                 if not self.response:
                     return
+
+    def get_contents(self):
+        """
+        Obtains only contents
+        """
+        if self.response and self.response.get_text():
+            return self.response.get_text()
+
+        self.get_response_implementation()
+
+        if self.response and self.response.get_text():
+            return self.response.get_text()
 
     def get_page_handler(self):
         """
@@ -368,6 +371,15 @@ class HttpRequestBuilder(object):
         if response:
             return response
 
+        response = PageResponseObject(
+            self.url,
+            text=None,
+            status_code=HTTP_STATUS_CODE_SERVER_ERROR,
+            request_url=self.url,
+        )
+
+        response.errors.append("Url:{} No response from crawler".format(self.url))
+
         self.dead = True
-        self.errors.append("Url:{} No response from crawler".format(self.url))
-        return self.response
+
+        return response

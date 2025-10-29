@@ -222,22 +222,15 @@ class RemoteServer(object):
         if not all_properties:
             return
 
-        properties = RemoteServer.read_properties_section("Properties", all_properties)
-
-        if not properties:
-            return
-
-        if "link" not in properties:
-            return
-
         response_data = RemoteServer.read_properties_section("Response", all_properties)
-
         if not response_data:
             return
 
-        streams = RemoteServer.read_properties_section("Streams", all_properties)
-
         response = json_to_response(response_data)
+        if not response:
+            return
+
+        streams = RemoteServer.read_properties_section("Streams", all_properties)
 
         if streams and "Text" in streams:
             response.text = streams["Text"]
@@ -249,8 +242,6 @@ class RemoteServer(object):
             for item in streams:
                 if item != "Binary":
                     response.text = streams[item]
-
-        url = properties["link"]
 
         return response
 

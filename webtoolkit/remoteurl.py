@@ -3,13 +3,17 @@ from .remoteserver import RemoteServer
 
 
 class RemoteUrl(ContentInterface):
-    def __init__(self, url, remote_server_location=None):
+    def __init__(self, url=None, remote_server_location=None, all_properties=None, social_properties=None):
         super().__init__(url=url, contents=None)
         self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server_location)
-        self.all_properties = None
-        self.social_properties = None
+
+        self.all_properties = all_properties
+        self.social_properties = social_properties
+
         self.responses = None
+        if self.all_properties:
+            self.get_responses()
 
     def get_responses(self):
         if self.all_properties is None:

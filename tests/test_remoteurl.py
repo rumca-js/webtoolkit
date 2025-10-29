@@ -5,9 +5,51 @@ from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCount
 from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
 
 
+all_properties = [
+   {
+       "data" : {},
+       "name" : "Properties",
+   },
+   {
+       "data" : {},
+       "name" : "Text",
+   },
+   {
+       "data" : {},
+       "name" : "Streams",
+   },
+   {
+       "data" : {
+           "crawler_name" : "Fake Properties Crawler1",
+           },
+       "name" : "Request",
+   },
+   {
+       "data" : {
+           "status_code" : 200,
+           "request" : {
+               "url": "https://example.com",
+               "crawler_name" : "Fake Properties Crawler2",
+           }
+       },
+       "name" : "Response",
+   },
+]
+
+
 class UrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
+
+    def test_constructor__all_properties(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        response = u.get_response()
+
+        self.assertTrue(response)
+        self.assertEqual(response.get_status_code(), 200)
+        self.assertTrue(response.request)
+        self.assertEqual(response.request.crawler_name, "Fake Properties Crawler2")
 
     def test_get_response(self):
         u = RemoteUrl("https://linkedin.com")
@@ -51,3 +93,4 @@ class UrlTest(FakeInternetTestCase):
         feeds = u.get_feeds()
 
         self.assertTrue(len(feeds) > 0)
+

@@ -32,7 +32,6 @@ HTTP_STATUS_SERVICE_UNAVAILABLE = 503           # Server temporarily overloaded 
 HTTP_STATUS_GATEWAY_TIMEOUT = 504               # Upstream server timeout
 
 # Non-standard / NGINX-specific (unofficial)
-HTTP_STATUS_SSL_CERTIFICATE_ERROR = 495         # SSL Certificate Error (used by NGINX)
 HTTP_STATUS_SSL_HANDSHAKE_FAILED = 496          # SSL Handshake Failed (NGINX)
 HTTP_STATUS_CLIENT_CLOSED_REQUEST = 499         # Client closed request before server response (NGINX)
 
@@ -131,3 +130,28 @@ def is_status_code_invalid(status_code):
 
     if status_code >= 400:
         return True
+
+
+def is_status_code_uncertain(status_code):
+    """
+    Uncertain in a way that we do not know if page is valid, invalid.
+    Maybe it is valid with other use agent, etc.
+    """
+    if status_code == HTTP_STATUS_USER_AGENT:
+        return True
+
+    if status_code == HTTP_STATUS_CODE_SERVER_ERROR:
+        #server error might be on one crawler, but does not have to be in another
+        return True
+
+    if status_code == HTTP_STATUS_CODE_EXCEPTION:
+        #server error might be on one crawler, but does not have to be in another
+        return True
+
+    if status_code == HTTP_STATUS_TOO_MANY_REQUESTS:
+        return True
+
+    if status_code == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
+        return True
+
+    return False
