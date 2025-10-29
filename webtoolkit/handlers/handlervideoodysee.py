@@ -4,9 +4,9 @@ from .handlerhttppage import HttpPageHandler
 
 
 class OdyseeVideoHandler(DefaultUrlHandler):
-    def __init__(self, url=None, contents=None, settings=None, url_builder=None):
+    def __init__(self, url=None, contents=None, url_builder=None):
         super().__init__(
-            url, contents=contents, settings=settings, url_builder=url_builder
+            url, contents=contents, url_builder=url_builder
         )
         self.channel = None
         self.video = None
@@ -86,23 +86,6 @@ class OdyseeVideoHandler(DefaultUrlHandler):
 
     def get_link_embed(self):
         return "https://odysee.com/$/embed/{0}".format(self.get_video_code())
-
-    def get_response(self):
-
-        if self.response:
-            return self.response
-
-        if self.dead:
-            return
-
-        settings = {}
-        settings["handler_class"] = HttpPageHandler
-
-        self.handler = self.url_builder(self.url, settings=settings)
-        self.response = self.handler.get_response()
-
-        if self.response:
-            return self.response
 
     def get_feeds(self):
         from .handlerchannelodysee import OdyseeChannelHandler
