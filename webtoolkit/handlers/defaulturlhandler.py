@@ -13,9 +13,9 @@ class DefaultUrlHandler(HttpPageHandler):
         self, url=None, contents=None, request=None, url_builder=None
     ):
         super().__init__(
-            url, request=request, url_builder=url_builder
+            url=url, request=request, url_builder=url_builder
         )
-        self.code = self.input2code(url)
+        self.code = self.input2code(self.url)
 
     def get_page_url(self, url, crawler_name=None):
         """

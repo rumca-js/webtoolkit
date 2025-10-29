@@ -20,6 +20,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         self.html_url = None  # channel html page contains useful info
         self.rss_url = None
         self.social_data = {}
+        self.user_name = None
 
         super().__init__(
             url,
@@ -97,16 +98,37 @@ class YouTubeChannelHandler(DefaultChannelHandler):
             return None
 
         if self.is_channel_name():
-            return self.input2code_handle(url)
-        if url.find("www.youtube.com/user") >= 0:
-            return self.input2code_handle(url)
+            self.user_name = self.input2code_handle(url)
+            return
         if url.find("/channel/") >= 0:
             return self.input2code_channel(url)
         if url.find("/feeds/") >= 0:
             return self.input2code_feeds(url)
 
     def input2code_handle(self, url):
-        raise IOError("Not supported")
+        wh = url.find("?") 
+        if wh >= 0:
+            url = url[:wh]
+
+        wh1 = url.find("www.youtube.com/user")
+        if wh1 >= 0:
+            start = wh1 + len("www.youtube.com/user") + 1
+            wh2 = url.find("/", start)
+            wh3 = url.find("/", wh2 + 1)
+            if wh3 == -1:
+                return url[start:]
+            else:
+                return url[start:wh3]
+
+        wh1 = url.find("www.youtube.com/@")
+        if wh1 >= 0:
+            start = wh1 + len("www.youtube.com/user") + 1
+            wh2 = url.find("/", start)
+            wh3 = url.find("/", wh2 + 1)
+            if wh3 == -1:
+                return url[start:]
+            else:
+                return url[start:wh3]
 
     def input2code_channel(self, url):
         wh = url.rfind("/")

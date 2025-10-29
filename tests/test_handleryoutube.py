@@ -118,8 +118,9 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
     def test_get_response(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.youtube.com/watch?v=123"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         response = handler.get_response()
@@ -130,21 +131,22 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
     def test_get_contents_hash(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.youtube.com/watch?v=123"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         hash = handler.get_contents_hash()
 
         self.assertTrue(hash)
-        # +1 for yt-flp +1 for return dislike
-        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_contents_body_hash(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.youtube.com/watch?v=123"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         hash = handler.get_contents_body_hash()
@@ -154,45 +156,28 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
     def test_get_contents(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.youtube.com/watch?v=123"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(test_link, request=request,url_builder=MockUrl)
 
         # call tested function
         contents = handler.get_contents()
 
         self.assertTrue(contents)
-        # +1 yt-dlp +1 return dislike
-        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_response(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.youtube.com/watch?v=123"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         response = handler.get_response()
 
         self.assertTrue(response)
-        # +1 yt-dlp +1 return dislike
-        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
-
-    def test_get_date_published(self):
-        MockRequestCounter.mock_page_requests = 0
-        test_link = "https://www.youtube.com/watch?v=archived"
-
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
-
-        response = handler.get_response()
-        # call tested function
-        date = handler.get_date_published()
-
-        expected_date_published = DateUtils.from_string("2023-11-13;00:00", "%Y-%m-%d;%H:%M")
-        expected_date_published = DateUtils.to_utc_date(expected_date_published)
-
-        self.assertEqual(date, expected_date_published)
-        # +1 for yt-dlp +1 for return dislike
-        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_social_data__none(self):
         MockRequestCounter.mock_page_requests = 0
@@ -349,8 +334,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
     def test_get_response(self):
         MockRequestCounter.mock_page_requests = 0
 
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = MockUrl(test_link).get_init_request()
+
         handler = YouTubeChannelHandler(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
+            url = test_link,
+            request=request,
             url_builder=MockUrl
         )
 
@@ -363,8 +352,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents_hash(self):
         MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = MockUrl(test_link).get_init_request()
+
         handler = YouTubeChannelHandler(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
+            request=request,
             url_builder=MockUrl
         )
 
@@ -376,8 +369,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents_body_hash(self):
         MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = MockUrl(test_link).get_init_request()
+
         handler = YouTubeChannelHandler(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
+            request=request,
             url_builder=MockUrl
         )
 
@@ -389,10 +386,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents(self):
         MockRequestCounter.mock_page_requests = 0
+
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = MockUrl(test_link).get_init_request()
 
         handler = YouTubeChannelHandler(
-            test_link,
+            request=request,
             url_builder=MockUrl
         )
 
@@ -404,10 +403,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_response(self):
         MockRequestCounter.mock_page_requests = 0
+
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = MockUrl(test_link).get_init_request()
 
         handler = YouTubeChannelHandler(
-            test_link,
+            request=request,
             url_builder=MockUrl
         )
 
@@ -420,8 +421,10 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
     def test_get_feeds__from_rss(self):
         MockRequestCounter.mock_page_requests = 0
 
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+
         handler = YouTubeChannelHandler(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+            url = test_link
         )
 
         # call tested function

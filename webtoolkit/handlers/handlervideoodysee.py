@@ -4,9 +4,9 @@ from .handlerhttppage import HttpPageHandler
 
 
 class OdyseeVideoHandler(DefaultUrlHandler):
-    def __init__(self, url=None, contents=None, url_builder=None):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
-            url, contents=contents, url_builder=url_builder
+            url, contents=contents, request=request, url_builder=url_builder
         )
         self.channel = None
         self.video = None

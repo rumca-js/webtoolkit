@@ -1,6 +1,7 @@
 from webtoolkit import (
    OdyseeVideoHandler,
    OdyseeChannelHandler,
+   PageRequestObject,
 )
 
 from webtoolkit.tests.mocks import MockUrl
@@ -77,7 +78,9 @@ class OdyseeVideoHandlerTest(FakeInternetTestCase):
     def test_get_contents_hash(self):
         test_link = "https://odysee.com/ridiculous-zendesk-vulnerability-causes:01c863c36e86789070adf02eaa5c0778975507d5"
 
-        handler = OdyseeVideoHandler(test_link, url_builder=MockUrl)
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         handler.get_response()
 
@@ -88,10 +91,12 @@ class OdyseeVideoHandlerTest(FakeInternetTestCase):
 
     def test_get_contents_body_hash(self):
         test_link = "https://odysee.com/ridiculous-zendesk-vulnerability-causes:01c863c36e86789070adf02eaa5c0778975507d5"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = OdyseeVideoHandler(test_link, url_builder=MockUrl)
+        handler = OdyseeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
-        handler.get_response()
+        response = handler.get_response()
+        self.assertTrue(response)
 
         # call tested function
         hash = handler.get_contents_body_hash()
@@ -100,8 +105,9 @@ class OdyseeVideoHandlerTest(FakeInternetTestCase):
 
     def test_get_response(self):
         test_link = "https://odysee.com/ridiculous-zendesk-vulnerability-causes:01c863c36e86789070adf02eaa5c0778975507d5"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = OdyseeVideoHandler(test_link, url_builder=MockUrl)
+        handler = OdyseeVideoHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         response = handler.get_response()
@@ -190,7 +196,11 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents_hash(self):
         MockRequestCounter.mock_page_requests = 0
-        handler = OdyseeChannelHandler("https://odysee.com/@samtime:1?test", url_builder=MockUrl)
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         hash = handler.get_contents_hash()
@@ -200,7 +210,11 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents_body_hash(self):
         MockRequestCounter.mock_page_requests = 0
-        handler = OdyseeChannelHandler("https://odysee.com/@samtime:1?test", url_builder=MockUrl)
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         hash = handler.get_contents_body_hash()
@@ -210,7 +224,11 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_contents(self):
         MockRequestCounter.mock_page_requests = 0
-        handler = OdyseeChannelHandler("https://odysee.com/@samtime:1?test", url_builder=MockUrl)
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         contents = handler.get_contents()
@@ -220,7 +238,11 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
 
     def test_get_response(self):
         MockRequestCounter.mock_page_requests = 0
-        handler = OdyseeChannelHandler("https://odysee.com/@samtime:1?test", url_builder=MockUrl)
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         response = handler.get_response()

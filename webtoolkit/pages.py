@@ -1231,7 +1231,7 @@ class HtmlPage(ContentInterface):
         body = self.get_body_text()
 
         if body == "":
-            return
+            return calculate_hash(body)
         elif body:
             return calculate_hash(body)
         else:

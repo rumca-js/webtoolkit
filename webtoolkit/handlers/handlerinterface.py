@@ -13,8 +13,11 @@ class HandlerInterface(DefaultContentPage):
     def __init__(
         self, url=None, contents=None, request=None, url_builder=None
     ):
+        if request and not url:
+            url = request.url
+
         super().__init__(
-            url,
+            url=url,
             contents=contents,
         )
         self.h = None

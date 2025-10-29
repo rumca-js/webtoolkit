@@ -42,10 +42,10 @@ class MockRequestCounter(object):
 
 
 class MockUrl(object):
-    def __init__(self, url=None, settings=None, request=None, url_builder=None):
+    def __init__(self, url=None, request=None, url_builder=None):
         self.url = url
-        self.settings = settings
         self.request = request
+        self.response = None
         self.url_builder = url_builder
 
     def get_init_settings(self):
@@ -67,9 +67,15 @@ class MockUrl(object):
         return ""
 
     def get_response(self):
+        if self.response:
+            return self.response
+
         headers = {}
         timeout_s = 20
         self.response = TestResponseObject(self.url, headers, timeout_s)
+
+        MockRequestCounter.requested(self.url, crawler_data=self.request)
+
         return self.response
 
     def get_streams(self):
