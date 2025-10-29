@@ -69,8 +69,7 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         url_link = self.get_json_url()
         if url_link:
-            request=copy.copy(self.request)
-            url = self.url_builder(url=url_link, request=request)
+            url=self.get_page_url(url_link)
             contents = url.get_contents()
 
             if contents:
