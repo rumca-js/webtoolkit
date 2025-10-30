@@ -1,6 +1,7 @@
 """
 """
-#fmt: off
+
+# fmt: off
 
 HTTP_STATUS_UNKNOWN = 0
 
@@ -88,7 +89,7 @@ def status_code_to_text(status_code):
     }
 
     return status_texts.get(status_code, f"STATUS_CODE({status_code})")
-#fmt: on
+# fmt: on
 
 
 def is_status_code_valid(status_code):
@@ -141,11 +142,11 @@ def is_status_code_uncertain(status_code):
         return True
 
     if status_code == HTTP_STATUS_CODE_SERVER_ERROR:
-        #server error might be on one crawler, but does not have to be in another
+        # server error might be on one crawler, but does not have to be in another
         return True
 
     if status_code == HTTP_STATUS_CODE_EXCEPTION:
-        #server error might be on one crawler, but does not have to be in another
+        # server error might be on one crawler, but does not have to be in another
         return True
 
     if status_code == HTTP_STATUS_TOO_MANY_REQUESTS:

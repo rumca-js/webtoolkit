@@ -28,9 +28,8 @@ class HttpPageHandler(HandlerInterface):
     """
     Just generic HTTP handler
     """
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
             url=url,
             contents=contents,
@@ -79,9 +78,7 @@ class HttpPageHandler(HandlerInterface):
 
         if self.is_handled_by():
             if not dap.is_media():
-                builder = HttpRequestBuilder(
-                    url=url, request=self.request
-                )
+                builder = HttpRequestBuilder(url=url, request=self.request)
                 self.response = builder.get_response()
 
                 if not self.response:

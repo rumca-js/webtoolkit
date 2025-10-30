@@ -9,12 +9,8 @@ from .handlerhttppage import HttpPageHandler
 class DefaultUrlHandler(HttpPageHandler):
     """ """
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
-        super().__init__(
-            url=url, request=request, url_builder=url_builder
-        )
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
+        super().__init__(url=url, request=request, url_builder=url_builder)
         self.code = self.input2code(self.url)
 
     def get_page_url(self, url, crawler_name=None):

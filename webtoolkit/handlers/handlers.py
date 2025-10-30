@@ -17,9 +17,7 @@ class RedditUrlHandler(DefaultUrlHandler):
     Maybe we could use python redditapi
     """
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.post_id = None
         self.subreddit = None
         self.social_data = {}
@@ -69,7 +67,7 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         url_link = self.get_json_url()
         if url_link:
-            url=self.get_page_url(url_link)
+            url = self.get_page_url(url_link)
             contents = url.get_contents()
 
             if contents:
@@ -159,9 +157,7 @@ class RedditUrlHandler(DefaultUrlHandler):
 
 class GitHubUrlHandler(DefaultUrlHandler):
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.social_data = {}
 
         super().__init__(
@@ -335,9 +331,7 @@ class ReturnDislike(DefaultUrlHandler):
 
 class HackerNewsHandler(DefaultUrlHandler):
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.social_data = {}
         super().__init__(
             url=url,
@@ -416,9 +410,7 @@ class HackerNewsHandler(DefaultUrlHandler):
 
 class InternetArchive(DefaultUrlHandler):
     def __init__(self, url, request=None, url_builder=None):
-        super().__init__(
-            url=url, request=request, url_builder=url_builder
-        )
+        super().__init__(url=url, request=request, url_builder=url_builder)
 
     def is_handled_by(self):
         p = UrlLocation(self.url)
@@ -435,9 +427,7 @@ class InternetArchive(DefaultUrlHandler):
 
 
 class FourChanChannelHandler(DefaultChannelHandler):
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
             url=url,
             contents=contents,
@@ -471,21 +461,19 @@ class FourChanChannelHandler(DefaultChannelHandler):
 
     def get_feeds(self):
         """
-        even for post, or individual videos we might request feed url
+        4chan RSS support does not seem to work any more
         """
         feeds = super().get_feeds()
 
-        if self.code:
-            feeds.append("https://boards.4chan.org/{}/index.rss".format(self.code))
+        # if self.code:
+        #    feeds.append("https://boards.4chan.org/{}/index.rss".format(self.code))
 
         return feeds
 
 
 class TwitterUrlHandler(DefaultUrlHandler):
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
             url=url,
             contents=contents,

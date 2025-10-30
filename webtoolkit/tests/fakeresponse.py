@@ -902,6 +902,7 @@ class FlaskRequest(object):
     """
     Used to mock flask requests
     """
+
     def __init__(self, host):
         self.host = host
         self.args = FlaskArgs()

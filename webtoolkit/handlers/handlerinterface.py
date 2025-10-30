@@ -10,9 +10,7 @@ class HandlerInterface(DefaultContentPage):
     this allows us to provide interface
     """
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         if request and not url:
             url = request.url
 

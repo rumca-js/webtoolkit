@@ -14,13 +14,15 @@ class YouTubeChannelHandler(DefaultChannelHandler):
     Natively since we inherit RssPage, the contents should be RssPage
     """
 
-    def __init__(
-        self, url=None, contents=None, request=None, url_builder=None
-    ):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.html_url = None  # channel html page contains useful info
         self.rss_url = None
         self.social_data = {}
         self.user_name = None
+
+        if request:
+            request.cookies = {}
+            request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
 
         super().__init__(
             url,
@@ -106,7 +108,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
             return self.input2code_feeds(url)
 
     def input2code_handle(self, url):
-        wh = url.find("?") 
+        wh = url.find("?")
         if wh >= 0:
             url = url[:wh]
 
@@ -183,16 +185,11 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         rss_url = self.get_rss_url()
         if rss_url:
             self.response = rss_url.get_response()
+        html_url = self.get_html_url()
+        if html_url:
+            self.html_response = html_url.get_response()
 
-        if (
-            not self.response
-            or self.response.status_code == PageResponseObject.STATUS_CODE_ERROR
-        ):
-            self.dead = True
-
-        if self.response:
-            self.contents = self.response.get_text()
-            return self.response
+        return self.response
 
     def get_rss_url(self):
         if self.rss_url:
@@ -226,11 +223,9 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         return self.streams
 
     def get_html_url(self):
-        if False:
-            # TODO disabled
-            self.html_url = self.get_page_url(self.url)
-            self.html_url.get_response()
-            return self.html_url
+        self.html_url = self.get_page_url(self.url)
+        self.html_url.get_response()
+        return self.html_url
 
     def get_entries(self):
         rss_url = self.get_rss_url()
