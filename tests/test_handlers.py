@@ -17,8 +17,9 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
 
     def test_constructor(self):
         test_link = "https://www.reddit.com/r/redditdev/comments/1hw8p3j/i_used_the_reddit_api_to_save_myself_time_with_my/"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = RedditUrlHandler(test_link, url_builder=MockUrl)
+        handler = RedditUrlHandler(test_link, request=request,url_builder=MockUrl)
 
         data = handler.get_json_data()
 
@@ -28,16 +29,18 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
 
     def test_input2code(self):
         test_link = "https://www.reddit.com/r/CursedAI"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = RedditUrlHandler(test_link, url_builder=MockUrl)
+        handler = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertEqual("CursedAI", handler.subreddit)
 
     def test_get_feeds__channel(self):
         test_link = "https://www.reddit.com/r/CursedAI"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = RedditUrlHandler(test_link, url_builder=MockUrl)
+        handler = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         feeds = handler.get_feeds()
@@ -46,8 +49,9 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
 
     def test_get_feeds__comments(self):
         test_link = "https://www.reddit.com/r/redditdev/comments/1hw8p3j/i_used_the_reddit_api_to_save_myself_time_with_my"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = RedditUrlHandler(test_link, url_builder=MockUrl)
+        handler = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         feeds = handler.get_feeds()
@@ -58,8 +62,9 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/redditdev/comments/1hw8p3j/i_used_the_reddit_api_to_save_myself_time_with_my/"
+        request = MockUrl(test_link).get_init_request()
 
-        url = RedditUrlHandler(test_link, url_builder=MockUrl)
+        url = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         properties = url.get_json_data()
@@ -73,8 +78,9 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/InternetIsBeautiful"
+        request = MockUrl(test_link).get_init_request()
 
-        url = RedditUrlHandler(test_link, url_builder=MockUrl)
+        url = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         properties = url.get_json_data()
@@ -91,24 +97,27 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
     def test_is_handled_by__repository(self):
         test_link = "https://github.com/rumca-js/Django-link-archive/commits.atom"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertTrue(handler.is_handled_by())
 
     def test_is_handled_by__api(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link,request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertTrue(handler.is_handled_by())
 
     def test_input2code__repository(self):
         test_link = "https://github.com/rumca-js/Django-link-archive/commits.atom"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertIn("Django-link-archive", handler.input2code(test_link))
@@ -116,8 +125,9 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
     def test_input2code__api(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertIn("Django-link-archive", handler.input2code(test_link))
@@ -125,8 +135,9 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
     def test_get_feeds(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         feeds = handler.get_feeds()
@@ -135,8 +146,9 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
     def test_get_json_url(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         url = handler.get_json_url()
@@ -145,8 +157,9 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
     def test_get_json_data(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = GitHubUrlHandler(test_link, url_builder=MockUrl)
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         data = handler.get_json_data()
@@ -160,8 +173,9 @@ class HackerNewsHandlerTest(FakeInternetTestCase):
 
     def test_constructor(self):
         test_link = "https://news.ycombinator.com/item?id=42728015"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = HackerNewsHandler(test_link, url_builder=MockUrl)
+        handler = HackerNewsHandler(test_link, request=request, url_builder=MockUrl)
 
         data = handler.get_json_data()
         self.assertEqual(handler.get_json_url(), "https://hacker-news.firebaseio.com/v0/item/42728015.json?print=pretty")
@@ -175,16 +189,18 @@ class TwitterUrlHandlerTest(FakeInternetTestCase):
 
     def test_is_handled_by(self):
         test_link = "https://x.com/RockstarGames?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = TwitterUrlHandler(test_link, url_builder=MockUrl)
+        handler = TwitterUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertTrue(handler.is_handled_by())
 
     def test_url(self):
         test_link = "https://x.com/RockstarGames?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = TwitterUrlHandler(test_link)
+        handler = TwitterUrlHandler(test_link, request=request, url_builder=MockUrl)
 
         expected_link = "https://x.com/RockstarGames"
 
@@ -198,16 +214,18 @@ class FourChanChannelHandlerTest(FakeInternetTestCase):
 
     def test_input2code(self):
         test_link = "https://4chan.org/test/"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = FourChanChannelHandler(test_link, url_builder=MockUrl)
+        handler = FourChanChannelHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         self.assertEqual("test", handler.code)
 
     def test_get_feeds(self):
         test_link = "https://4chan.org/test/"
+        request = MockUrl(test_link).get_init_request()
 
-        handler = FourChanChannelHandler(test_link, url_builder=MockUrl)
+        handler = FourChanChannelHandler(test_link, request=request, url_builder=MockUrl)
 
         # call tested function
         # self.assertEqual(["https://boards.4chan.org/test/index.rss"], handler.get_feeds())

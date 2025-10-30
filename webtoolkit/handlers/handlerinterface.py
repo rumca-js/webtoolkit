@@ -163,8 +163,10 @@ class HandlerInterface(DefaultContentPage):
 
         if thumbs_up is not None and thumbs_down is not None:
             all = thumbs_down + thumbs_up
-
-            return thumbs_up / all
+            if all != 0:
+                return thumbs_up / all
+            else:
+                return 0
 
     def get_upvote_diff(self):
         thumbs_up = self.get_thumbs_up()
