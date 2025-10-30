@@ -31,6 +31,7 @@ class PageRequestObject(object):
         accept_types=None,
         bytes_limit=None,
         settings=None,
+        cookies=None,
         crawler_name=None,
         crawler_type=None,
         handler_type=None,
@@ -46,12 +47,15 @@ class PageRequestObject(object):
         self.accept_types = accept_types
         self.bytes_limit = bytes_limit
         self.settings = settings
+        self.cookies = cookies
         self.crawler_name = crawler_name
         self.crawler_type = crawler_type
         self.handler_type = handler_type
 
         if not self.settings:
             self.settings = {}
+        if not self.cookies:
+            self.cookies = []
 
     def __str__(self):
         string = ""
@@ -102,6 +106,8 @@ def request_to_json(request):
         json["bytes_limit"] = request.bytes_limit
     if len(request.settings) > 0:
         json["settings"] = request.settings
+    if len(request.cookies) > 0:
+        json["cookies"] = request.cookies
     if request.crawler_name:
         json["crawler_name"] = request.crawler_name
     if request.crawler_type:
@@ -141,6 +147,7 @@ def json_to_request(json_data):
     if request.bytes_limit is not None:
         request.bytes_limit = int(request.bytes_limit)
     request.settings = json_data.get("settings")
+    request.cookies = json_data.get("cookies")
     request.crawler_name = json_data.get("crawler_name")
     request.crawler_type = json_data.get("crawler_type")
     request.handler_type = json_data.get("handler_type")
