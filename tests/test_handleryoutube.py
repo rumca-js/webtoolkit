@@ -271,6 +271,22 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
         self.assertTrue(handler.is_handled_by())
 
+    def test_is_handled_by__a(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/@1234"
+        # call tested function
+        handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+        self.assertTrue(handler.is_handled_by())
+
+    def test_user_name(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/@1234"
+        # call tested function
+        handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+        self.assertEqual(handler.user_name, "1234")
+
     def test_is_handled_by__feed(self):
         MockRequestCounter.mock_page_requests = 0
 

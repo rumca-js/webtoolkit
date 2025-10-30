@@ -84,6 +84,9 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         return "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(code)
 
     def get_feeds(self):
+        if not self.code:
+            return []
+
         feeds = super().get_feeds()
         if self.code:
             feeds.append(
@@ -112,25 +115,23 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         if wh >= 0:
             url = url[:wh]
 
-        wh1 = url.find("www.youtube.com/user")
+        wh1 = url.find("youtube.com/user")
         if wh1 >= 0:
-            start = wh1 + len("www.youtube.com/user") + 1
-            wh2 = url.find("/", start)
-            wh3 = url.find("/", wh2 + 1)
-            if wh3 == -1:
-                return url[start:]
+            start = wh1 + len("youtube.com/user") + 1
+            wh2 = url.find("/", start+1)
+            if wh2 == -1:
+                return url[start-1:]
             else:
-                return url[start:wh3]
+                return url[start-1:wh2]
 
-        wh1 = url.find("www.youtube.com/@")
+        wh1 = url.find("youtube.com/@")
         if wh1 >= 0:
-            start = wh1 + len("www.youtube.com/user") + 1
-            wh2 = url.find("/", start)
-            wh3 = url.find("/", wh2 + 1)
-            if wh3 == -1:
-                return url[start:]
+            start = wh1 + len("youtube.com/@") + 1
+            wh2 = url.find("/", start + 1)
+            if wh2 == -1:
+                return url[start-1:]
             else:
-                return url[start:wh3]
+                return url[start-1:wh2]
 
     def input2code_channel(self, url):
         wh = url.rfind("/")
@@ -175,6 +176,8 @@ class YouTubeChannelHandler(DefaultChannelHandler):
             return self.response.get_text()
 
     def get_response(self):
+        if not self.code:
+            return
 
         if self.response:
             return self.response
