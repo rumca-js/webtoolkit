@@ -154,6 +154,8 @@ def json_to_request(json_data):
 
     if not request.settings:
         request.settings = {}
+    if not request.cookies:
+        request.cookies = {}
 
     return request
 
