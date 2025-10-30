@@ -26,10 +26,30 @@ class DefaultUrlHandler(HttpPageHandler):
 
         request.url = url
         request.handler_type = HttpPageHandler
-
+        request.crawler_type = None
         if crawler_name:
             request.crawler_name = crawler_name
+
+        if self.url_builder:
+            url = self.url_builder(
+                url=url, request=request, url_builder=self.url_builder
+            )
+            return url
+
+    def build_default_url(self, url, crawler_name=None):
+        """
+        TODO reneme get_page_url to build_http_url
+        """
+        if self.request:
+            request = copy.copy(self.request)
+        else:
+            request = PageRequestObject(url)
+
+        request.url = url
+
         request.crawler_type = None
+        if crawler_name:
+            request.crawler_name = crawler_name
 
         if self.url_builder:
             url = self.url_builder(
