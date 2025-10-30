@@ -55,7 +55,7 @@ class PageRequestObject(object):
         if not self.settings:
             self.settings = {}
         if not self.cookies:
-            self.cookies = []
+            self.cookies = {}
 
     def __str__(self):
         string = ""
