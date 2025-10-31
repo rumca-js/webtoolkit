@@ -32,6 +32,9 @@ class YouTubeChannelHandler(DefaultRssChannelHandler):
             url_builder=url_builder,
         )
 
+        if self.code is None:
+            raise IOError("Could not decode code from url {}".format(url))
+
     def is_handled_by(self):
         if not self.url:
             return False
