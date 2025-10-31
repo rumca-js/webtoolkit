@@ -1107,7 +1107,7 @@ class HtmlPage(ContentInterface):
         props["og_image"] = self.get_og_image()
         # props["is_html"] = self.is_html()
         props["charset"] = self.get_charset()
-        props["rss_urls"] = self.get_rss_urls()
+        props["feeds"] = self.get_feeds()
         # props["status_code"] = self.status_code
 
         # if UrlLocation(self.url).is_domain():
@@ -1115,9 +1115,10 @@ class HtmlPage(ContentInterface):
         #        props["robots_txt_url"] = UrlLocation(self.url).get_robots_txt_url()
         #        props["site_maps_urls"] = self.get_site_maps()
 
-        props["links"] = self.get_links()
-        props["links_inner"] = self.get_links_inner()
-        props["links_outer"] = self.get_links_outer()
+        #props["links"] = self.get_links()
+        #props["links_inner"] = self.get_links_inner()
+        #props["links_outer"] = self.get_links_outer()
+
         props["favicons"] = self.get_favicons()
         props["contents"] = self.get_contents()
         if self.get_contents():

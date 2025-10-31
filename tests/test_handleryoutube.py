@@ -253,7 +253,7 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         self.assertEqual(handler.url, test_link)
 
         # +1 - obtains channel code from HTML
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_is_handled_by__channel(self):
         MockRequestCounter.mock_page_requests = 0

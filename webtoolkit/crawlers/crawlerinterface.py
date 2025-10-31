@@ -39,6 +39,10 @@ class WebToolsTimeoutException(Exception):
 
 
 class CrawlerInterface(object):
+    """
+    Crawler is a tool that allows to obtain contents from the internet.
+    There are various tools.
+    """
     def __init__(self, url=None, request=None):
         """
         @param response_file If set, response is stored in a file

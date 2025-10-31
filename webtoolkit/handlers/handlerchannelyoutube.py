@@ -1,15 +1,15 @@
 import traceback
-import copy
+from concurrent.futures import ThreadPoolExecutor
 
 from ..response import PageResponseObject
 from ..urllocation import UrlLocation
 from ..pages import RssPage
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultChannelHandler
+from .defaulturlhandler import DefaultRssChannelHandler
 from .handlerhttppage import HttpPageHandler
 
 
-class YouTubeChannelHandler(DefaultChannelHandler):
+class YouTubeChannelHandler(DefaultRssChannelHandler):
     """
     Natively since we inherit RssPage, the contents should be RssPage
     """
@@ -19,6 +19,7 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         self.rss_url = None
         self.social_data = {}
         self.user_name = None
+        self.threads = True
 
         if request:
             request.cookies = {}
@@ -30,9 +31,6 @@ class YouTubeChannelHandler(DefaultChannelHandler):
             request=request,
             url_builder=url_builder,
         )
-
-        if url:
-            self.code = self.input2code(url)
 
     def is_handled_by(self):
         if not self.url:
@@ -57,11 +55,11 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         ):
             return True
 
-    def is_channel_name(self):
-        if not self.url:
+    def is_channel_name(self, url):
+        if not url:
             return False
 
-        short_url = UrlLocation(self.url).get_protocolless()
+        short_url = UrlLocation(url).get_protocolless()
 
         if (
             short_url.startswith("www.youtube.com/@")
@@ -102,15 +100,29 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         if wh == -1:
             return None
 
-        if self.is_channel_name():
-            self.user_name = self.input2code_handle(url)
-            return
+        if self.is_channel_name(url):
+            return self.input2code_handle(url)
         if url.find("/channel/") >= 0:
             return self.input2code_channel(url)
         if url.find("/feeds/") >= 0:
             return self.input2code_feeds(url)
 
     def input2code_handle(self, url):
+        page_handler = self.get_page_url(url)
+        response = page_handler.get_response()
+        if not response:
+            return
+
+        props = page_handler.get_properties()
+        if not props:
+            return
+
+        if "feeds" in props:
+            if len(props["feeds"]) > 0:
+                feed = props["feeds"][0]
+                return self.input2code(feed)
+
+    def intpu2handlename(self, url):
         wh = url.find("?")
         if wh >= 0:
             url = url[:wh]
@@ -145,14 +157,6 @@ class YouTubeChannelHandler(DefaultChannelHandler):
     def get_channel_code(self):
         return self.code
 
-    def get_channel_name(self):
-        url = self.get_rss_url()
-        if url:
-            return url.get_title()
-
-    def get_channel_url(self):
-        return self.code2url(self.code)
-
     def get_channel_url(self):
         if self.code:
             return self.code2url(self.code)
@@ -185,33 +189,50 @@ class YouTubeChannelHandler(DefaultChannelHandler):
         if self.dead:
             return
 
-        rss_url = self.get_rss_url()
-        if rss_url:
-            self.response = rss_url.get_response()
-        html_url = self.get_html_url()
-        if html_url:
-            self.html_response = html_url.get_response()
+        if not self.threads:
+            self.rss_url = self.get_rss_url()
+            self.html_url = self.get_html_url()
+
+            if self.rss_url:
+                self.response = self.rss_url.get_response()
+            else:
+                WebLogger.error("Could not obtain RSS")
+            if self.html_url:
+                self.response_html = self.html_url.get_response()
+            else:
+                WebLogger.error("Could not obtain HTML")
+        else:
+            with ThreadPoolExecutor() as executor:
+                thread_result_rss = executor.submit(self.get_rss_url)
+                thread_result_html = executor.submit(self.get_html_url)
+
+                rss_url = thread_result_rss.result()
+                html_url = thread_result_html.result()
+
+                if rss_url:
+                    self.response = rss_url.get_response()
+                else:
+                    WebLogger.error("Could not obtain RSS")
+                if html_url:
+                    self.html_response = html_url.get_response()
+                else:
+                    WebLogger.error("Could not obtain HTML")
 
         return self.response
 
-    def get_rss_url(self):
-        if self.rss_url:
-            return self.rss_url
+    def get_html_url(self):
+        #print("get_html_url")
+        if self.html_url:
+            return self.html_url
 
-        feeds = self.get_feeds()
-        if not feeds or len(feeds) == 0:
-            WebLogger.error(
-                "Url:{} Cannot read YouTube channel feed URL".format(self.url)
-            )
+        self.html_url = self.get_page_url(self.get_channel_url())
+        if not self.html_url:
             return
 
-        feed = feeds[0]
-        if not feed:
-            return
+        self.html_url.get_response()
 
-        self.rss_url = self.get_page_url(feed)
-        self.rss_url.get_response()
-        return self.rss_url
+        #print("get_html_url DONE")
+        return self.html_url
 
     def get_streams(self):
         if self.rss_url:
@@ -224,65 +245,6 @@ class YouTubeChannelHandler(DefaultChannelHandler):
                 self.streams["HTML"] = response.get_text()
 
         return self.streams
-
-    def get_html_url(self):
-        self.html_url = self.get_page_url(self.url)
-        self.html_url.get_response()
-        return self.html_url
-
-    def get_entries(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_entries()
-        else:
-            return []
-
-    def get_title(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_title()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_title()
-
-    def get_description(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_description()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_description()
-
-    def get_language(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_language()
-
-    def get_thumbnail(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            thumbnail = rss_url.get_thumbnail()
-            if thumbnail:
-                return thumbnail
-
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_thumbnail()
-
-    def get_author(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_author()
-
-    def get_album(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_album()
-
-    def get_tags(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_tags()
 
     def get_canonical_url(self):
         if self.url.find("feeds") >= 0:

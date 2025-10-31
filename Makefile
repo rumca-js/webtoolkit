@@ -1,7 +1,10 @@
 .PHONY: test
 
-test:
+test: test-min test-man
+test-min:
 	poetry run python -m unittest discover -v 2>&1 | tee test_output.txt
+test-man:
+	poetry run python manual_test.py
 
 build:
 	poetry build

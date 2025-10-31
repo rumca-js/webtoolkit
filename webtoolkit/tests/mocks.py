@@ -114,6 +114,9 @@ class MockUrl(object):
     def get_status_code(self):
         return 200
 
+    def get_properties(self):
+        return {}
+
 
 class MockCrawler(CrawlerInterface):
 

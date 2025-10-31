@@ -1,10 +1,10 @@
 from ..urllocation import UrlLocation
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultChannelHandler
+from .defaulturlhandler import DefaultRssChannelHandler
 from .handlerhttppage import HttpPageHandler
 
 
-class OdyseeChannelHandler(DefaultChannelHandler):
+class OdyseeChannelHandler(DefaultRssChannelHandler):
 
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
@@ -109,47 +109,3 @@ class OdyseeChannelHandler(DefaultChannelHandler):
 
     def get_channel_feed(self):
         return self.code2feed(self.code)
-
-    def get_entries(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_entries()
-        else:
-            return []
-
-    def get_rss_url(self):
-
-        if self.rss_url:
-            return self.rss_url
-
-        feeds = self.get_feeds()
-        if not feeds or len(feeds) == 0:
-            WebLogger.error(
-                "Url:{} Cannot read YouTube channel feed URL".format(self.url)
-            )
-            return
-
-        feed = feeds[0]
-
-        if not feed:
-            return
-
-        self.rss_url = self.get_page_url(feed)
-        self.rss_url.get_response()
-        return self.rss_url
-
-    def get_response(self):
-        if self.response:
-            return self.response
-
-        if self.dead:
-            return
-
-        self.rss_url = self.get_rss_url()
-        self.response = self.rss_url.get_response()
-        return self.response
-
-    def get_contents(self):
-        response = self.get_response()
-        if response:
-            return response.get_text()

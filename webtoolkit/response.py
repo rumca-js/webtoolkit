@@ -4,6 +4,7 @@
 import html
 import json
 import base64
+from pathlib import Path
 from collections import OrderedDict
 
 from .webtools import (
@@ -402,13 +403,18 @@ class PageResponseObject(object):
 
         status_code_text = status_code_to_text(self.status_code)
 
-        return "PageResponseObject: Url:{} Status code:{} Headers:{} Text:{} Binary:{}".format(
+        text = "PageResponseObject: Url:{} Status code:{} Headers:{} Text:{} Binary:{}".format(
             self.url,
             status_code_text,
             self.headers,
             has_text_data,
             has_binary_data,
         )
+
+        for error in self.errors:
+            text += "\n" + error
+
+        return text
 
     def is_html(self):
         if self.get_content_type() is not None and self.is_content_html():
@@ -566,6 +572,10 @@ def response_to_file(response, file_name):
 
 
 def file_to_response(file_name):
+    path = Path(filename)
+    if not path.exists():
+        return 
+
     with open(file_name, "r") as fh:
         json_text = fh.read()
         json_data = json.loads(json_text)
