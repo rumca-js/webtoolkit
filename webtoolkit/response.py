@@ -509,6 +509,8 @@ def response_to_json(response, with_streams=False):
 
         if with_streams:
             response_data["streams"] = response.get_streams()
+
+        response_data["request"] = request_to_json(response.request)
     else:
         response_data["is_valid"] = False
         response_data["status_code"] = HTTP_STATUS_CODE_EXCEPTION
@@ -516,7 +518,7 @@ def response_to_json(response, with_streams=False):
             HTTP_STATUS_CODE_EXCEPTION
         )
 
-    response_data["request"] = request_to_json(response.request)
+        response_data["request"] = None
 
     return response_data
 
