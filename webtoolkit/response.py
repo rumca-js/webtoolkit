@@ -574,7 +574,7 @@ def response_to_file(response, file_name):
 
 
 def file_to_response(file_name):
-    path = Path(filename)
+    path = Path(file_name)
     if not path.exists():
         return 
 
