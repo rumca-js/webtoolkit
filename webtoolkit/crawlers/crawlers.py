@@ -10,7 +10,6 @@ import threading
 from ..pages import RssPage, HtmlPage
 from ..response import PageResponseObject, file_to_response
 from .crawlerinterface import CrawlerInterface
-from .crawlerinterface import WebToolsTimeoutException
 from ..webconfig import WebLogger
 from ..statuses import (
     HTTP_STATUS_UNKNOWN,
@@ -24,6 +23,7 @@ from ..statuses import (
     HTTP_STATUS_CODE_PAGE_UNSUPPORTED,
     HTTP_STATUS_CODE_SERVER_ERROR,
 )
+from .crawlerinterface import WebToolsTimeoutException
 
 
 class RequestsCrawler(CrawlerInterface):

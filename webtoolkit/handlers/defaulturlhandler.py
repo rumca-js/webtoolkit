@@ -3,6 +3,7 @@ import copy
 from ..utils.dateutils import DateUtils
 from ..pages import DefaultContentPage
 from ..request import PageRequestObject
+from ..webconfig import WebLogger
 from .handlerhttppage import HttpPageHandler
 
 
