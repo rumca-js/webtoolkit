@@ -78,7 +78,7 @@ class HttpPageHandler(HandlerInterface):
 
         if self.is_handled_by():
             if not dap.is_media():
-                builder = HttpRequestBuilder(url=url, request=self.request)
+                builder = CrawlerCaller(url=url, request=self.request)
                 self.response = builder.get_response()
 
                 if not self.response:
@@ -267,7 +267,7 @@ class HttpPageHandler(HandlerInterface):
         return result
 
 
-class HttpRequestBuilder(object):
+class CrawlerCaller(object):
     """
     Makes actual request using crawler.
     This should be just a builder.
@@ -282,10 +282,9 @@ class HttpRequestBuilder(object):
         """
         self.response = None
         self.url = url
+
         self.request = request
         self.errors = []
-
-        # Flag to not retry same contents requests for things we already know are dead
         self.dead = False
 
         if self.url is None:
@@ -295,14 +294,6 @@ class HttpRequestBuilder(object):
             self.errors.append("Passed incorrect url {}".format(stack_str))
             return
 
-        # TODO remove things below?
-        if self.url.lower().find("https") >= 0:
-            self.protocol = "https"
-        elif self.url.lower().find("http") >= 0:
-            self.protocol = "http"
-        else:
-            self.protocol = "https"
-
     def get_response(self):
         if self.response:
             return self.response
@@ -311,22 +302,12 @@ class HttpRequestBuilder(object):
             return None
 
         WebLogger.debug(f"{self.url}: Obtaining HTTP response")
-        self.response = self.get_response_make_call()
+        self.response = self.run_crawler()
         WebLogger.debug(f"{self.url}: Obtaining HTTP response DONE")
 
         return self.response
 
-    def get_text(self):
-        response = self.get_response()
-        if response:
-            return response.get_text()
-
-    def get_binary(self):
-        response = self.get_response()
-        if response:
-            return response.get_binary()
-
-    def get_response_make_call(self):
+    def run_crawler(self):
         """ """
         response = PageResponseObject(
             self.url,

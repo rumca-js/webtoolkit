@@ -1,6 +1,6 @@
 from .handlerinterface import HandlerInterface
 from .defaulturlhandler import DefaultUrlHandler, DefaultChannelHandler
-from .handlerhttppage import HttpPageHandler
+from .handlerhttppage import HttpPageHandler, CrawlerCaller
 
 from .handlerchannelyoutube import *
 from .handlervideoyoutube import *
