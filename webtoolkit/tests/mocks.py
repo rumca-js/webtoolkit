@@ -64,7 +64,8 @@ class MockUrl(object):
         pass
 
     def get_contents(self):
-        return ""
+        response = self.get_response()
+        return response.get_text()
 
     def get_response(self):
         if self.response:
@@ -79,7 +80,7 @@ class MockUrl(object):
         return self.response
 
     def get_streams(self):
-        pass
+        return []
 
     def ping(self, timeout_s=20, user_agent=None):
         return True
