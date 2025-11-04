@@ -464,11 +464,11 @@ class PageResponseObject(object):
         return interface.is_captcha_protected()
 
     def get_page(self):
-        if self.p:
-            return self.p
+        if self.page:
+            return self.page
 
-        self.p = PageFactory.get(self, self.get_text())
-        return self.p
+        self.page = PageFactory.get(self, self.get_text())
+        return self.page
 
 
 def response_to_json(response, with_streams=False):

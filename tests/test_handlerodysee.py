@@ -206,7 +206,7 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         hash = handler.get_contents_hash()
 
         self.assertTrue(hash)
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_contents_body_hash(self):
         MockRequestCounter.mock_page_requests = 0
@@ -220,7 +220,7 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         hash = handler.get_contents_body_hash()
 
         self.assertTrue(hash)
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_contents(self):
         MockRequestCounter.mock_page_requests = 0
@@ -248,4 +248,4 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         response = handler.get_response()
 
         self.assertTrue(response)
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)

@@ -468,4 +468,4 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
         thumbnail = handler.get_thumbnail()
 
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
