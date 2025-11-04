@@ -5,21 +5,18 @@ from ..response import PageResponseObject
 from ..urllocation import UrlLocation
 from ..pages import RssPage
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultRssChannelHandler
+from .defaulturlhandler import DefaultRssChannelHandler, DefaultRssHtmlChannelHandler
 from .handlerhttppage import HttpPageHandler
 
 
-class YouTubeChannelHandler(DefaultRssChannelHandler):
+class YouTubeChannelHandler(DefaultRssHtmlChannelHandler):
     """
     Natively since we inherit RssPage, the contents should be RssPage
     """
 
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
-        self.html_url = None  # channel html page contains useful info
-        self.rss_url = None
         self.social_data = {}
         self.user_name = None
-        self.threads = True
 
         if request:
             request.cookies = {}
@@ -164,7 +161,6 @@ class YouTubeChannelHandler(DefaultRssChannelHandler):
     def get_contents(self):
         """
         We obtain information about channel.
-        We cannot use HTML page to obtain thumbnail - as web page asks to log in to view this
         """
         if self.dead:
             return
@@ -178,47 +174,6 @@ class YouTubeChannelHandler(DefaultRssChannelHandler):
         response = self.get_response()
         if response:
             return self.response.get_text()
-
-    def get_response(self):
-        if not self.code:
-            return
-
-        if self.response:
-            return self.response
-
-        if self.dead:
-            return
-
-        if not self.threads:
-            self.rss_url = self.get_rss_url()
-            self.html_url = self.get_html_url()
-
-            if self.rss_url:
-                self.response = self.rss_url.get_response()
-            else:
-                WebLogger.error("Could not obtain RSS")
-            if self.html_url:
-                self.response_html = self.html_url.get_response()
-            else:
-                WebLogger.error("Could not obtain HTML")
-        else:
-            with ThreadPoolExecutor() as executor:
-                thread_result_rss = executor.submit(self.get_rss_url)
-                thread_result_html = executor.submit(self.get_html_url)
-
-                rss_url = thread_result_rss.result()
-                html_url = thread_result_html.result()
-
-                if rss_url:
-                    self.response = rss_url.get_response()
-                else:
-                    WebLogger.error("Could not obtain RSS")
-                if html_url:
-                    self.html_response = html_url.get_response()
-                else:
-                    WebLogger.error("Could not obtain HTML")
-
-        return self.response
 
     def get_html_url(self):
         #print("get_html_url")
