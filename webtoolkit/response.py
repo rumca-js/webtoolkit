@@ -171,6 +171,7 @@ class PageResponseObject(object):
         self.recognized_content_type = None
         self.body_hash = None
         self.is_allowed_internal = True
+        self.page = None
 
         if self.status_code is None:
             self.status_code = 0
@@ -463,7 +464,11 @@ class PageResponseObject(object):
         return interface.is_captcha_protected()
 
     def get_page(self):
-        return PageFactory.get(self, self.get_text())
+        if self.p:
+            return self.p
+
+        self.p = PageFactory.get(self, self.get_text())
+        return self.p
 
 
 def response_to_json(response, with_streams=False):
