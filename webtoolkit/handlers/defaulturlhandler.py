@@ -287,6 +287,13 @@ class DefaultRssHtmlChannelHandler(DefaultUrlHandler):
         #print("get_html_url DONE")
         return self.html_url
 
+    def get_entries(self):
+        rss_url = self.get_rss_url()
+        if rss_url:
+            return rss_url.get_entries()
+        else:
+            return []
+
     def get_title(self):
         rss_url = self.get_rss_url()
         if rss_url:
