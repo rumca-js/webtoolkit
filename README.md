@@ -112,7 +112,7 @@ Default User headers
 webtoolkit.get_default_headers()
 ```
 
-# HTTP processing
+# HTTP processing - requests
 
 Request HTTP object allows to make HTTP call.
 ```
@@ -126,6 +126,8 @@ url_data = request_encode(request)
 json_data = request_to_json(request)  # json
 request = json_to_request(json_data)  # json
 ```
+
+# HTTP processing - response
 
 Check for valid HTTP responses:
 ```
@@ -152,18 +154,27 @@ response = json_to_response(json_data)
 
 To obtain page contents object:
 ```
-page = PageResponseObject().get_page()   # for example could be HtmlPage
+page = PageResponseObject().get_page()   # returns type of page, be it HtmlPage, RssPage, etc.
 ```
 
 # Remote interfaces
 
-You can implement scraping servers yourself. The communication between remotes use PageRequestObject and PageResponseObjects (and encoding them / converting to JSON).
+You can use existing scraping servers.
 
  - RemoteServer - Interface for calling external crawling systems
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
 
+The communication between client and server should be through JSON requests and responses.
+
 # Testing
 
-Provides data and facilities that will aid you in testing.
+webtoolkit provides data and facilities that will aid you in testing.
 
-Do you want to implement new RSS parser? Go ahead, use the data.
+You can use them in your project:
+ - FakeResponse
+ - MockUrl
+
+Project also provides manual tests that check if project works
+```
+make tests
+```
