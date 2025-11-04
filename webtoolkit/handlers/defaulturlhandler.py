@@ -200,6 +200,14 @@ class DefaultRssHtmlChannelHandler(DefaultUrlHandler):
 
         super().__init__(url=url, request=request, url_builder=url_builder)
 
+    def get_channel_name(self):
+        url = self.get_rss_url()
+        if url:
+            return url.get_title()
+        url = self.get_html_url()
+        if url:
+            return url.get_title()
+
     def get_response(self):
         if not self.code:
             return
