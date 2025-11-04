@@ -129,6 +129,8 @@ def date_str_to_date(date_str):
 
 
 def calculate_hash(text):
+    if not text:
+        return
     try:
         return hashlib.md5(text.encode("utf-8")).digest()
     except Exception as E:
@@ -136,6 +138,8 @@ def calculate_hash(text):
 
 
 def calculate_hash_binary(binary):
+    if not text:
+        return
     try:
         return hashlib.md5(binary).digest()
     except Exception as E:
