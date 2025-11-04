@@ -241,6 +241,10 @@ class PageResponseObject(object):
         self.body_hash = body_hash
 
     def get_body_hash(self):
+        if not self.body_hash:
+            page = self.get_page()
+            if page:
+                self.body_hash = page.get_contents_body_hash()
         return self.body_hash
 
     def set_request(self, request):

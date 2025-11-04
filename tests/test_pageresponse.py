@@ -2,6 +2,9 @@ import json
 from pathlib import Path
 
 from webtoolkit.utils.dateutils import DateUtils
+from webtoolkit.tests.fakeinternetcontents import (
+    webpage_with_real_rss_links
+)
 
 from webtoolkit import (
     PageRequestObject,
@@ -295,6 +298,16 @@ class PageResponseObjectTest(FakeInternetTestCase):
 
         self.assertTrue(response.get_hash())
 
+    def test_get_body_hash__text(self):
+        headers = {"Content-Type": "text/html; charset=UTF-8"}
+        response = PageResponseObject(
+            "https://test.com", "", status_code=200, text=webpage_with_real_rss_links, headers=headers
+        )
+
+        self.assertTrue(response.get_hash())
+        self.assertTrue(response.get_body_hash())
+        self.assertNotEqual(response.get_hash(), response.get_body_hash())
+
     def test_get_last_modified(self):
         date_str = DateUtils.get_datetime_now_iso()
 
@@ -449,7 +462,7 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertEqual(json_map["Recognized-Content-Type"], "text/rss")
         self.assertEqual(json_map["Charset"], "UTF-8")
         self.assertNotEqual(json_map["hash"], None)
-        self.assertEqual(json_map["body_hash"], None)
+        self.assertNotEqual(json_map["body_hash"], None)
 
     def test_response_to_json__valid_binary_no_streams(self):
         headers = {"Content-Type": "text/rss; charset=UTF-8"}
@@ -480,7 +493,7 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertEqual(json_map["Recognized-Content-Type"], "text/rss")
         self.assertEqual(json_map["Charset"], "UTF-8")
         self.assertNotEqual(json_map["hash"], None)
-        self.assertEqual(json_map["body_hash"], None)
+        self.assertNotEqual(json_map["body_hash"], None)
 
     def test_response_to_json__valid_text_streams(self):
         headers = {"Content-Type": "text/rss; charset=UTF-8"}
@@ -511,7 +524,7 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         self.assertEqual(json_map["Recognized-Content-Type"], "text/rss")
         self.assertEqual(json_map["Charset"], "UTF-8")
         self.assertNotEqual(json_map["hash"], None)
-        self.assertEqual(json_map["body_hash"], None)
+        self.assertNotEqual(json_map["body_hash"], None)
 
     def test_response_to_json__with_request(self):
         test_link = "https://test.com"
