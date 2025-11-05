@@ -158,18 +158,6 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         if self.code:
             return self.code2url(self.code)
 
-    def get_streams(self):
-        if self.rss_url:
-            response = self.rss_url.get_response()
-            if response is not None:
-                self.streams["RSS"] = response.get_text()
-        if self.html_url:
-            response = self.html_url.get_response()
-            if response is not None:
-                self.streams["HTML"] = response.get_text()
-
-        return self.streams
-
     def get_canonical_url(self):
         if self.url.find("feeds") >= 0:
             return self.url
