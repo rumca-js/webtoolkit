@@ -281,14 +281,30 @@ class TestResponseObject(PageResponseObject):
         self.text = text
 
     def get_text_for_url(self, url):
+        if url.startswith("https://www.youtube.com/channel/"):
+            return self.get_contents_youtube_channel(url)
         if url.startswith("https://youtube.com/channel/"):
             return self.get_contents_youtube_channel(url)
 
         if url.startswith("https://www.youtube.com/watch?v=666"):
             return webpage_no_pubdate_rss
 
-        if url.startswith("https://www.youtube.com/user/linustechtips"):
-            return youtube_channel_html_linus_tech_tips
+        if url.startswith(
+            "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        ):
+            return youtube_channel_rss_linus_tech_tips
+
+        if url.startswith("https://www.youtube.com/feeds"):
+            return webpage_samtime_youtube_rss
+
+        if url == "https://www.youtube.com/robots.txt":
+            return youtube_robots_txt
+
+        if url == "https://www.youtube.com/sitemaps/sitemap.xml":
+            return youtube_sitemap_sitemaps
+
+        if url == "https://www.youtube.com/product/sitemap.xml":
+            return youtube_sitemap_product
 
         if url == "https://rss-page-with-broken-content-type.com/feed":
             return youtube_channel_html_linus_tech_tips
@@ -298,14 +314,6 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://www.rss-in-html.com/feed"):
             return geekwire_feed
-
-        if url.startswith(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        ):
-            return youtube_channel_rss_linus_tech_tips
-
-        if url.startswith("https://www.youtube.com/feeds"):
-            return webpage_samtime_youtube_rss
 
         if url == "https://www.reddit.com/r/InternetIsBeautiful/.json":
             return reddit_subreddit_json
@@ -321,15 +329,6 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId"):
             return return_dislike_json
-
-        if url == "https://www.youtube.com/robots.txt":
-            return youtube_robots_txt
-
-        if url == "https://www.youtube.com/sitemaps/sitemap.xml":
-            return youtube_sitemap_sitemaps
-
-        if url == "https://www.youtube.com/product/sitemap.xml":
-            return youtube_sitemap_product
 
         if url.startswith("https://odysee.com/$/rss"):
             return webpage_samtime_youtube_rss
@@ -546,16 +545,28 @@ class TestResponseObject(PageResponseObject):
             self.binary = text.encode("utf-8")
 
     def get_contents_youtube_channel(self, url):
-        if url == "https://youtube.com/channel/samtime/rss.xml":
-            return webpage_samtime_youtube_rss
+        print("s")
+        if url.startswith("https://www.youtube.com/channel"):
+            print("o")
+            return youtube_channel_html_linus_tech_tips
+        elif url.startswith("https://youtube.com/channel"):
+            return youtube_channel_html_linus_tech_tips
+        elif url.startswith("https://www.youtube.com/@"):
+            return youtube_channel_html_linus_tech_tips
+        elif url.startswith("https://youtube.com/@"):
+            return youtube_channel_html_linus_tech_tips
+        elif url.startswith("https://www.youtube.com/user"):
+            return youtube_channel_html_linus_tech_tips
+        elif url.startswith("https://youtube.com/user"):
+            return youtube_channel_html_linus_tech_tips
 
-        elif url == "https://youtube.com/channel/2020-year-channel/rss.xml":
+        elif url == "https://www.youtube.com/feeds/videos.xml?channel_id=2020-year-channel":
             return webpage_old_pubdate_rss
 
-        elif url == "https://youtube.com/channel/no-pubdate-channel/rss.xml":
+        elif url == "https://www.youtube.com/feeds/videos.xml?channel_id=nopubdate":
             return webpage_no_pubdate_rss
 
-        elif url == "https://youtube.com/channel/airpano/rss.xml":
+        elif url == "https://www.youtube.com/feeds/videos.xml?channel_id=airpano":
             return webpage_youtube_airpano_feed
 
         elif (

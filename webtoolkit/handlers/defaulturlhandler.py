@@ -144,6 +144,8 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         for page_url in self.channel_sources_urls.values():
             self.streams[page_url] = page_url.get_response()
 
+        return self.streams
+
     def get_response_source(self, page_url):
         if page_url in self.channel_sources_urls.values():
             return self.channel_sources_urls[page_url]
@@ -180,7 +182,10 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def get_thumbnail(self):
         for url in self.channel_sources_urls.values():
+            print(url.url)
             thumbnail = url.get_thumbnail()
+            print(url.get_response())
+            print(thumbnail)
             if thumbnail:
                 return thumbnail
 

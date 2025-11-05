@@ -47,6 +47,7 @@ class MockUrl(object):
         self.request = request
         self.response = None
         self.url_builder = url_builder
+        self.page = None
 
     def get_init_settings(self):
         return MockCrawler.get_default_crawler(self.url)
@@ -74,6 +75,7 @@ class MockUrl(object):
         headers = {}
         timeout_s = 20
         self.response = TestResponseObject(self.url, headers, timeout_s)
+        self.page = self.response.get_page()
 
         MockRequestCounter.requested(self.url, crawler_data=self.request)
 
@@ -89,36 +91,47 @@ class MockUrl(object):
         return []
 
     def get_title(self):
-        pass
+        if self.page:
+            return self.page.get_title()
 
     def get_description(self):
-        pass
+        if self.page:
+            return self.page.get_description()
 
     def get_language(self):
-        pass
+        if self.page:
+            return self.page.get_language()
 
     def get_thumbnail(self):
-        pass
+        if self.page:
+            return self.page.get_thumbnail()
 
     def get_author(self):
-        pass
+        if self.page:
+            return self.page.get_author()
 
     def get_album(self):
-        pass
+        if self.page:
+            return self.page.get_album()
 
     def get_tags(self):
-        pass
+        if self.page:
+            return self.page.get_tags()
 
     def get_date_published(self):
-        pass
+        if self.page:
+            return self.page.get_date_published()
 
     def get_status_code(self):
-        return 200
+        if self.response:
+            return self.response.status_code
 
     def get_properties(self):
         return {}
 
     def get_entries(self):
+        if self.page:
+            return list(self.page.get_entries())
         return []
 
 
