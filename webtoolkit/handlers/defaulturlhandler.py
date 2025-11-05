@@ -1,4 +1,5 @@
 import copy
+from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 
 from ..utils.dateutils import DateUtils
@@ -72,18 +73,31 @@ class DefaultChannelHandler(DefaultUrlHandler):
     Default handler for channels
     """
 
-    pass
+    def get_channel_name(self):
+        return self.get_title()
+
+    def get_channel_url(self):
+        if self.code:
+            return self.code2url(self.code)
 
 
-class DefaultRssChannelHandler(DefaultUrlHandler):
+class DefaultCompoundChannelHandler(DefaultChannelHandler):
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
-        self.rss_url = None
+        self.channel_sources_urls = OrderedDict()
         super().__init__(url=url, request=request, url_builder=url_builder)
 
-    def get_channel_name(self):
-        url = self.get_rss_url()
-        if url:
-            return url.get_title()
+    def get_channel_sources(self):
+        sources = []
+
+        feeds = self.get_feeds()
+        if feeds and len(feeds) > 0:
+            feed = feeds[0]
+            if feed:
+                sources.append(feed)
+
+        sources.append(self.get_channel_url())
+
+        return sources
 
     def get_contents(self):
         """
@@ -96,12 +110,8 @@ class DefaultRssChannelHandler(DefaultUrlHandler):
         if self.contents:
             return self.contents
 
-        if self.response:
-            return self.response.get_text()
-
-        response = self.get_response()
-        if response:
-            return self.response.get_text()
+        if self.get_response():
+            return self.get_response().get_text()
 
     def get_response(self):
         if not self.code:
@@ -113,241 +123,81 @@ class DefaultRssChannelHandler(DefaultUrlHandler):
         if self.dead:
             return
 
-        self.rss_url = self.get_rss_url()
+        handles = []
+        with ThreadPoolExecutor() as executor:
+            for channel_source in self.get_channel_sources():
+                handles.append(executor.submit(self.get_response_source, channel_source))
 
-        if self.rss_url:
-            self.response = self.rss_url.get_response()
-        else:
-            WebLogger.error("Could not obtain RSS")
+            for handle in handles:
+                url = handle.result()
+
+                if self.response is None:
+                    self.response = url.get_response()
+
+                response = url.get_response()
+
+                self.channel_sources_urls[url.url] = url
 
         return self.response
 
-    def get_rss_url(self):
-        #print("get_rss_url")
-        if self.rss_url:
-            return self.rss_url
+    def get_streams(self):
+        if page_url in self.channel_sources_urls.values():
+            self.streams[page_url] = page_url.get_response()
 
-        feeds = self.get_feeds()
-        if not feeds or len(feeds) == 0:
-            WebLogger.error(
-                "Url:{} Cannot read RSS channel feed URL".format(self.url)
-            )
-            return
+    def get_response_source(self, page_url):
+        if page_url in self.channel_sources_urls.values():
+            return self.channel_sources_urls[page_url]
 
-        feed = feeds[0]
-        if not feed:
-            return
+        url = self.get_page_url(page_url)
+        if url:
+            url.get_response()
 
-        self.rss_url = self.get_page_url(feed)
-        if not self.rss_url:
-            return
-
-        self.rss_url.get_response()
-        #print("get_rss_url DONE")
-        return self.rss_url
+        return url
 
     def get_entries(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_entries()
-        else:
-            return []
+        for url in self.channel_sources_urls.values():
+            entries = url.get_entries()
+            if entries and len(entries) > 0:
+                return entries
 
     def get_title(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_title()
+        for url in self.channel_sources_urls.values():
+            title = url.get_title()
+            if title:
+                return title
 
     def get_description(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_description()
+        for url in self.channel_sources_urls.values():
+            description = url.get_description()
+            if description:
+                return description
 
     def get_language(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_language()
+        for url in self.channel_sources_urls.values():
+            language = url.get_language()
+            if language:
+                return language
 
     def get_thumbnail(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            thumbnail = rss_url.get_thumbnail()
+        for url in self.channel_sources_urls.values():
+            thumbnail = url.get_thumbnail()
             if thumbnail:
                 return thumbnail
 
     def get_author(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_author()
+        for url in self.channel_sources_urls.values():
+            author = url.get_author()
+            if author:
+                return author
 
     def get_album(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_album()
+        for url in self.channel_sources_urls.values():
+            album = url.get_author()
+            if album:
+                return album
 
     def get_tags(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_tags()
-
-
-class DefaultRssHtmlChannelHandler(DefaultUrlHandler):
-    def __init__(self, url=None, contents=None, request=None, url_builder=None):
-
-        self.html_url = None
-        self.rss_url = None
-        self.threads = True
-
-        super().__init__(url=url, request=request, url_builder=url_builder)
-
-    def get_channel_name(self):
-        url = self.get_rss_url()
-        if url:
-            return url.get_title()
-        url = self.get_html_url()
-        if url:
-            return url.get_title()
-
-    def get_response(self):
-        if not self.code:
-            return
-
-        if self.response:
-            return self.response
-
-        if self.dead:
-            return
-
-        if not self.threads:
-            self.rss_url = self.get_rss_url()
-            self.html_url = self.get_html_url()
-
-            if self.rss_url:
-                self.response = self.rss_url.get_response()
-            else:
-                WebLogger.error("Could not obtain RSS")
-            if self.html_url:
-                self.response_html = self.html_url.get_response()
-            else:
-                WebLogger.error("Could not obtain HTML")
-        else:
-            with ThreadPoolExecutor() as executor:
-                thread_result_rss = executor.submit(self.get_rss_url)
-                thread_result_html = executor.submit(self.get_html_url)
-
-                rss_url = thread_result_rss.result()
-                html_url = thread_result_html.result()
-
-                if rss_url:
-                    self.response = rss_url.get_response()
-                else:
-                    WebLogger.error("Could not obtain RSS")
-                if html_url:
-                    self.html_response = html_url.get_response()
-                else:
-                    WebLogger.error("Could not obtain HTML")
-
-        return self.response
-
-    def get_rss_url(self):
-        #print("get_rss_url")
-        if self.rss_url:
-            return self.rss_url
-
-        feeds = self.get_feeds()
-        if not feeds or len(feeds) == 0:
-            WebLogger.error(
-                "Url:{} Cannot read RSS feed URL".format(self.url)
-            )
-            return
-
-        feed = feeds[0]
-        if not feed:
-            return
-
-        self.rss_url = self.get_page_url(feed)
-        if not self.rss_url:
-            return
-
-        self.rss_url.get_response()
-        #print("get_rss_url DONE")
-        return self.rss_url
-
-    def get_html_url(self):
-        #print("get_html_url")
-        if self.html_url:
-            return self.html_url
-
-        self.html_url = self.get_page_url(self.get_channel_url())
-        if not self.html_url:
-            return
-
-        self.html_url.get_response()
-
-        #print("get_html_url DONE")
-        return self.html_url
-
-    def get_entries(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_entries()
-        else:
-            return []
-
-    def get_title(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_title()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_title()
-
-    def get_description(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_description()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_description()
-
-    def get_language(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_language()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_language()
-
-    def get_thumbnail(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            thumbnail = rss_url.get_thumbnail()
-            if thumbnail:
-                return thumbnail
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_thumbnail()
-
-    def get_author(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_author()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_author()
-
-    def get_album(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_album()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_album()
-
-    def get_tags(self):
-        rss_url = self.get_rss_url()
-        if rss_url:
-            return rss_url.get_tags()
-        html_url = self.get_html_url()
-        if html_url:
-            return html_url.get_tags()
+        for url in self.channel_sources_urls.values():
+            tags = url.get_tags()
+            if tags:
+                return tags

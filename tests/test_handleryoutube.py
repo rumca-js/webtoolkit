@@ -458,7 +458,7 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_constructor__get_thumbnail(self):
+    def test_get_thumbnail(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/1234"
@@ -466,8 +466,11 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
         self.assertEqual(handler.url, test_link)
 
+        handler.get_response()
+
         thumbnail = handler.get_thumbnail()
 
+        self.assertTrue(thumbnail)
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_entries(self):

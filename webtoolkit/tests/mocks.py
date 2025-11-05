@@ -118,6 +118,9 @@ class MockUrl(object):
     def get_properties(self):
         return {}
 
+    def get_entries(self):
+        return []
+
 
 class MockCrawler(CrawlerInterface):
 

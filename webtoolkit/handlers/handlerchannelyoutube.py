@@ -5,11 +5,11 @@ from ..response import PageResponseObject
 from ..urllocation import UrlLocation
 from ..pages import RssPage
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultRssChannelHandler, DefaultRssHtmlChannelHandler
+from .defaulturlhandler import DefaultCompoundChannelHandler
 from .handlerhttppage import HttpPageHandler
 
 
-class YouTubeChannelHandler(DefaultRssHtmlChannelHandler):
+class YouTubeChannelHandler(DefaultCompoundChannelHandler):
     """
     Natively since we inherit RssPage, the contents should be RssPage
     """
@@ -157,37 +157,6 @@ class YouTubeChannelHandler(DefaultRssHtmlChannelHandler):
     def get_channel_url(self):
         if self.code:
             return self.code2url(self.code)
-
-    def get_contents(self):
-        """
-        We obtain information about channel.
-        """
-        if self.dead:
-            return
-
-        if self.contents:
-            return self.contents
-
-        if self.response:
-            return self.response.get_text()
-
-        response = self.get_response()
-        if response:
-            return self.response.get_text()
-
-    def get_html_url(self):
-        #print("get_html_url")
-        if self.html_url:
-            return self.html_url
-
-        self.html_url = self.get_page_url(self.get_channel_url())
-        if not self.html_url:
-            return
-
-        self.html_url.get_response()
-
-        #print("get_html_url DONE")
-        return self.html_url
 
     def get_streams(self):
         if self.rss_url:
