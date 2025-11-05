@@ -82,6 +82,7 @@ class HandlerInterface(DefaultContentPage):
 
     def get_streams(self):
         self.streams["Default"] = self.response
+        return self.streams
 
     def get_contents_body_hash(self):
         return self.get_contents_hash()
