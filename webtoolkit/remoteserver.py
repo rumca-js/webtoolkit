@@ -238,10 +238,8 @@ class RemoteServer(object):
         if streams and "Binary" in streams:
             response.binary = streams["Binary"]
 
-        if streams and len(streams) > 0:
-            for item in streams:
-                if item != "Binary":
-                    response.text = streams[item]
+        if not response.text and streams and len(streams) > 0:
+            response.text = streams[0]["text"]
 
         return response
 
