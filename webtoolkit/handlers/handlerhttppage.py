@@ -241,12 +241,12 @@ class HttpPageHandler(HandlerInterface):
     def get_entries(self):
         if self.p:
             if type(self.p) is RssPage:
-                return self.p.get_entries()
+                return list(self.p.get_entries())
             if type(self.p) is HtmlPage:
                 # There might be RSS in HTML
                 rss = RssPage(self.url, self.p.get_contents())
                 if rss.is_valid():
-                    return rss.get_entries()
+                    return list(rss.get_entries())
         return []
 
     def get_feeds(self):

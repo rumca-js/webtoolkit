@@ -159,7 +159,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     def get_entries(self):
         for url in self.channel_sources_urls.values():
             entries = url.get_entries()
-            if entries and len(entries) > 0:
+            if entries and len(list(entries)) > 0:
                 return entries
 
     def get_title(self):
@@ -182,10 +182,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def get_thumbnail(self):
         for url in self.channel_sources_urls.values():
-            print(url.url)
             thumbnail = url.get_thumbnail()
-            print(url.get_response())
-            print(thumbnail)
             if thumbnail:
                 return thumbnail
 
