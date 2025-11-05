@@ -138,7 +138,7 @@ def calculate_hash(text):
 
 
 def calculate_hash_binary(binary):
-    if not text:
+    if not binary:
         return
     try:
         return hashlib.md5(binary).digest()

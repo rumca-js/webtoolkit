@@ -141,7 +141,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         return self.response
 
     def get_streams(self):
-        if page_url in self.channel_sources_urls.values():
+        for page_url in self.channel_sources_urls.values():
             self.streams[page_url] = page_url.get_response()
 
     def get_response_source(self, page_url):
