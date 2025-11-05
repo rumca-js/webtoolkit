@@ -54,6 +54,10 @@ def test_youtube_channel_by_rss():
     if entries_len == 0:
         print("---------------> Entries len is 0---------------")
 
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
+
 
 def test_youtube_channel_by_channel():
     test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -63,6 +67,10 @@ def test_youtube_channel_by_channel():
     if entries_len == 0:
         print("---------------> Entries len is 0---------------")
 
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
+
 
 def test_youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
@@ -71,6 +79,10 @@ def test_youtube_channel_by_handle():
     entries_len = len(list(handler.get_entries()))
     if entries_len == 0:
         print("---------------> Entries len is 0---------------")
+
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
 
 
 def test_youtube_video():
@@ -85,6 +97,10 @@ def test_odysee_channel():
     entries_len = len(list(handler.get_entries()))
     if entries_len == 0:
         print("---------------> Entries len is 0---------------")
+
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
 
 
 def test_odysee_video():
