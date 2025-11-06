@@ -11,6 +11,8 @@ import traceback
 
 from webtoolkit.utils.dateutils import DateUtils
 from webtoolkit import (
+    BaseUrl,
+    PageRequestObject,
     PageResponseObject,
     WebLogger,
     WebConfig,
@@ -27,7 +29,7 @@ from webtoolkit import (
 )
 
 from webtoolkit.tests.fakeresponse import FakeInternetData, TestResponseObject
-from webtoolkit.tests.mocks import MockRequestCounter
+from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler
 
 
 class FakeInternetTestCase(unittest.TestCase):
@@ -42,6 +44,8 @@ class FakeInternetTestCase(unittest.TestCase):
         RemoteServer.get_socialj = self.get_socialj
         RemoteServer.get_feedsj = self.get_feedsj
         RemoteServer.get_pingj = self.get_pingj
+
+        BaseUrl.get_request_for_url = self.get_request_for_url
 
     def get_getj(self, url, name="", settings=None):
         # print("FakeInternet:get_getj: Url:{}".format(url))
@@ -64,6 +68,13 @@ class FakeInternetTestCase(unittest.TestCase):
     def get_pingj(self, url, settings=None):
         data = FakeInternetData(url)
         return data.ping(url, settings=settings)
+
+    def get_request_for_url(self, url):
+        request = PageRequestObject(url)
+        request.crawler_name = "MockCrawler"
+        request.crawler_type = MockCrawler(url)
+
+        return request
 
     def setup_configuration(self):
         # each suite should start with a default configuration entry

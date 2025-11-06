@@ -130,3 +130,6 @@ class YouTubeVideoHandler(DefaultUrlHandler):
 
     def get_link_music(self):
         return "https://music.youtube.com?v={0}".format(self.get_video_code())
+
+    def get_channel_name(self):
+        pass

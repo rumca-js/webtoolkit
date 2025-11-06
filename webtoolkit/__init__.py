@@ -33,3 +33,5 @@ from .contentmoderation import (
 
 from .crawlers import *
 from .handlers import *
+
+from .baseurl import BaseUrl
