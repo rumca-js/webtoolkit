@@ -76,6 +76,9 @@ class BaseUrl(ContentInterface):
             self.request_url = request.url
             self.request = request
 
+        if not self.request.crawler_type:
+            self.request = self.get_request_for_request(self.request)
+
         self.url = self.request.url
         self.handler = None
         self.response = None
@@ -87,10 +90,6 @@ class BaseUrl(ContentInterface):
             WebLogger.error("Url needs to be specified")
             return
 
-        if not self.request.crawler_type:
-            WebLogger.error("Could not find crawler")
-            return
-
         if not self.url_builder:
             self.url_builder = BaseUrl
 
@@ -98,6 +97,12 @@ class BaseUrl(ContentInterface):
         request = PageRequestObject(url)
         request.crawler_name = "RequestsCrawler"
         request.crawler_type = RequestsCrawler(url)
+
+        return request
+
+    def get_request_for_request(self, request):
+        request.crawler_name = "RequestsCrawler"
+        request.crawler_type = RequestsCrawler(request.url)
 
         return request
 

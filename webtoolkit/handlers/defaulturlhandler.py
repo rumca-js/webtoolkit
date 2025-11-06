@@ -95,7 +95,12 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             if feed:
                 sources.append(feed)
 
-        sources.append(self.get_channel_url())
+        channel_url = self.get_channel_url()
+        if channel_url:
+            sources.append(channel_url)
+
+        if len(sources) == 0:
+            sources.append(self.url)
 
         return sources
 
@@ -104,9 +109,6 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         We obtain information about channel.
         We cannot use HTML page to obtain thumbnail - as web page asks to log in to view this
         """
-        if self.dead:
-            return
-
         if self.contents:
             return self.contents
 
@@ -114,14 +116,8 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             return self.get_response().get_text()
 
     def get_response(self):
-        if not self.code:
-            return
-
         if self.response:
             return self.response
-
-        if self.dead:
-            return
 
         handles = []
         with ThreadPoolExecutor() as executor:

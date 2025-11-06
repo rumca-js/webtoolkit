@@ -1051,6 +1051,7 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
+        self.assertTrue(properties)
         self.assertIn("upvote_ratio", properties)
         self.assertTrue(properties["upvote_ratio"])
 

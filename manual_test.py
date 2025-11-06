@@ -1,6 +1,7 @@
 import requests
 
 from webtoolkit import (
+   BaseUrl,
    YouTubeChannelHandler,
    YouTubeVideoHandler,
    OdyseeChannelHandler,
@@ -28,12 +29,22 @@ def print_handler(handler):
 
 
 def run_with_handler(test_url, handler):
-    print("Running {}".format(test_url))
+    print("Running {} with handler {}".format(test_url, handler.__name__))
     request = PageRequestObject(url=test_url)
     request.crawler_name = "RequestsCrawler"
     request.crawler_type = RequestsCrawler(request.url)
     handler = handler(request=request, url_builder=UrlBuilder)
     response = handler.get_response()
+
+    if response is None:
+        print("Missing response!")
+        return
+    if response.is_invalid():
+        print("Invalid response")
+        return
+    if response.get_text() is None:
+        print("No text in response")
+        return
 
     #print(response)
     #print_handler(handler)
@@ -41,12 +52,32 @@ def run_with_handler(test_url, handler):
     return response, handler
 
 
-def test_vanilla_google():
+def run_with_base_url(test_url):
+    print("Running {} with BaseUrl".format(test_url))
+
+    url = BaseUrl(url=test_url)
+    response = url.get_response()
+    handler = url.get_handler()
+
+    if response is None:
+        print("Missing response!")
+        return
+    if response.is_invalid():
+        print("Invalid response")
+        return
+    if response.get_text() is None:
+        print("No text in response")
+        return
+
+    return response, handler
+
+
+def test_handler_vanilla_google():
     test_url = "https://www.google.com"
     response, handler = run_with_handler(test_url, HttpPageHandler)
 
 
-def test_youtube_channel_by_rss():
+def test_handler_youtube_channel_by_rss():
     test_url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
 
@@ -59,7 +90,7 @@ def test_youtube_channel_by_rss():
         print("---------------> Streams len is 0---------------")
 
 
-def test_youtube_channel_by_channel():
+def test_handler_youtube_channel_by_channel():
     test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
 
@@ -72,7 +103,7 @@ def test_youtube_channel_by_channel():
         print("---------------> Streams len is 0---------------")
 
 
-def test_youtube_channel_by_handle():
+def test_handler_youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
 
@@ -85,12 +116,12 @@ def test_youtube_channel_by_handle():
         print("---------------> Streams len is 0---------------")
 
 
-def test_youtube_video():
+def test_handler_youtube_video():
     test_url = "https://www.youtube.com/watch?v=9yanqmc01ck"
     return run_with_handler(test_url, YouTubeVideoHandler)
 
 
-def test_odysee_channel():
+def test_handler_odysee_channel():
     test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
     response, handler = run_with_handler(test_url, OdyseeChannelHandler)
 
@@ -103,28 +134,73 @@ def test_odysee_channel():
         print("---------------> Streams len is 0---------------")
 
 
-def test_odysee_video():
+def test_handler_odysee_video():
     test_url = "https://odysee.com/servo-browser-finally-hits-a-major:24fc604b8d282b226091928dda97eb0099ab2f05"
 
     return run_with_handler(test_url, OdyseeVideoHandler)
 
 
+def test_baseurl__youtube_video():
+    test_url = "https://www.youtube.com/watch?v=9yanqmc01ck"
+    return run_with_base_url(test_url)
+
+
+def test_baseurl__youtube_channel():
+    test_url = "https://www.youtube.com/@LinusTechTips"
+    response, handler = run_with_base_url(test_url)
+
+    entries_len = len(list(handler.get_entries()))
+    if entries_len == 0:
+        print("---------------> Entries len is 0---------------")
+
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
+
+
+def test_baseurl__odysee_channel():
+    test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
+    response, handler = run_with_base_url(test_url)
+
+    entries_len = len(list(handler.get_entries()))
+    if entries_len == 0:
+        print("---------------> Entries len is 0---------------")
+
+    streams_len = len(list(handler.get_streams()))
+    if streams_len == 0:
+        print("---------------> Streams len is 0---------------")
+
+
+def test_baseurl__odysee_video():
+    test_url = "https://odysee.com/servo-browser-finally-hits-a-major:24fc604b8d282b226091928dda97eb0099ab2f05"
+    return run_with_base_url(test_url)
+
+
+
 def main():
-    #print("------------------------")
-    #test_vanilla_google()
     print("------------------------")
-    test_youtube_channel_by_rss()
+    test_handler_vanilla_google()
     print("------------------------")
-    test_youtube_channel_by_channel()
-    #print("------------------------")
-    #test_youtube_video()
+    test_handler_youtube_channel_by_rss()
     print("------------------------")
-    test_youtube_channel_by_handle()
-    #print("------------------------")
-    #test_odysee_video()
+    test_handler_youtube_channel_by_channel()
     print("------------------------")
-    test_odysee_channel()
+    test_handler_youtube_video()
+    print("------------------------")
+    test_handler_youtube_channel_by_handle()
+    print("------------------------")
+    test_handler_odysee_video()
+    print("------------------------")
+    test_handler_odysee_channel()
+
+    print("------------------------")
+    test_baseurl__youtube_video()
+    print("------------------------")
+    test_baseurl__youtube_channel()
+    print("------------------------")
+    test_baseurl__odysee_video()
+    print("------------------------")
+    test_baseurl__odysee_channel()
 
 
 main()
-

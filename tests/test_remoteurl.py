@@ -37,7 +37,7 @@ all_properties = [
 ]
 
 
-class UrlTest(FakeInternetTestCase):
+class RemoteUrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
 
@@ -94,3 +94,34 @@ class UrlTest(FakeInternetTestCase):
 
         self.assertTrue(len(feeds) > 0)
 
+    def get_from_properties__youtube_video(self):
+        test_link = "https://www.youtube.com/watch?v=1234"
+        url = BaseUrl(test_link)
+        all_properties = url.get_properties(full=True)
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
+
+    def get_from_properties__youtube_channel(self):
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = BaseUrl(test_link)
+        all_properties = url.get_properties(full=True)
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
+
+    def get_from_properties__reddit(self):
+        test_link = "https://www.reddit.com/r/searchengines/.rss"
+
+        url = BaseUrl(test_link)
+        all_properties = url.get_properties(full=True)
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
