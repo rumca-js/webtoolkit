@@ -164,6 +164,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             entries = url.get_entries()
             if entries and len(list(entries)) > 0:
                 return entries
+        return []
 
     def get_title(self):
         for url in self.channel_sources_urls.values():

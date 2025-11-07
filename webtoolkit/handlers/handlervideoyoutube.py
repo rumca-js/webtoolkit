@@ -5,12 +5,12 @@ from ..utils.dateutils import DateUtils
 from ..contentinterface import ContentInterface
 from ..response import PageResponseObject
 from ..urllocation import UrlLocation
-from ..pages import HtmlPage, YouTubeVideoJson
+from ..pages import HtmlPage, YouTubeVideoJson, ReturnDislikeJson
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultUrlHandler
+from .defaulturlhandler import DefaultUrlHandler,DefaultCompoundChannelHandler
 
 
-class YouTubeVideoHandler(DefaultUrlHandler):
+class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         super().__init__(
             url=url,
@@ -133,3 +133,32 @@ class YouTubeVideoHandler(DefaultUrlHandler):
 
     def get_channel_name(self):
         pass
+
+    def get_social_data(self):
+        url = self.get_page_url(self.get_return_dislike_url_link())
+
+        response = url.get_response()
+        if response.is_valid():
+            self.return_dislike_json = ReturnDislikeJson(contents=response.get_text())
+
+        return super().get_social_data()
+
+    def get_return_dislike_url_link(self):
+        return "https://returnyoutubedislikeapi.com/votes?videoId=" + self.get_video_code()
+
+    def get_view_count(self):
+        """ """
+        if self.return_dislike_json:
+            return self.return_dislike_json.get_view_count()
+
+    def get_rating(self):
+        if self.return_dislike_json:
+            return self.return_dislike_json.get_rating()
+
+    def get_thumbs_up(self):
+        if self.return_dislike_json:
+            return self.return_dislike_json.get_thumbs_up()
+
+    def get_thumbs_down(self):
+        if self.return_dislike_json:
+            return self.return_dislike_json.get_thumbs_down()

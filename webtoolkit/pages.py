@@ -1573,3 +1573,42 @@ class YouTubeVideoJson(object):
         self._json["t_dislikes"] = rdd.get_dislikes()
         self._json["t_view_count"] = rdd.get_view_count()
         self._json["t_rating"] = rdd.get_rating()
+
+
+class ReturnDislikeJson(object):
+    def __init__(self, url=None, contents=None):
+        self.contents = contents
+        self.load_response()
+
+    def load_response(self):
+        self._json = self.loads(self.contents)
+        return self._json
+
+    def loads(self, data):
+        try:
+            self._json = json.loads(data)
+            return self._json
+        except ValueError as E:
+            self._json = {}
+
+    def get_json(self):
+        return self._json
+
+    def get_thumbs_up(self):
+        if self._json:
+            return self._json.get("likes")
+
+    def get_thumbs_down(self):
+        if self._json:
+            return self._json.get("dislikes")
+
+    def get_view_count(self):
+        if self._json:
+            return self._json.get("viewCount")
+
+    def get_rating(self):
+        if self._json:
+            return self._json.get("rating")
+
+    def get_json_data(self):
+        self.get_response()
