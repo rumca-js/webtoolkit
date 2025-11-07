@@ -24,6 +24,7 @@ class DefaultUrlHandler(HttpPageHandler):
         check multiple source of data.
         """
         if not url:
+            WebLogger.error("Default Url Handler - no url")
             return
 
         if self.request:
@@ -32,6 +33,7 @@ class DefaultUrlHandler(HttpPageHandler):
             request = PageRequestObject(url)
 
         request.url = url
+        request.handler_name = "HttpPageHandler"
         request.handler_type = HttpPageHandler
         request.crawler_type = None
         if crawler_name:
@@ -42,6 +44,8 @@ class DefaultUrlHandler(HttpPageHandler):
                 url=url, request=request, url_builder=self.url_builder
             )
             return url
+
+        WebLogger.error("Default Url Handler - no builder")
 
     def build_default_url(self, url, crawler_name=None):
         """
@@ -66,6 +70,9 @@ class DefaultUrlHandler(HttpPageHandler):
                 url=url, request=request, url_builder=self.url_builder
             )
             return url
+
+    def get_code(self):
+        return self.code
 
 
 class DefaultChannelHandler(DefaultUrlHandler):

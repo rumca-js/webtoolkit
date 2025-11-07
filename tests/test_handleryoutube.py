@@ -253,7 +253,7 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         self.assertEqual(handler.url, test_link)
 
         # +1 - obtains channel code from HTML
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_is_handled_by__channel(self):
         MockRequestCounter.mock_page_requests = 0
@@ -268,7 +268,7 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/user/1234"
         # call tested function
-        handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeChannelHandler(url=test_link, url_builder=MockUrl)
         self.assertTrue(handler.is_handled_by())
 
     def test_is_handled_by__a(self):

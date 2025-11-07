@@ -120,7 +120,6 @@ class BaseUrl(ContentInterface):
             InternetArchive,
             FourChanChannelHandler,
             TwitterUrlHandler,
-            YouTubeVideoHandler,        # present here, if somebody wants to call it by name
             YouTubeChannelHandler,      # present here, if somebody wants to call it by name
             HttpPageHandler,            # default
         ]
@@ -211,7 +210,7 @@ class BaseUrl(ContentInterface):
             self.handler = self.get_handler_implementation()
 
         if self.handler:
-            if (self.request.respect_robots):
+            if self.request.respect_robots:
                 if not self.is_allowed():
                     return
 
@@ -512,16 +511,16 @@ class BaseUrl(ContentInterface):
             for key, feed in enumerate(feeds):
                 properties["feeds"].append(feed)
 
+        is_channel = False
+        channel_handler = YouTubeChannelHandler(url=self.url)
+        if channel_handler.is_handled_by():
+            is_channel = True
+
         if page_handler:
             """
             TODO detect type of handler. IsChannel?
             """
-            if type(page_handler) is YouTubeChannelHandler:
-                if page_handler.get_channel_name():
-                    properties["channel_name"] = page_handler.get_channel_name()
-                    properties["channel_url"] = page_handler.get_channel_url()
-
-            if type(page_handler) is YouTubeVideoHandler:
+            if is_channel:
                 if page_handler.get_channel_name():
                     properties["channel_name"] = page_handler.get_channel_name()
                     properties["channel_url"] = page_handler.get_channel_url()

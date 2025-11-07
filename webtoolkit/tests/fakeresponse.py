@@ -286,6 +286,12 @@ class TestResponseObject(PageResponseObject):
         if url.startswith("https://youtube.com/channel/"):
             return self.get_contents_youtube_channel(url)
 
+        if url.startswith("https://odysee.com/$/rss"):
+            return webpage_samtime_youtube_rss
+
+        if url.startswith("https://odysee.com/"):
+            return youtube_channel_html_linus_tech_tips
+
         if url.startswith("https://www.youtube.com/watch?v=666"):
             return webpage_no_pubdate_rss
 
@@ -329,9 +335,6 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId"):
             return return_dislike_json
-
-        if url.startswith("https://odysee.com/$/rss"):
-            return webpage_samtime_youtube_rss
 
         if url.startswith("https://hnrss.org"):
             return webpage_hackernews_rss
@@ -545,9 +548,7 @@ class TestResponseObject(PageResponseObject):
             self.binary = text.encode("utf-8")
 
     def get_contents_youtube_channel(self, url):
-        print("s")
         if url.startswith("https://www.youtube.com/channel"):
-            print("o")
             return youtube_channel_html_linus_tech_tips
         elif url.startswith("https://youtube.com/channel"):
             return youtube_channel_html_linus_tech_tips

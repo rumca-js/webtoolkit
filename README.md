@@ -92,6 +92,16 @@ is_status_code_valid(status_code)   # provides information if input status code 
 is_status_code_invalid(status_code) # provides information if input status code indicates the page is invalid
 ```
 
+# Url processing
+
+Normally to obtain page contents you should just
+```
+url = BaseUrl("https://example.com")
+response = url.get_response()
+```
+
+It supports many different page types automatically. You can request youtube pages, github, etc.
+
 # Standard interfaces
 
 Two standard interfaces

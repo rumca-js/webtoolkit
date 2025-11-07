@@ -8,6 +8,7 @@ This module provides replacement for the Internet.
 from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
+    BaseUrl,
     CrawlerInterface,
     PageRequestObject,
 )
@@ -41,98 +42,31 @@ class MockRequestCounter(object):
         print(stack_string)
 
 
-class MockUrl(object):
-    def __init__(self, url=None, request=None, url_builder=None):
-        self.url = url
-        self.request = request
-        self.response = None
-        self.url_builder = url_builder
-        self.page = None
+class MockUrl(BaseUrl):
 
-    def get_init_settings(self):
-        return MockCrawler.get_default_crawler(self.url)
+    def __init__(self, url=None, request=None, url_builder=None):
+        if url_builder is None:
+            url_builder = MockUrl
+        super().__init__(url=url, request=request, url_builder=url_builder)
+
+    def get_request_for_url(self, url):
+        request = PageRequestObject(url)
+        request.crawler_name = "MockCrawler"
+        request.crawler_type = MockCrawler(url)
+
+        return request
+
+    def get_request_for_request(self, request):
+        request.crawler_name = "MockCrawler"
+        request.crawler_type = MockCrawler(request.url)
+
+        return request
 
     def get_init_request(self):
         request = PageRequestObject(self.url)
         request.crawler_name = "MockCrawler"
         request.crawler_type = MockCrawler(url=self.url)
         return request
-
-    def get_handlers():
-        return []
-
-    def get_type():
-        pass
-
-    def get_contents(self):
-        response = self.get_response()
-        return response.get_text()
-
-    def get_response(self):
-        if self.response:
-            return self.response
-
-        headers = {}
-        timeout_s = 20
-        self.response = TestResponseObject(self.url, headers, timeout_s)
-        self.page = self.response.get_page()
-
-        MockRequestCounter.requested(self.url, crawler_data=self.request)
-
-        return self.response
-
-    def get_streams(self):
-        return []
-
-    def ping(self, timeout_s=20, user_agent=None):
-        return True
-
-    def get_urls(self):
-        return []
-
-    def get_title(self):
-        if self.page:
-            return self.page.get_title()
-
-    def get_description(self):
-        if self.page:
-            return self.page.get_description()
-
-    def get_language(self):
-        if self.page:
-            return self.page.get_language()
-
-    def get_thumbnail(self):
-        if self.page:
-            return self.page.get_thumbnail()
-
-    def get_author(self):
-        if self.page:
-            return self.page.get_author()
-
-    def get_album(self):
-        if self.page:
-            return self.page.get_album()
-
-    def get_tags(self):
-        if self.page:
-            return self.page.get_tags()
-
-    def get_date_published(self):
-        if self.page:
-            return self.page.get_date_published()
-
-    def get_status_code(self):
-        if self.response:
-            return self.response.status_code
-
-    def get_properties(self):
-        return {}
-
-    def get_entries(self):
-        if self.page:
-            return list(self.page.get_entries())
-        return []
 
 
 class MockCrawler(CrawlerInterface):

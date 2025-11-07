@@ -98,7 +98,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             return None
 
         if self.is_channel_name(url):
-            return self.input2code_handle(url)
+            return
         if url.find("/channel/") >= 0:
             return self.input2code_channel(url)
         if url.find("/feeds/") >= 0:
@@ -106,6 +106,9 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
 
     def input2code_handle(self, url):
         page_handler = self.get_page_url(url)
+        if not page_handler:
+            return
+
         response = page_handler.get_response()
         if not response:
             return
@@ -187,3 +190,18 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
     def get_social_data(self):
         if len(self.social_data) != 0:
             return super().get_social_data()
+
+    def get_response(self):
+        if self.code:
+            return super().get_response()
+        elif self.url:
+            url = self.get_page_url(self.url)
+            if not url.get_response():
+                return
+
+            for feed in url.get_feeds():
+                handler = YouTubeChannelHandler(url=feed)
+                if handler.is_handled_by():
+                    self.code = handler.get_code()
+
+                    return super().get_response()

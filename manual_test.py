@@ -46,6 +46,12 @@ def run_with_handler(test_url, handler):
         print("No text in response")
         return
 
+    entries_len = len(list(handler.get_entries()))
+    print(f"Entries: {entries_len}")
+
+    streams_len = len(list(handler.get_streams()))
+    print(f"Streams: {streams_len}")
+
     #print(response)
     #print_handler(handler)
 
@@ -69,6 +75,12 @@ def run_with_base_url(test_url):
         print("No text in response")
         return
 
+    entries_len = len(list(handler.get_entries()))
+    print(f"Entries: {entries_len}")
+
+    streams_len = len(list(handler.get_streams()))
+    print(f"Streams: {streams_len}")
+
     return response, handler
 
 
@@ -81,39 +93,16 @@ def test_handler_youtube_channel_by_rss():
     test_url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
 
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
 
 
 def test_handler_youtube_channel_by_channel():
     test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
 
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
-
 
 def test_handler_youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_handler(test_url, YouTubeChannelHandler)
-
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
 
 
 def test_handler_youtube_video():
@@ -124,14 +113,6 @@ def test_handler_youtube_video():
 def test_handler_odysee_channel():
     test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
     response, handler = run_with_handler(test_url, OdyseeChannelHandler)
-
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
 
 
 def test_handler_odysee_video():
@@ -149,26 +130,10 @@ def test_baseurl__youtube_channel():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_base_url(test_url)
 
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
-
 
 def test_baseurl__odysee_channel():
     test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
     response, handler = run_with_base_url(test_url)
-
-    entries_len = len(list(handler.get_entries()))
-    if entries_len == 0:
-        print("---------------> Entries len is 0---------------")
-
-    streams_len = len(list(handler.get_streams()))
-    if streams_len == 0:
-        print("---------------> Streams len is 0---------------")
 
 
 def test_baseurl__odysee_video():
