@@ -14,7 +14,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
     Natively since we inherit RssPage, the contents should be RssPage
     """
 
-    def __init__(self, url=None, contents=None, request=None, url_builder=None):
+    def __init__(self, url=None, request=None, url_builder=None):
         self.social_data = {}
         self.user_name = None
 
@@ -23,8 +23,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
 
         super().__init__(
-            url,
-            contents=contents,
+            url=url,
             request=request,
             url_builder=url_builder,
         )
@@ -166,30 +165,6 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             return self.url
         else:
             return self.get_channel_url()
-
-    def get_json_data(self):
-        entries = self.get_entries()
-        for entry in entries:
-            u = self.get_page_url(entry["link"])
-            u.get_response()
-            h = u.get_handler()
-            if h:
-                props = h.get_properties()
-                if props:
-                    self.social_data["followers_count"] = props.get(
-                        "channel_follower_count"
-                    )
-                    if self.social_data["followers_count"]:
-                        return
-
-            return  # TODO?
-
-    def get_followers_count(self):
-        return self.social_data.get("followers_count")
-
-    def get_social_data(self):
-        if len(self.social_data) != 0:
-            return super().get_social_data()
 
     def get_response(self):
         if self.code:
