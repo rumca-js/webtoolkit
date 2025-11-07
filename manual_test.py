@@ -13,6 +13,10 @@ from webtoolkit import (
 )
 
 
+def print_bar():
+    print("------------------------")
+
+
 class UrlBuilder(HttpPageHandler):
     def __init__(self, url=None, request=None,url_builder=None, contents=None):
         if request and request.crawler_type is None:
@@ -55,6 +59,8 @@ def run_with_handler(test_url, handler):
     #print(response)
     #print_handler(handler)
 
+    print_bar()
+
     return response, handler
 
 
@@ -80,6 +86,11 @@ def run_with_base_url(test_url):
 
     streams_len = len(list(handler.get_streams()))
     print(f"Streams: {streams_len}")
+
+    properties = url.get_social_properties()
+    print(f"Social properties: {properties}")
+
+    print_bar()
 
     return response, handler
 
@@ -141,31 +152,37 @@ def test_baseurl__odysee_video():
     return run_with_base_url(test_url)
 
 
+def test_baseurl__github():
+    test_url = "https://github.com/rumca-js/crawler-buddy"
+    return run_with_base_url(test_url)
+
+
+def test_baseurl__reddit__channel():
+    test_url = "https://www.reddit.com/r/wizardposting"
+    return run_with_base_url(test_url)
+
+
+def test_baseurl__reddit__news():
+    test_url = "https://www.reddit.com/r/wizardposting/comments/1olomjs/screw_human_skeletons_im_gonna_get_more_creative/"
+    return run_with_base_url(test_url)
+
 
 def main():
-    print("------------------------")
     test_handler_vanilla_google()
-    print("------------------------")
     test_handler_youtube_channel_by_rss()
-    print("------------------------")
     test_handler_youtube_channel_by_channel()
-    print("------------------------")
     test_handler_youtube_video()
-    print("------------------------")
     test_handler_youtube_channel_by_handle()
-    print("------------------------")
     test_handler_odysee_video()
-    print("------------------------")
     test_handler_odysee_channel()
 
-    print("------------------------")
     test_baseurl__youtube_video()
-    print("------------------------")
     test_baseurl__youtube_channel()
-    print("------------------------")
     test_baseurl__odysee_video()
-    print("------------------------")
     test_baseurl__odysee_channel()
+    test_baseurl__github()
+    test_baseurl__reddit__channel()
+    test_baseurl__reddit__news()
 
 
 main()
