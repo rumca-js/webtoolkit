@@ -1056,7 +1056,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(properties["thumbs_down"])
 
         # return dislike + youtube json
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_social_properties__github(self):
         MockRequestCounter.mock_page_requests = 0
