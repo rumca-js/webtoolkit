@@ -20,7 +20,7 @@ class RedditUrlHandler(DefaultUrlHandler):
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.post_id = None
         self.subreddit = None
-        self.social_data = {}
+        self.social_data = None
 
         super().__init__(
             url=url,
@@ -94,8 +94,10 @@ class RedditUrlHandler(DefaultUrlHandler):
         return text
 
     def get_json_data(self):
-        if self.social_data != {}:
+        if self.social_data is not None:
             return self.social_data
+
+        self.social_data = {}
 
         json_text = self.get_json_text()
 
@@ -140,6 +142,9 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         If we did not receive social data, do not return anything
         """
+        if self.social_data is None:
+            self.get_json_data()
+
         if len(self.social_data) > 0:
             return super().get_social_data()
 

@@ -190,9 +190,9 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
 
         self.assertFalse(social_data is None)
 
-        self.assertFalse(social_data["thumbs_up"])
-        self.assertFalse(social_data["thumbs_down"])
-        self.assertFalse(social_data["view_count"])
+        self.assertTrue(social_data["thumbs_up"])
+        self.assertTrue(social_data["thumbs_down"])
+        self.assertTrue(social_data["view_count"])
         self.assertFalse(social_data["rating"])
         self.assertFalse(social_data["upvote_ratio"])
         self.assertFalse(social_data["upvote_diff"])

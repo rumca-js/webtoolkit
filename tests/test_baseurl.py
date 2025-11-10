@@ -1049,11 +1049,11 @@ class BaseUrlTest(FakeInternetTestCase):
         properties = url.get_social_properties()
 
         self.assertIn("view_count", properties)
-        self.assertFalse(properties["view_count"])
+        self.assertTrue(properties["view_count"])
         self.assertIn("thumbs_up", properties)
-        self.assertFalse(properties["thumbs_up"])
+        self.assertTrue(properties["thumbs_up"])
         self.assertIn("thumbs_down", properties)
-        self.assertFalse(properties["thumbs_down"])
+        self.assertTrue(properties["thumbs_down"])
 
         # return dislike + youtube json
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)

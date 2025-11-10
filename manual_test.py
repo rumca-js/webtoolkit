@@ -81,6 +81,10 @@ def run_with_base_url(test_url):
         print("No text in response")
         return
 
+    if handler.get_title() is None:
+        print("No title in url")
+        return
+
     entries_len = len(list(handler.get_entries()))
     print(f"Entries: {entries_len}")
 
@@ -98,6 +102,7 @@ def run_with_base_url(test_url):
 def test_handler_vanilla_google():
     test_url = "https://www.google.com"
     response, handler = run_with_handler(test_url, HttpPageHandler)
+    return response, handler
 
 
 def test_handler_youtube_channel_by_rss():
@@ -130,6 +135,12 @@ def test_handler_odysee_video():
     test_url = "https://odysee.com/servo-browser-finally-hits-a-major:24fc604b8d282b226091928dda97eb0099ab2f05"
 
     return run_with_handler(test_url, OdyseeVideoHandler)
+
+
+def test_baseurl__vanilla_google():
+    test_url = "https://www.google.com"
+    response,handler = run_with_base_url(test_url)
+    return response,handler
 
 
 def test_baseurl__youtube_video():
@@ -168,14 +179,15 @@ def test_baseurl__reddit__news():
 
 
 def main():
-    test_handler_vanilla_google()
-    test_handler_youtube_channel_by_rss()
-    test_handler_youtube_channel_by_channel()
-    test_handler_youtube_video()
-    test_handler_youtube_channel_by_handle()
-    test_handler_odysee_video()
-    test_handler_odysee_channel()
+    #test_handler_vanilla_google()
+    #test_handler_youtube_channel_by_rss()
+    #test_handler_youtube_channel_by_channel()
+    #test_handler_youtube_video()
+    #test_handler_youtube_channel_by_handle()
+    #test_handler_odysee_video()
+    #test_handler_odysee_channel()
 
+    test_baseurl__vanilla_google()
     test_baseurl__youtube_video()
     test_baseurl__youtube_channel()
     test_baseurl__odysee_video()
