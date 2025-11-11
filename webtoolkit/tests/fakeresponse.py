@@ -32,6 +32,7 @@ from webtoolkit.tests.fakeinternetcontents import (
     webpage_with_rss_link_rss_contents,
     webpage_html_casinos,
     webpage_html_canonical_1,
+    webpage_with_date_published,
 )
 from webtoolkit.tests.fake.geekwirecom import (
     geekwire_feed,
@@ -294,6 +295,9 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://www.youtube.com/watch?v=666"):
             return webpage_no_pubdate_rss
+
+        if url.startswith("https://www.youtube.com/watch?v=date_published"):
+            return webpage_with_date_published
 
         if url.startswith(
             "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -638,10 +642,15 @@ class TestResponseObject(PageResponseObject):
             return """{}"""
 
     def __str__(self):
-        return "TestResponseObject: Url:{} Status code:{} Headers:{}".format(
+        has_text_data = "Yes" if self.text else "No"
+        has_binary_data = "Yes" if self.binary else "No"
+
+        return "TestResponseObject: Url:{} Status code:{} Headers:{} Text:{} Binary:{}".format(
             self.url,
             self.status_code,
             self.headers,
+            has_text_data,
+            has_binary_data,
         )
 
 

@@ -207,3 +207,9 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             tags = url.get_tags()
             if tags:
                 return tags
+
+    def get_date_published(self):
+        for url in self.channel_sources_urls.values():
+            date_published = url.get_date_published()
+            if date_published:
+                return date_published

@@ -820,7 +820,6 @@ class HtmlPage(ContentInterface):
         There could be multiple places to read published time.
         We try every possible thing.
         """
-
         # used by mainstream media. Examples?
         date_str = self.get_property_field("article:published_time")
         if date_str:

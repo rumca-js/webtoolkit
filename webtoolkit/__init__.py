@@ -35,3 +35,4 @@ from .crawlers import *
 from .handlers import *
 
 from .baseurl import BaseUrl
+from .domaincache import *

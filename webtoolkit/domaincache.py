@@ -15,9 +15,10 @@ import asyncio
 
 from webtoolkit import (
     UrlLocation,
+    BaseUrl,
 )
 
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 
 
 class DomainCacheInfo(object):
@@ -36,7 +37,7 @@ class DomainCacheInfo(object):
         self.url_builder = url_builder
 
         if not self.url_builder:
-            self.url_builder = Url
+            self.url_builder = BaseUrl
 
         if self.respect_robots_txt:
             self.robots_contents = self.get_robots_txt_contents()

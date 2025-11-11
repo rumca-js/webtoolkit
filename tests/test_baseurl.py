@@ -11,26 +11,7 @@ from webtoolkit import (
 )
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
-from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler
-
-
-class MockBaseUrl(BaseUrl):
-    def __init__(self, url=None, request=None, url_builder=None):
-        super().__init__(url=url, request=request, url_builder=url_builder)
-        self.url_builder = MockBaseUrl
-
-    def get_request_for_url(self, url):
-        request = PageRequestObject(url)
-        request.crawler_name = "MockCrawler"
-        request.crawler_type = MockCrawler(url)
-
-        return request
-
-    def get_request_for_request(self, request):
-        request.crawler_name = "MockCrawler"
-        request.crawler_type = MockCrawler(request.url)
-
-        return request
+from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler, MockUrl
 
 
 class BaseUrlTest(FakeInternetTestCase):
@@ -49,7 +30,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://my-server:8185/view/somethingsomething/"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         link = url.request.url
 
         self.assertEqual(link, "https://my-server:8185/view/somethingsomething")
@@ -62,7 +43,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = " https://my-server:8185/view/somethingsomething/"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         link = url.request.url
 
         self.assertEqual(link, "https://my-server:8185/view/somethingsomething")
@@ -72,7 +53,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.google.com/url?q=https://forum.ddopl.com/&sa=Udupa"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         cleaned_link = url.request.url
 
         self.assertEqual(cleaned_link, "https://forum.ddopl.com")
@@ -84,7 +65,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://worldofwarcraft.blizzard.com/&ved=2ahUKEwjtx56Pn5WFAxU2DhAIHYR1CckQFnoECCkQAQ&usg=AOvVaw1pDkx5K7B5loKccvg_079-"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         link = url.request.url
 
         self.assertEqual(link, "https://worldofwarcraft.blizzard.com")
@@ -96,7 +77,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         link = url.request.url
 
         self.assertEqual(link, "https://corridordigital.com")
@@ -107,13 +88,13 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.YouTube.com/Test"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         cleaned_link = url.request.url
 
         self.assertEqual(cleaned_link, "https://www.youtube.com/Test")
 
         test_link = "https://www.YouTube.com/Test/"
-        url = MockBaseUrl(test_link)
+        url = MockUrl(test_link)
         link = url.request.url
 
         self.assertEqual(cleaned_link, "https://www.youtube.com/Test")
@@ -124,7 +105,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         self.assertEqual(type(url.get_handler()), HttpPageHandler)
@@ -137,7 +118,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "http://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         self.assertEqual(type(url.get_handler()), HttpPageHandler)
@@ -150,7 +131,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         self.assertEqual(type(url.get_handler()), RedditUrlHandler)
@@ -163,7 +144,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "ftp://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         expected_error = False
         try:
@@ -180,7 +161,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        url = MockBaseUrl("https://www.codeproject.com/WebServices/NewsRSS.aspx")
+        url = MockUrl("https://www.codeproject.com/WebServices/NewsRSS.aspx")
 
         handler = url.get_handler()
 
@@ -194,7 +175,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         handler = url.get_handler()
 
@@ -207,7 +188,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         # call tested function
         test_link = "https://www.youtube.com/watch?v=1234"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         handler = url.get_handler()
 
@@ -219,7 +200,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
 
@@ -233,7 +214,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://multiple-favicons.com/page.html"
 
-        handler = MockBaseUrl(test_link).get_type()
+        handler = MockUrl(test_link).get_type()
 
         # call tested function
         self.assertEqual(type(handler), HtmlPage)
@@ -244,7 +225,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         handler = url.get_type()
@@ -257,7 +238,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         handler = url.get_type()
@@ -270,7 +251,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/watch?v=1234"
 
         # call tested function
-        handler = MockBaseUrl(test_link).get_type()
+        handler = MockUrl(test_link).get_type()
 
         self.assertTrue(type(handler), YouTubeVideoHandler)
 
@@ -282,7 +263,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         properties = url.get_properties()
@@ -302,7 +283,7 @@ class BaseUrlTest(FakeInternetTestCase):
         channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         properties = url.get_properties()
@@ -322,7 +303,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/watch?v=1234"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         properties = url.get_properties()
@@ -333,7 +314,29 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties["link"], test_link)
         self.assertEqual(properties["link_request"], test_link)
 
-        # +1 for yt-flp +1 for return dislike
+        # +1 for HTML
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
+    def test_get_properties__youtube_video__date_published(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=date_published"
+
+        # call tested function
+        url = MockUrl(request=self.get_request(test_link))
+
+        response = url.get_response()
+        properties = url.get_properties()
+
+        self.assertIn("title", properties)
+        self.assertIn("link", properties)
+        self.assertIn("date_published", properties)
+
+        self.assertEqual(properties["link"], test_link)
+        self.assertEqual(properties["link_request"], test_link)
+        self.assertTrue(properties["date_published"])
+
+        # +1 for HTML
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_properties__html__basic(self):
@@ -342,7 +345,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://page-with-two-links.com"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         properties = url.get_properties()
@@ -360,7 +363,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://page-with-two-links.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
 
@@ -384,7 +387,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
 
@@ -414,7 +417,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
         channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
 
@@ -445,7 +448,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://odysee.com/$/rss/@DistroTube:2"
 
         # call tested function
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         all_properties = url.get_properties(full=True)
@@ -474,7 +477,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/watch?v=1234"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
 
@@ -501,7 +504,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://binary.jpg.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -534,7 +537,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://audio.jpg.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
         # call tested function
@@ -567,7 +570,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://video.jpg.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
 
@@ -596,7 +599,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
     def test_get_contents__pass(self):
         test_link = "https://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         contents = url.get_contents()
@@ -606,7 +609,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.reset()
 
         test_link = "https://page-with-http-status-500.com"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         contents = url.get_contents()
@@ -623,7 +626,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://multiple-favicons.com/page.html"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         self.assertEqual(url.get_handler().p, None)
 
@@ -641,7 +644,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://binary.jpg.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -653,7 +656,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://page-with-http-status-500.com"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         self.assertEqual(type(url.get_handler()), HttpPageHandler)
 
@@ -671,7 +674,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://page-with-last-modified-header.com"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         response = url.get_response()
 
@@ -686,7 +689,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         result = url.find_rss_url()
         self.assertEqual(result.url, url.get_feeds()[0])
@@ -698,7 +701,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
         test_link_result = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         feeds = url.get_feeds()
         self.assertIn(test_link_result, feeds)
@@ -708,7 +711,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://odysee.com/@samtime:1?test"
         test_link_result = "https://odysee.com/$/rss/@samtime:1"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         feeds = url.get_feeds()
         self.assertIn(test_link_result, feeds)
@@ -718,7 +721,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         feeds = url.get_feeds()
@@ -730,7 +733,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://opml-file-example.com/ompl.xml"
         test_link_result = "https://www.opmllink1.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         feeds = url.get_feeds()
@@ -742,7 +745,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         result = url.find_rss_url()
         self.assertEqual(
@@ -754,7 +757,7 @@ class BaseUrlTest(FakeInternetTestCase):
     def test_find_rss_url__odysee(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://odysee.com/@samtime:1?test"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         result = url.find_rss_url()
         self.assertEqual(result.url, "https://odysee.com/$/rss/@samtime:1")
@@ -763,7 +766,7 @@ class BaseUrlTest(FakeInternetTestCase):
     def test_find_rss_url__rss(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         result = url.find_rss_url()
@@ -774,7 +777,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link ="https://linkedin.com"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -788,7 +791,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -802,7 +805,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/watch?v=1234"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -814,7 +817,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -828,7 +831,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -842,7 +845,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://linkedin.com"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -862,7 +865,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -884,7 +887,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://page-with-canonical-link.com"
         test_canonical_link = "https://www.page-with-canonical-link.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -902,7 +905,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://page-with-canonical-link.com"
         test_canonical_link = "https://www.page-with-canonical-link.com"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
         url.get_response()
 
         # call tested function
@@ -919,7 +922,7 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -936,7 +939,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -954,7 +957,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
         test_channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -971,7 +974,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -989,7 +992,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
         test_canonical_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -1006,7 +1009,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.youtube.com/watch?v=1234"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -1024,7 +1027,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://m.youtube.com/watch?v=1234"
         test_canonical_link = "https://www.youtube.com/watch?v=1234"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         urls = url.get_urls()
@@ -1041,7 +1044,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://m.youtube.com/watch?v=1234"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -1063,7 +1066,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://github.com/rumca-js?tab=repositories"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         properties = url.get_social_properties()
@@ -1078,7 +1081,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://www.reddit.com/r/redditdev/comments/1hw8p3j/i_used_the_reddit_api_to_save_myself_time_with_my/"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         properties = url.get_social_properties()
@@ -1094,7 +1097,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         test_link = "https://linkedin.com/watch?v=1234"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         properties = url.get_social_properties()
@@ -1111,7 +1114,7 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
         channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
-        url = MockBaseUrl(request=self.get_request(test_link))
+        url = MockUrl(request=self.get_request(test_link))
 
         # call tested function
         response = url.get_response()

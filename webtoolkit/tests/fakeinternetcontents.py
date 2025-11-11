@@ -170,3 +170,14 @@ webpage_html_canonical_1 = """<html>
  page body
  </body>
 """
+
+webpage_with_date_published = """
+<html>
+<head>
+<meta itemprop="datePublished" content="2023-11-13T03:21:12-08:00">
+</head>
+
+<body>
+</body>
+</html>
+"""
