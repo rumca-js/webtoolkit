@@ -45,7 +45,27 @@ location = UrlLocation(link).up()
 UrlLocation(link).is_onion()
 ```
 
+# Url processing
+
+Normally to obtain page contents you should just
+```
+url = BaseUrl("https://example.com")
+url.get_title()
+url.get_description()
+url.get_lanugage()
+url.get_date_published()
+url.get_author()
+url.get_feeds()
+url.get_entries()
+
+response = url.get_response()
+```
+
+It supports many different page types automatically. You can request youtube pages, github, etc.
+
 # Page definitions
+
+BaseUrl can support various types of pages.
 
 HTML pages
 ```
@@ -77,6 +97,8 @@ page.get_entries()
 
 # Content processing
 
+Internet contents can be parsed in various ways.
+
 Extracts links from contents
 ```
 ContentLinkParser().get_links()
@@ -99,24 +121,6 @@ is_status_code_valid(status_code)   # provides information if input status code 
 is_status_code_invalid(status_code) # provides information if input status code indicates the page is invalid
 ```
 
-# Url processing
-
-Normally to obtain page contents you should just
-```
-url = BaseUrl("https://example.com")
-url.get_title()
-url.get_description()
-url.get_lanugage()
-url.get_date_published()
-url.get_author()
-url.get_feeds()
-url.get_entries()
-
-response = url.get_response()
-```
-
-It supports many different page types automatically. You can request youtube pages, github, etc.
-
 # Standard interfaces
 
 Two standard interfaces
@@ -138,6 +142,8 @@ webtoolkit.get_default_headers()
 ```
 
 # HTTP processing - requests
+
+Communication is performed via request - response pairs.
 
 Request HTTP object allows to make HTTP call.
 ```
@@ -187,7 +193,6 @@ page = PageResponseObject().get_page()   # returns type of page, be it HtmlPage,
 You can use existing scraping servers.
 
  - RemoteUrl - Wrapper around RemoteServer for easy access to remote data. Provides API similar to BaseUrl.
- - RemoteServer - Interface for calling external crawling systems
 
 ```
 url = RemoteUrl("http://192.168.0.168...")
@@ -203,6 +208,10 @@ response = url.get_response()
 ```
 
 The communication between client and server should be through JSON requests and responses.
+
+Other classes
+
+ - RemoteServer - Interface for calling external crawling systems
 
 # Testing
 
