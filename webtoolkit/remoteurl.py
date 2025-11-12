@@ -1,5 +1,6 @@
 from .contentinterface import ContentInterface
 from .remoteserver import RemoteServer
+from .webtools import json_decode_field
 
 
 class RemoteUrl(ContentInterface):
@@ -132,10 +133,17 @@ class RemoteUrl(ContentInterface):
         return self.server.get_linkj(self.url)
 
     def get_hash(self):
-        return self.get_response().hash
+        return self.get_response().get_hash()
 
-    def get_hash_body(self):
-        return self.get_response().body_hash
+    def get_body_hash(self):
+        return self.get_response().get_body_hash()
+
+    def get_meta_hash(self):
+        hash_section = RemoteServer.read_properties_section(
+            "PropertiesHash", self.all_properties
+        )
+        if hash_section:
+            return json_decode_field(hash_section)
 
     def get_social_properties(self):
         if self.social_properties is None:

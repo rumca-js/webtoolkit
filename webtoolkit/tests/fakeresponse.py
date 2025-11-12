@@ -12,6 +12,7 @@ import traceback
 from webtoolkit.utils.dateutils import DateUtils
 
 from webtoolkit import (
+    calculate_hash,
     json_encode_field,
     json_decode_field,
     PageResponseObject,
@@ -686,10 +687,14 @@ class FakeInternetData(object):
     def get_all_properties(self):
         data = []
         data.append({"name": "Properties", "data": self.properties})
-        data.append({"name": "Settings", "data": None})
+        data.append({"name": "Request", "data": None})
         data.append({"name": "Response", "data": self.response})
         data.append({"name": "Headers", "data": {}})
         data.append({"name": "Entries", "data": self.entries})
+
+        properties_hash = json_encode_field(calculate_hash(str(self.properties)))
+        data.append({"name": "PropertiesHash", "data": properties_hash})
+
         data.append(
             {
                 "name": "Streams",

@@ -40,8 +40,10 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             or short_url.startswith("m.youtube.com/channel")
             or short_url.startswith("www.youtube.com/@")
             or short_url.startswith("youtube.com/@")
+            or short_url.startswith("m.youtube.com/@")
             or short_url.startswith("www.youtube.com/user")
             or short_url.startswith("youtube.com/user")
+            or short_url.startswith("m.youtube.com/user")
         ):
             return True
         if (
@@ -63,6 +65,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             or short_url.startswith("m.youtube.com/@")
             or short_url.startswith("www.youtube.com/user")
             or short_url.startswith("youtube.com/user")
+            or short_url.startswith("m.youtube.com/user")
         ):
             return True
 

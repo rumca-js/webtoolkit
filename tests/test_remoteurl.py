@@ -79,13 +79,25 @@ class RemoteUrlTest(FakeInternetTestCase):
         u = RemoteUrl("https://linkedin.com")
         response = u.get_response()
 
+        self.assertTrue(u.get_hash())
+
         self.assertTrue(response.get_hash())
 
     def test_get_body_hash(self):
         u = RemoteUrl("https://linkedin.com")
         response = u.get_response()
 
+        self.assertTrue(u.get_body_hash())
+
         self.assertTrue(response.body_hash)
+
+    def test_get_meta_hash(self):
+        u = RemoteUrl("https://linkedin.com")
+        response = u.get_response()
+
+        hash = u.get_meta_hash()
+
+        self.assertTrue(hash)
 
     def test_get_feeds(self):
         u = RemoteUrl("https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM")
