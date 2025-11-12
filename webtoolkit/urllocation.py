@@ -321,6 +321,7 @@ class UrlLocation(object):
         url = UrlLocation.get_google_redirect_fix(url)
         url = UrlLocation.get_google_redirect_fix2(url)
         url = UrlLocation.get_youtube_redirect_fix(url)
+        url = UrlLocation.get_linkedin_redirect_fix(url)
         url = UrlLocation.get_trackless_url(url)
 
         return url
@@ -357,6 +358,32 @@ class UrlLocation(object):
             param_value = query_params.get("q", [None])[0]
 
             param_value = unquote(param_value)
+            param_value = UrlLocation.get_cleaned_link(param_value)
+            return param_value
+
+        return url
+
+    def get_linkedin_redirect_fix(url):
+        stupid_string = "https://www.linkedin.com"
+        if url.find(stupid_string) >= 0:
+            parsed_url = urlparse(url)
+            query_params = parse_qs(parsed_url.query)
+            param_value = query_params.get("url", [None])[0]
+            if param_value:
+                param_value = UrlLocation.get_cleaned_link(param_value)
+                return param_value
+
+        return url
+
+    def get_url_arg(self):
+        url = self.url
+        if not url:
+            return
+
+        parsed_url = urlparse(url)
+        query_params = parse_qs(parsed_url.query)
+        param_value = query_params.get("url", [None])[0]
+        if param_value:
             param_value = UrlLocation.get_cleaned_link(param_value)
             return param_value
 

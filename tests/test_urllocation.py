@@ -571,6 +571,17 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_cleaned_link__stupid_linkedin(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.linkedin.com/safety/go?url=https%3A%2F%2Fgzeek.pl"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, "https://gzeek.pl")
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_is_onion(self):
         # True cases
 
@@ -585,3 +596,14 @@ class UrlLocationTest(FakeInternetTestCase):
         url = UrlLocation(test_link)
 
         self.assertFalse(url.is_onion())
+
+    def test_get_url_arg(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.linkedin.com/safety/go?url=https%3A%2F%2Fgzeek.pl"
+
+        cleaned_link = UrlLocation(test_link).get_url_arg()
+
+        self.assertEqual(cleaned_link, "https://gzeek.pl")
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)

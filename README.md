@@ -52,6 +52,10 @@ HTML pages
 page = HtmlPage(url, contents)
 page.get_title()
 page.get_description()
+page.get_lanugage()
+page.get_date_published()
+page.get_author()
+page.get_feeds()
 ```
 
 RSS pages
@@ -59,6 +63,9 @@ RSS pages
 page = RssPage(url, contents)
 page.get_title()
 page.get_description()
+page.get_lanugage()
+page.get_date_published()
+page.get_author()
 page.get_entries()
 ```
 
@@ -97,6 +104,14 @@ is_status_code_invalid(status_code) # provides information if input status code 
 Normally to obtain page contents you should just
 ```
 url = BaseUrl("https://example.com")
+url.get_title()
+url.get_description()
+url.get_lanugage()
+url.get_date_published()
+url.get_author()
+url.get_feeds()
+url.get_entries()
+
 response = url.get_response()
 ```
 
@@ -171,8 +186,21 @@ page = PageResponseObject().get_page()   # returns type of page, be it HtmlPage,
 
 You can use existing scraping servers.
 
+ - RemoteUrl - Wrapper around RemoteServer for easy access to remote data. Provides API similar to BaseUrl.
  - RemoteServer - Interface for calling external crawling systems
- - RemoteUrl - Wrapper around RemoteServer for easy access to remote data
+
+```
+url = RemoteUrl("http://192.168.0.168...")
+url.get_title()
+url.get_description()
+url.get_lanugage()
+url.get_date_published()
+url.get_author()
+url.get_feeds()
+url.get_entries()
+
+response = url.get_response()
+```
 
 The communication between client and server should be through JSON requests and responses.
 
