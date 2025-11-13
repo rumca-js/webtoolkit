@@ -221,6 +221,6 @@ You can use them in your project:
 Project also provides manual tests that check if project works
 ```
 make tests
-make tests-min minimal set of unit tests
-make tests-man tests performed on real internet data
+make tests-min # minimal set of unit tests
+make tests-man # tests performed on real internet data
 ```
