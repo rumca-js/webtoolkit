@@ -17,39 +17,14 @@ Install by
 pip install webtoolkit
 ```
 
-# Url parsing
-
-Sanitize link and remove trackers:
-```
-link = UrlLocation.get_cleaned_link(link)
-```
-
-Extract domain name:
-```
-domain = UrlLocation(link).get_domain()
-```
-
-Parse link, returns parts of the link [TBD]. It should return .scheme .domain .location .args
-```
-location = UrlLocation(link)
-parsed_data = location.parse_url()
-link = location.join(parsed_data) - joins back parsed data into a link
-```
-
-Go up in link structure. First to parent location, then to domain, then to domain super.
-```
-location = UrlLocation(link).up()
-```
-
-```
-UrlLocation(link).is_onion()
-```
-
 # Url processing
 
 Normally to obtain page contents you should just
 ```
 url = BaseUrl("https://example.com")
+
+response = url.get_response()
+
 url.get_title()
 url.get_description()
 url.get_lanugage()
@@ -57,8 +32,6 @@ url.get_date_published()
 url.get_author()
 url.get_feeds()
 url.get_entries()
-
-response = url.get_response()
 ```
 
 It supports many different page types automatically. You can request youtube pages, github, etc.
@@ -95,18 +68,41 @@ page = OpmlPage(url, contents)
 page.get_entries()
 ```
 
+# Url location processing
+
+Sanitize link and remove trackers:
+```
+link = UrlLocation.get_cleaned_link(link)
+```
+
+Extract domain name:
+```
+domain = UrlLocation(link).get_domain()
+```
+
+Parse link, returns parts of the link.
+```
+location = UrlLocation(link)
+parsed_data = location.parse_url()
+link = location.join(parsed_data) - joins back parsed data into a link
+```
+
+Go up in link structure. First to parent location, then to domain, then to domain super.
+```
+location = UrlLocation(link).up()
+```
+
+```
+UrlLocation(link).is_onion()
+```
+
 # Content processing
 
 Internet contents can be parsed in various ways.
 
 Extracts links from contents
 ```
-ContentLinkParser().get_links()
-```
-
-Check if contents if captcha protected
-```
-ContentInterface().is_captcha_protected()
+ContentLinkParser(contents).get_links()
 ```
 
 Obtain text ready for display
@@ -119,26 +115,6 @@ Status analysis. Note that from some status we cannot know if page is OK, or not
 ```
 is_status_code_valid(status_code)   # provides information if input status code indicates the page is OK
 is_status_code_invalid(status_code) # provides information if input status code indicates the page is invalid
-```
-
-# Standard interfaces
-
-Two standard interfaces
- - CrawlerInterface - Standard interface for crawler implementations
- - HandlerInterface - Allows implementing custom handlers for different use cases
-
-Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi. This package does not provide them, to make it more clean and neat.
-
-Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
-
-Default User agents
-```
-webtoolkit.get_default_user_agent()
-```
-
-Default User headers
-```
-webtoolkit.get_default_headers()
 ```
 
 # HTTP processing - requests
@@ -196,6 +172,8 @@ You can use existing scraping servers.
 
 ```
 url = RemoteUrl("http://192.168.0.168...")
+response = url.get_response()
+
 url.get_title()
 url.get_description()
 url.get_lanugage()
@@ -203,8 +181,6 @@ url.get_date_published()
 url.get_author()
 url.get_feeds()
 url.get_entries()
-
-response = url.get_response()
 ```
 
 The communication between client and server should be through JSON requests and responses.
@@ -212,6 +188,26 @@ The communication between client and server should be through JSON requests and 
 Other classes
 
  - RemoteServer - Interface for calling external crawling systems
+
+# Standard interfaces
+
+Two standard interfaces
+ - CrawlerInterface - Standard interface for crawler implementations
+ - HandlerInterface - Allows implementing custom handlers for different use cases
+
+Crawlers are different means of obtaining Internet data. Examples: requests, selenium, playwright, httpx, curlcffi. This package does not provide them, to make it more clean and neat.
+
+Handlers are classes that allows automatic deduction of links, places, video codes from links, or data. Examples: youtube handler can use yt-dlp to obtain channel video list, or obtain channel ID, etc.
+
+Default User agents
+```
+webtoolkit.get_default_user_agent()
+```
+
+Default User headers
+```
+webtoolkit.get_default_headers()
+```
 
 # Testing
 
@@ -224,4 +220,6 @@ You can use them in your project:
 Project also provides manual tests that check if project works
 ```
 make tests
+make tests-min minimal set of unit tests
+make tests-man tests performed on real internet data
 ```
