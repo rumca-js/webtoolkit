@@ -36,6 +36,15 @@ url.get_entries()
 
 BaseUrl automatically detects and supports many different page types, including YouTube, GitHub, Reddit, and others.
 
+Chain of data
+```
+url = BaseUrl("https://example.com")
+
+response = url.get_response()
+handler = url.get_handler()
+page = handler.get_page()
+```
+
 # Page definitions
 
 BaseUrl supports various page types through different classes
@@ -153,6 +162,11 @@ PageResponseObject().is_captcha_protected()
 ```
 
 Note: Some status codes may indicate uncertain results (e.g. throttling), where the page cannot be confirmed as valid or invalid yet.
+
+To obtain page structure from response, simply
+```
+PageResponseObject().get_page()   # can return HtmlPage, RssPage, etc.
+```
 
 Response communication is done via JSON
 ```
