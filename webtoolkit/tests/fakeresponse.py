@@ -285,14 +285,12 @@ class TestResponseObject(PageResponseObject):
     def get_text_for_url(self, url):
         if url.startswith("https://www.youtube.com/channel/"):
             return self.get_contents_youtube_channel(url)
+
         if url.startswith("https://youtube.com/channel/"):
             return self.get_contents_youtube_channel(url)
 
-        if url.startswith("https://odysee.com/$/rss"):
-            return webpage_samtime_youtube_rss
-
-        if url.startswith("https://odysee.com/"):
-            return youtube_channel_html_linus_tech_tips
+        if url.startswith("https://www.youtube.com/watch?v=666"):
+            self.status_code = 500
 
         if url.startswith("https://www.youtube.com/watch?v=666"):
             return webpage_no_pubdate_rss
@@ -317,6 +315,18 @@ class TestResponseObject(PageResponseObject):
         if url == "https://www.youtube.com/product/sitemap.xml":
             return youtube_sitemap_product
 
+        if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId=666"):
+            return ""
+
+        if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId"):
+            return return_dislike_json
+
+        if url.startswith("https://odysee.com/$/rss"):
+            return webpage_samtime_youtube_rss
+
+        if url.startswith("https://odysee.com/"):
+            return youtube_channel_html_linus_tech_tips
+
         if url == "https://rss-page-with-broken-content-type.com/feed":
             return youtube_channel_html_linus_tech_tips
 
@@ -337,9 +347,6 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://api.github.com"):
             return github_json
-
-        if url.startswith("https://returnyoutubedislikeapi.com/votes?videoId"):
-            return return_dislike_json
 
         if url.startswith("https://hnrss.org"):
             return webpage_hackernews_rss

@@ -179,12 +179,14 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         self.assertTrue(response)
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_social_data__none(self):
+    def test_get_social_data__valid(self):
         MockRequestCounter.mock_page_requests = 0
 
-        test_link = "https://www.youtube.com/watch?v=666"
+        test_link = "https://www.youtube.com/watch?v=123"
 
         handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler.get_response()
+
         # call tested function
         social_data = handler.get_social_data()
 
@@ -200,18 +202,27 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         self.assertFalse(social_data["stars"])
         self.assertFalse(social_data["followers_count"])
 
-    def test_get_social_data__valid(self):
+    def test_get_social_data__none(self):
         MockRequestCounter.mock_page_requests = 0
 
-        test_link = "https://www.youtube.com/watch?v=123"
+        test_link = "https://www.youtube.com/watch?v=666"
 
         handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
-        handler.get_response()
-
         # call tested function
         social_data = handler.get_social_data()
 
         self.assertFalse(social_data is None)
+
+        self.assertFalse(social_data["thumbs_up"])
+        self.assertFalse(social_data["thumbs_down"])
+        self.assertFalse(social_data["view_count"])
+        self.assertFalse(social_data["rating"])
+        self.assertFalse(social_data["upvote_ratio"])
+        self.assertFalse(social_data["upvote_diff"])
+        self.assertFalse(social_data["upvote_view_ratio"])
+        self.assertFalse(social_data["stars"])
+        self.assertFalse(social_data["followers_count"])
+
 
 
 class YouTubeChannelHandlerTest(FakeInternetTestCase):
