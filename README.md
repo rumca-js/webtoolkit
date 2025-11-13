@@ -19,7 +19,7 @@ pip install webtoolkit
 
 # Url processing
 
-Normally to obtain page contents you should just
+To obtain a Url’s data, you can simply do:
 ```
 url = BaseUrl("https://example.com")
 
@@ -34,11 +34,11 @@ url.get_feeds()
 url.get_entries()
 ```
 
-It supports many different page types automatically. You can request youtube pages, github, etc.
+BaseUrl automatically detects and supports many different page types, including YouTube, GitHub, Reddit, and others.
 
 # Page definitions
 
-BaseUrl can support various types of pages.
+BaseUrl supports various page types through different classes
 
 HTML pages
 ```
@@ -80,14 +80,15 @@ Extract domain name:
 domain = UrlLocation(link).get_domain()
 ```
 
-Parse link, returns parts of the link.
+Parse and reconstruct links
 ```
 location = UrlLocation(link)
 parsed_data = location.parse_url()
 link = location.join(parsed_data) - joins back parsed data into a link
 ```
 
-Go up in link structure. First to parent location, then to domain, then to domain super.
+Navigate up the URL structure
+Go up in the link hierarchy — first to the parent path, then to the domain, and finally to the domain root.
 ```
 location = UrlLocation(link).up()
 ```
