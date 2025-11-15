@@ -715,50 +715,53 @@ class FakeInternetData(object):
         return data
 
     def get_getj(self, request=None, url=None):
-        if self.url == "https://linkedin.com":
+        if request:
+            url = request.url
+
+        if url == "https://linkedin.com":
             self.properties["title"] = "Https LinkedIn Page title"
             self.properties["description"] = "Https LinkedIn Page description"
-        elif self.url == "https://m.youtube.com/watch?v=1234":
+        elif url == "https://m.youtube.com/watch?v=1234":
             self.properties["link"] = "https://www.youtube.com/watch?v=1234"
             self.properties["feeds"] = [
                 "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
             ]
             self.properties["title"] = "YouTube 1234 video"
             self.properties["language"] = None
-        elif self.url == "https://www.youtube.com/watch?v=1234":
+        elif url == "https://www.youtube.com/watch?v=1234":
             self.properties["link"] = "https://www.youtube.com/watch?v=1234"
             self.properties["feeds"] = [
                 "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
             ]
             self.properties["title"] = "YouTube 1234 video"
             self.properties["language"] = None
-        elif self.url == "https://youtu.be/1234":
+        elif url == "https://youtu.be/1234":
             self.properties["link"] = "https://www.youtube.com/watch?v=1234"
             self.properties["feeds"] = [
                 "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id",
             ]
             self.properties["title"] = "YouTube 1234 video"
             self.properties["language"] = None
-        elif self.url == "https://www.reddit.com/r/searchengines/":
+        elif url == "https://www.reddit.com/r/searchengines/":
             self.properties["feeds"] = ["https://www.reddit.com/r/searchengines/.rss"]
-        elif self.url == "https://www.reddit.com/r/searchengines":
+        elif url == "https://www.reddit.com/r/searchengines":
             self.properties["feeds"] = ["https://www.reddit.com/r/searchengines/.rss"]
-        elif self.url == "https://www.reddit.com/r/searchengines/.rss":
+        elif url == "https://www.reddit.com/r/searchengines/.rss":
             self.set_entries(10)
-        elif self.url == "https://page-with-rss-link.com":
+        elif url == "https://page-with-rss-link.com":
             self.properties["title"] = "Page with RSS link"
             self.properties["feeds"] = ["https://page-with-rss-link.com/feed"]
-        elif self.url == "https://page-with-rss-link.com/feed":
+        elif url == "https://page-with-rss-link.com/feed":
             self.set_entries(10)
             self.response["Content-Type"] = "application/rss+xml"
             self.properties["title"] = "Page with RSS link - RSS contents"
-        elif self.url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
+        elif url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
             self.set_entries(13)
             self.response["Content-Type"] = "application/rss+xml"
             self.properties["thumbnail"] = (
                 "https://www.codeproject.com/App_Themes/Std/Img/logo100x30.gif"
             )
-        elif self.url == "https://no-props-page.com":
+        elif url == "https://no-props-page.com":
             self.properties["title"] = None
             self.properties["description"] = None
             self.properties["date_published"] = None
@@ -767,92 +770,92 @@ class FakeInternetData(object):
             self.properties["album"] = None
             self.properties["page_rating"] = 0
             self.properties["thumbnail"] = None
-        elif self.url == "https://page-with-http-status-615.com":
+        elif url == "https://page-with-http-status-615.com":
             self.response["status_code"] = HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS
-        elif self.url == "https://page-with-http-status-614.com":
+        elif url == "https://page-with-http-status-614.com":
             self.response["status_code"] = HTTP_STATUS_CODE_SERVER_ERROR
-        elif self.url == "https://page-with-http-status-600.com":
+        elif url == "https://page-with-http-status-600.com":
             self.response["status_code"] = HTTP_STATUS_CODE_EXCEPTION
-        elif self.url == "https://page-with-http-status-500.com":
+        elif url == "https://page-with-http-status-500.com":
             self.response["status_code"] = 500
-        elif self.url == "https://page-with-http-status-429.com":
+        elif url == "https://page-with-http-status-429.com":
             self.response["status_code"] = HTTP_STATUS_TOO_MANY_REQUESTS
-        elif self.url == "https://page-with-http-status-403.com":
+        elif url == "https://page-with-http-status-403.com":
             self.response["status_code"] = HTTP_STATUS_USER_AGENT
-        elif self.url == "https://page-with-http-status-400.com":
+        elif url == "https://page-with-http-status-400.com":
             self.response["status_code"] = 400
-        elif self.url == "https://page-with-http-status-300.com":
+        elif url == "https://page-with-http-status-300.com":
             self.response["status_code"] = 300
-        elif self.url == "https://page-with-http-status-200.com":
+        elif url == "https://page-with-http-status-200.com":
             self.response["status_code"] = 200
-        elif self.url == "https://page-with-http-status-100.com":
+        elif url == "https://page-with-http-status-100.com":
             self.response["status_code"] = 100
-        elif self.url == "http://page-with-http-status-500.com":
+        elif url == "http://page-with-http-status-500.com":
             self.response["status_code"] = 500
-        elif self.url == "http://page-with-http-status-400.com":
+        elif url == "http://page-with-http-status-400.com":
             self.response["status_code"] = 400
-        elif self.url == "http://page-with-http-status-300.com":
+        elif url == "http://page-with-http-status-300.com":
             self.response["status_code"] = 300
-        elif self.url == "http://page-with-http-status-200.com":
+        elif url == "http://page-with-http-status-200.com":
             self.response["status_code"] = 200
-        elif self.url == "http://page-with-http-status-100.com":
+        elif url == "http://page-with-http-status-100.com":
             self.response["status_code"] = 100
-        elif self.url == "https://www.youtube.com/watch?v=666":
+        elif url == "https://www.youtube.com/watch?v=666":
             self.response["status_code"] = 500
-        elif self.url == "https://invalid.rsspage.com/rss.xml":
+        elif url == "https://invalid.rsspage.com/rss.xml":
             self.response["status_code"] = 500
         elif (
-            self.url
+            url
             == "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
         ):
             self.set_entries(13)
             self.response["Content-Type"] = "application/rss+xml"
-            self.properties["feeds"] = [self.url]
+            self.properties["feeds"] = [url]
         elif (
-            self.url
+            url
             == "https://www.youtube.com/feeds/videos.xml?channel_id=NOLANGUAGETIMESAMTIMESAM"
         ):
             self.set_entries(13, language=None)
             self.response["Content-Type"] = "application/rss+xml"
-            self.properties["feeds"] = [self.url]
+            self.properties["feeds"] = [url]
             self.properties["language"] = None
-        elif self.url.startswith("https://odysee.com/$/rss"):
+        elif url.startswith("https://odysee.com/$/rss"):
             self.set_entries(13)
             self.response["Content-Type"] = "application/rss+xml"
-            self.properties["feeds"] = [self.url]
-        elif self.url == "https://www.geekwire.com/feed":
+            self.properties["feeds"] = [url]
+        elif url == "https://www.geekwire.com/feed":
             self.text_data = geekwire_feed
             self.response["Content-Type"] = "application/rss+xml"
-            self.properties["feeds"] = [self.url]
+            self.properties["feeds"] = [url]
         elif (
-            self.url
+            url
             == "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id"
         ):
             self.set_entries(13)
             self.response["Content-Type"] = "application/rss+xml"
-            self.properties["feeds"] = [self.url]
-        elif self.url == "https://instance.com/apps/rsshistory/sources-json":
+            self.properties["feeds"] = [url]
+        elif url == "https://instance.com/apps/rsshistory/sources-json":
             self.properties["title"] = "Instance Proxy"
-        elif self.url == "https://v.firebog.net/hosts/AdguardDNS.txt":
+        elif url == "https://v.firebog.net/hosts/AdguardDNS.txt":
             self.text_data = firebog_adguard_list
-        elif self.url == "https://v.firebog.net/hosts/static/w3kbl.txt":
+        elif url == "https://v.firebog.net/hosts/static/w3kbl.txt":
             self.text_data = firebog_w3kbl_list
-        elif self.url == "https://v.firebog.net/hosts/lists.php?type=tick":
+        elif url == "https://v.firebog.net/hosts/lists.php?type=tick":
             self.text_data = firebog_tick_lists
-        elif self.url == "https://v.firebog.net/hosts/RPiList-Malware.txt":
+        elif url == "https://v.firebog.net/hosts/RPiList-Malware.txt":
             self.text_data = firebog_malware
-        elif self.url == "https://casino.com":
+        elif url == "https://casino.com":
             self.properties["title"] = "Casino Casino Casino"
             self.properties["description"] = "Casino Casino Casino"
-        elif self.url == "https://nfsw.com":
+        elif url == "https://nfsw.com":
             self.properties["title"] = "AI NSFW girlfriend"
             self.properties["description"] = "AI NSFW girlfriend"
-        elif self.url == "https://binary.com/file":
+        elif url == "https://binary.com/file":
             self.properties["title"] = ""
             self.properties["description"] = ""
             self.binary_data = "text".encode()
 
-        if self.url.find("reddit") >= 0:
+        if url.find("reddit") >= 0:
             self.properties["language"] = "en"
 
         if self.response["status_code"] > 200 and self.response["status_code"] < 400:
