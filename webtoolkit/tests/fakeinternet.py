@@ -47,13 +47,18 @@ class FakeInternetTestCase(unittest.TestCase):
 
         BaseUrl.get_request_for_url = self.get_request_for_url
 
-    def get_getj(self, url, name="", settings=None):
+    def get_getj(self, request=None, url=None):
         # print("FakeInternet:get_getj: Url:{}".format(url))
-        # return json.loads(remote_server_json)
-        MockRequestCounter.requested(url=url, info=settings)
 
-        data = FakeInternetData(url)
-        return data.get_getj(name, settings)
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        MockRequestCounter.requested(url=request.url, info=request)
+
+        data = FakeInternetData(request.url)
+        return data.get_getj(request, url)
 
     def get_socialj(self, url):
         MockRequestCounter.requested(url=url)

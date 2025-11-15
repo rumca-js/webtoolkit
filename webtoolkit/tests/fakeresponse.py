@@ -714,7 +714,7 @@ class FakeInternetData(object):
 
         return data
 
-    def get_getj(self, name="", settings=None):
+    def get_getj(self, request=None, url=None):
         if self.url == "https://linkedin.com":
             self.properties["title"] = "Https LinkedIn Page title"
             self.properties["description"] = "Https LinkedIn Page description"

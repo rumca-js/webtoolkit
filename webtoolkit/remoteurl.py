@@ -24,7 +24,7 @@ class RemoteUrl(ContentInterface):
 
     def get_responses(self):
         if self.all_properties is None:
-            self.all_properties = self.server.get_getj(self.url)
+            self.all_properties = self.server.get_getj(url=self.url)
 
         if not self.responses:
             self.responses = {"Default": RemoteServer.get_response(self.all_properties)}
