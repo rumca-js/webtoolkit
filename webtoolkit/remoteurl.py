@@ -1,6 +1,9 @@
+from collections import OrderedDict
+
 from .contentinterface import ContentInterface
 from .remoteserver import RemoteServer
 from .webtools import json_decode_field
+from .response import json_to_response
 
 
 class RemoteUrl(ContentInterface):
@@ -27,27 +30,34 @@ class RemoteUrl(ContentInterface):
             self.all_properties = self.server.get_getj(url=self.url)
 
         if not self.responses:
-            self.responses = {"Default": RemoteServer.get_response(self.all_properties)}
+            self.responses = OrderedDict()
+
+            streams_data = RemoteServer.read_properties_section("Streams", self.all_properties)
+
+            if streams_data and len(streams_data) > 0:
+                for item in streams_data:
+                    response = json_to_response(item)
+                    if response.url:
+                        self.responses[response.url] = response
 
         return self.responses
 
     def get_response(self):
-        if "Default" in self.get_responses():
-            return self.responses["Default"]
+        responses = self.get_responses()
+        if "Default" in responses:
+            return responses["Default"]
+        for url in responses:
+            return responses[url]
 
     def get_text(self):
-        responses = self.get_responses()
-        if "Text" in responses:
-            return responses["Text"].get_text()
-        if "Default" in responses:
-            return responses["Default"].get_text()
+        response = self.get_response()
+        if response and respose.get_text():
+            return response.get_text()
 
     def get_binary(self):
-        responses = self.get_responses()
-        if "Binary" in responses:
-            return responses["Binary"].get_text()
-        if "Default" in responses:
-            return responses["Default"].get_binary()
+        response = self.get_response()
+        if response and respose.get_binary():
+            return response.get_binary()
 
     def get_properties(self):
         if self.all_properties is None:

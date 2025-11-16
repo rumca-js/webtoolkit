@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 import requests
 import urllib.parse
@@ -222,28 +223,27 @@ class RemoteServer(object):
         if not all_properties:
             return
 
-        response_data = RemoteServer.read_properties_section("Response", all_properties)
-        if not response_data:
+        streams = RemoteServer.read_properties_section("Streams", all_properties)
+
+        if streams and len(streams) > 0:
+            for item in streams:
+                response = json_to_response(item)
+                return response
+
+    def get_responses(all_properties):
+        if not all_properties:
             return
 
-        response = json_to_response(response_data)
-        if not response:
-            return
+        responses = OrderedDict()
 
         streams = RemoteServer.read_properties_section("Streams", all_properties)
 
-        if streams and "Text" in streams:
-            response.text = streams["Text"]
-
-        if streams and "Binary" in streams:
-            response.binary = streams["Binary"]
-
         if not response.text and streams and len(streams) > 0:
             for item in streams:
-                response = json_to_response(streams[item])
-                return response
+                response = json_to_response(item)
+                responses[item] = response
 
-        return response
+        return responses
 
     def encode(data):
         return urllib.parse.quote(data, safe="")

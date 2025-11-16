@@ -200,6 +200,11 @@ def test_baseurl__remote_url():
         print("No title")
         return
 
+    remote_responses = remote_url.get_responses()
+    if not remote_responses:
+        print("No responses")
+        return
+
     print_bar()
 
 
