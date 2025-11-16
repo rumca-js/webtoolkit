@@ -678,17 +678,9 @@ class FakeInternetData(object):
             "thumbnail": None,
         }
 
-        self.response = {
-            "status_code": 200,
-            "Content-Length": 200,
-            "Content-Type": "text/html",
-            "body_hash": json_encode_field(b"01001012"),
-            "hash": json_encode_field(b"01001012"),
-            "text" : "text",
-            "is_valid": True,
-            "is_invalid": False,
-            "is_allowed": True,
-        }
+        response = TestResponseObject(self.url, {}, 15)
+        self.response = response_to_json(response)
+
         self.text_data = "Something"
         self.binary_data = None
         self.entries = []
