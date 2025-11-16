@@ -239,7 +239,9 @@ class RemoteServer(object):
             response.binary = streams["Binary"]
 
         if not response.text and streams and len(streams) > 0:
-            response.text = streams[0]["text"]
+            for item in streams:
+                response = json_to_response(streams[item])
+                return response
 
         return response
 

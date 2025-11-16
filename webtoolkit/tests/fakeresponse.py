@@ -15,6 +15,7 @@ from webtoolkit import (
     calculate_hash,
     json_encode_field,
     json_decode_field,
+    response_to_json,
     PageResponseObject,
     ResponseHeaders,
     HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
@@ -683,6 +684,7 @@ class FakeInternetData(object):
             "Content-Type": "text/html",
             "body_hash": json_encode_field(b"01001012"),
             "hash": json_encode_field(b"01001012"),
+            "text" : "text",
             "is_valid": True,
             "is_invalid": False,
             "is_allowed": True,
@@ -706,8 +708,7 @@ class FakeInternetData(object):
             {
                 "name": "Streams",
                 "data": {
-                    "Text": self.text_data,
-                    "Binary": json_encode_field(self.binary_data),
+                    self.url : self.response,
                 },
             }
         )
