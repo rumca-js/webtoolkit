@@ -2,6 +2,7 @@ import requests
 
 from webtoolkit import (
    BaseUrl,
+   RemoteUrl,
    YouTubeChannelHandler,
    YouTubeVideoHandler,
    OdyseeChannelHandler,
@@ -178,14 +179,38 @@ def test_baseurl__reddit__news():
     return run_with_base_url(test_url)
 
 
+def test_baseurl__remote_url():
+    test_url = "https://www.google.com"
+
+    print("Running RemoteUrl test {} with handler".format(test_url))
+
+    url = BaseUrl(url=test_url)
+    response = url.get_response()
+
+    all_properties = url.get_properties(full=True)
+
+    remote_url = RemoteUrl(all_properties=all_properties)
+    remote_response = remote_url.get_response()
+
+    if not remote_response.is_valid():
+        print("Remote response is not valid")
+        return
+
+    if not remote_url.get_title():
+        print("No title")
+        return
+
+    print_bar()
+
+
 def main():
-    #test_handler_vanilla_google()
-    #test_handler_youtube_channel_by_rss()
-    #test_handler_youtube_channel_by_channel()
-    #test_handler_youtube_video()
-    #test_handler_youtube_channel_by_handle()
-    #test_handler_odysee_video()
-    #test_handler_odysee_channel()
+    test_handler_vanilla_google()
+    test_handler_youtube_channel_by_rss()
+    test_handler_youtube_channel_by_channel()
+    test_handler_youtube_video()
+    test_handler_youtube_channel_by_handle()
+    test_handler_odysee_video()
+    test_handler_odysee_channel()
 
     test_baseurl__vanilla_google()
     test_baseurl__youtube_video()
@@ -195,6 +220,8 @@ def main():
     test_baseurl__github()
     test_baseurl__reddit__channel()
     test_baseurl__reddit__news()
+
+    test_baseurl__remote_url()
 
 
 main()
