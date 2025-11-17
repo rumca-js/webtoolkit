@@ -219,31 +219,31 @@ class RemoteServer(object):
 
         return json_data
 
-    def get_response(all_properties):
-        if not all_properties:
-            return
-
-        streams = RemoteServer.read_properties_section("Streams", all_properties)
-
-        if streams and len(streams) > 0:
-            for item in streams:
-                response = json_to_response(item)
-                return response
-
     def get_responses(all_properties):
         if not all_properties:
             return
 
         responses = OrderedDict()
 
-        streams = RemoteServer.read_properties_section("Streams", all_properties)
-
-        if not response.text and streams and len(streams) > 0:
-            for item in streams:
-                response = json_to_response(item)
-                responses[item] = response
+        streams_data = RemoteServer.read_properties_section("Streams", all_properties)
+        if streams_data and len(streams_data) > 0:
+            for item in streams_data:
+                response_data = streams_data[item]
+                response = json_to_response(response_data)
+                if response.url:
+                    responses[item] = response
 
         return responses
+
+    def get_response(all_properties):
+        responses = RemoteServer.get_responses(all_properties)
+        if not responses:
+            return
+
+        if "Default" in responses:
+            return responses["Default"]
+        for url in responses:
+            return responses[url]
 
     def encode(data):
         return urllib.parse.quote(data, safe="")

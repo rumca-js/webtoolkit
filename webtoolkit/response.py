@@ -566,7 +566,13 @@ def json_to_response(json_data, with_streams=False):
     response.body_hash = body_hash
 
     request_data = json_data.get("request")
-    response.set_request(json_to_request(request_data))
+    request = json_to_request(request_data)
+    response.set_request(request)
+
+    if not response.url and request:
+        response.url = request.url
+    if not response.url and response.request_url:
+        response.url = response.request_url
 
     return response
 

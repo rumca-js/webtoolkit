@@ -15,13 +15,22 @@ all_properties = [
        "name" : "Text",
    },
    {
-       "data" : {},
+       "data" : {
+           "https://example.com" : {
+               "status_code" : 200,
+               "request" : {
+                   "url": "https://example.com",
+                   "crawler_name" : "Fake Properties Crawler2",
+               },
+               "text" : "<html></html"
+           }
+       },
        "name" : "Streams",
    },
    {
        "data" : {
            "crawler_name" : "Fake Properties Crawler1",
-           },
+       },
        "name" : "Request",
    },
    {
@@ -74,6 +83,12 @@ class RemoteUrlTest(FakeInternetTestCase):
 
         self.assertTrue(properties)
         self.assertIn("stars", properties)
+
+    def test_get_text(self):
+        u = RemoteUrl("https://google.com")
+        text = u.get_text()
+
+        self.assertTrue(text)
 
     def test_get_hash(self):
         u = RemoteUrl("https://linkedin.com")

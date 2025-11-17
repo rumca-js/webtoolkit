@@ -30,15 +30,7 @@ class RemoteUrl(ContentInterface):
             self.all_properties = self.server.get_getj(url=self.url)
 
         if not self.responses:
-            self.responses = OrderedDict()
-
-            streams_data = RemoteServer.read_properties_section("Streams", self.all_properties)
-
-            if streams_data and len(streams_data) > 0:
-                for item in streams_data:
-                    response = json_to_response(item)
-                    if response.url:
-                        self.responses[response.url] = response
+            self.responses = RemoteServer.get_responses(self.all_properties)
 
         return self.responses
 
@@ -51,7 +43,7 @@ class RemoteUrl(ContentInterface):
 
     def get_text(self):
         response = self.get_response()
-        if response and respose.get_text():
+        if response and response.get_text():
             return response.get_text()
 
     def get_binary(self):

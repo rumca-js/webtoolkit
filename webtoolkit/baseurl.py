@@ -225,8 +225,8 @@ class BaseUrl(ContentInterface):
             return self.response
 
     def get_streams(self):
-        streams = []
-        streams_data = []
+        streams = {}
+        result = {}
 
         handler = self.get_handler()
 
@@ -238,11 +238,11 @@ class BaseUrl(ContentInterface):
             streams = self.handler.get_streams()
 
         if streams:
-            for response in streams.values():
+            for key, response in streams.items():
                 response_json = response_to_json(response)
-                streams_data.append(response_json)
+                result[key] = response_json
 
-        return streams_data
+        return result
 
     def get_headers(self):
         # TODO implement
