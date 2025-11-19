@@ -1,3 +1,6 @@
+"""
+Default url handler.
+"""
 import copy
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
@@ -10,7 +13,9 @@ from .handlerhttppage import HttpPageHandler
 
 
 class DefaultUrlHandler(HttpPageHandler):
-    """ """
+    """
+    Default URL handler
+    """
 
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.code = None
@@ -89,6 +94,9 @@ class DefaultChannelHandler(DefaultUrlHandler):
 
 
 class DefaultCompoundChannelHandler(DefaultChannelHandler):
+    """
+    Default URL handler which is capable of obtaining data from many network sources automatically.
+    """
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.channel_sources_urls = OrderedDict()
         super().__init__(url=url, request=request, url_builder=url_builder)

@@ -1,3 +1,6 @@
+"""
+Crawler interface can be implemented to provide new mechanisms of crawling
+"""
 import json
 import os
 import base64

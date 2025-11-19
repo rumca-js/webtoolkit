@@ -17,6 +17,9 @@ from .urllocation import UrlLocation
 
 
 class ContentInterface(object):
+    """
+    Content interface
+    """
     def __init__(self, url, contents):
         self.url = url
         self.contents = contents
@@ -25,38 +28,74 @@ class ContentInterface(object):
         return self.contents
 
     def get_title(self):
+        """
+        Returns title
+        """
         raise NotImplementedError
 
     def get_description(self):
+        """
+        Returns description
+        """
+        raise NotImplementedError
+
+    def get_date_published(self):
+        """
+        This should be date. Not string
+        """
         raise NotImplementedError
 
     def get_language(self):
+        """
+        Returns language
+        """
         raise NotImplementedError
 
     def get_thumbnail(self):
+        """
+        Returns thumbnail
+        """
         raise NotImplementedError
 
     def get_author(self):
+        """
+        Returns author
+        """
         raise NotImplementedError
 
     def get_album(self):
+        """
+        Returns album
+        """
         raise NotImplementedError
 
     def get_tags(self):
+        """
+        Returns tags
+        """
         raise NotImplementedError
 
     def get_url(self):
+        """
+        Returns url
+        """
         return self.url
 
     def get_canonical_url(self):
+        """
+        Returns canonical url
+        """
         return self.url
 
     def get_feeds(self):
+        """
+        Returns feeds from contents
+        """
         return []
 
     def get_page_rating(self):
         """
-        Default behavior
+        Returns contents page rating
         """
         rating_vector = self.get_page_rating_vector()
         link_rating = self.get_link_rating()
@@ -107,21 +146,24 @@ class ContentInterface(object):
 
         return result
 
-    def get_date_published(self):
-        """
-        This should be date. Not string
-        """
-        raise NotImplementedError
-
     def get_contents_hash(self):
+        """
+        Returns contents hash
+        """
         contents = self.get_contents()
         if contents:
             return calculate_hash(contents)
 
     def get_contents_body_hash(self):
+        """
+        Returns contents body hash
+        """
         return self.get_contents_hash()
 
     def get_properties(self):
+        """
+        Returns contents properties
+        """
         props = {}
 
         props["link"] = self.url

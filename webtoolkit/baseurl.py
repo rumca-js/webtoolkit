@@ -1,13 +1,9 @@
 """
-Main Url handling class
+Url handling class.
 
 @example
-url = Url(link = "https://google.com")
+url = BaseUrl(link = "https://google.com")
 response = url.get_response()
-
-options.request.url
-options.mode_mapping
-
 """
 
 import base64
@@ -60,7 +56,7 @@ from .crawlers import (
 
 class BaseUrl(ContentInterface):
     """
-    Encapsulates data page, and builder to make request
+    Base Url class capable of reading network pages.
     """
     def __init__(self, url=None, request=None, url_builder=None):
         """

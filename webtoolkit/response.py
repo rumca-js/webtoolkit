@@ -1,4 +1,5 @@
 """
+Response API
 """
 
 import html
@@ -23,6 +24,9 @@ from .request import request_to_json, json_to_request
 
 
 class ResponseHeaders(object):
+    """
+    Response headers
+    """
     def __init__(self, headers):
         self.headers = dict(headers)
 
@@ -143,6 +147,9 @@ class ResponseHeaders(object):
 
 
 class PageResponseObject(object):
+    """
+    Response object
+    """
     STATUS_CODE_OK = 200
     STATUS_CODE_ERROR = 500
     STATUS_CODE_UNDEF = 0
@@ -472,7 +479,9 @@ class PageResponseObject(object):
 
 
 def response_to_json(response, with_streams=False):
-    """ """
+    """
+    Converts response to JSON
+    """
     response_data = OrderedDict()
 
     if response:
@@ -533,6 +542,9 @@ def response_to_json(response, with_streams=False):
 
 
 def json_to_response(json_data, with_streams=False):
+    """
+    Converts JSON to response object
+    """
     if not json_data:
         return
 
@@ -578,6 +590,9 @@ def json_to_response(json_data, with_streams=False):
 
 
 def response_to_file(response, file_name):
+    """
+    Stores response in a file
+    """
     if not response:
         return
 
@@ -589,6 +604,9 @@ def response_to_file(response, file_name):
 
 
 def file_to_response(file_name):
+    """
+    Reads response from a file
+    """
     path = Path(file_name)
     if not path.exists():
         return 

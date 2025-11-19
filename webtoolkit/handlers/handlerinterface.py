@@ -1,13 +1,14 @@
+"""
+Handler interface that can be implemented to provide more complex logic for reading meta data.
+"""
 from webtoolkit import DefaultContentPage, calculate_hash_binary, calculate_hash
 
 
 class HandlerInterface(DefaultContentPage):
     """
-    Default URL handler.
-    Behavior can be changed by setting .h handler property
-
-    There can be various means of accessing things on the internet. we may use browsers, or programs
-    this allows us to provide interface
+    Handler interface can be implemented to provide more complex means for obtaining data from the internet.
+    For example to obtain data about YouTube video you can fetch JSON file from yt-dlp, but also ask 
+    return dislike page to obtain dislike ratio.
     """
 
     def __init__(self, url=None, contents=None, request=None, url_builder=None):

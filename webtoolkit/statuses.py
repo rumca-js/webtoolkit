@@ -92,14 +92,14 @@ def status_code_to_text(status_code):
 # fmt: on
 
 
-def is_status_code_valid(status_code):
+def is_status_code_valid(status_code) -> bool:
     if status_code is None:
         return False
 
     return status_code >= 200 and status_code < 400
 
 
-def is_status_code_invalid(status_code):
+def is_status_code_invalid(status_code) -> bool:
     """
     This function informs that status code is so bad, that further communication does not make any sense
     """
@@ -133,7 +133,7 @@ def is_status_code_invalid(status_code):
         return True
 
 
-def is_status_code_uncertain(status_code):
+def is_status_code_uncertain(status_code) -> bool:
     """
     Uncertain in a way that we do not know if page is valid, invalid.
     Maybe it is valid with other use agent, etc.

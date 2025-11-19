@@ -22,6 +22,9 @@ from .contentlinkparser import ContentLinkParser
 
 
 class DefaultContentPage(ContentInterface):
+    """
+    Default content page that does not throw exceptions
+    """
     def __init__(self, url, contents=""):
         super().__init__(url=url, contents=contents)
 
@@ -60,6 +63,9 @@ class DefaultContentPage(ContentInterface):
 
 
 class JsonPage(ContentInterface):
+    """
+    JSON page
+    """
     def __init__(self, url, contents):
         super().__init__(url=url, contents=contents)
 
@@ -296,9 +302,7 @@ class RssPageEntry(ContentInterface):
 
 class RssPage(ContentInterface):
     """
-    Handles RSS parsing.
-    Do not use feedparser directly enywhere. We use BasicPage
-    which allows to define timeouts.
+    RSS page
     """
 
     def __init__(self, url, contents):
@@ -632,6 +636,10 @@ class OpmlPageEntry(ContentInterface):
 
 
 class OpmlPage(ContentInterface):
+    """
+    OPML page
+    """
+
     def __init__(self, url, contents):
         """
         We could provide support for more items
@@ -1257,6 +1265,10 @@ class HtmlPage(ContentInterface):
 
 
 class XmlPage(ContentInterface):
+    """
+    XML page
+    """
+
     def __init__(self, url, contents):
         super().__init__(url=url, contents=contents)
 
@@ -1283,6 +1295,10 @@ class XmlPage(ContentInterface):
 
 
 class PageFactory(object):
+    """
+    Page factory that produces page object from response / contents.
+    """
+
     def get(response, contents):
         """
         Note: some servers might return text/html for RSS sources.
@@ -1386,6 +1402,10 @@ class PageFactory(object):
 
 
 class YouTubeVideoJson(object):
+    """
+    YouTube video JSON
+    """
+
     def __init__(self, url=None):
         self._json = {}
         self.url = url
@@ -1575,6 +1595,10 @@ class YouTubeVideoJson(object):
 
 
 class ReturnDislikeJson(object):
+    """
+    Return dislike JSON file.
+    """
+
     def __init__(self, url=None, contents=None):
         self.contents = contents
         self.load_response()

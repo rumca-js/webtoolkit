@@ -1,3 +1,10 @@
+"""
+Remote URL provides capabilities to call network crawling server, and read responses.
+
+url = RemoteUrl("https://127.0.0.1:8080")
+response = url.get_response()
+print(response.status_code)
+"""
 from collections import OrderedDict
 
 from .contentinterface import ContentInterface
@@ -7,6 +14,9 @@ from .response import json_to_response
 
 
 class RemoteUrl(ContentInterface):
+    """
+    Remote Network crawler URL
+    """
     def __init__(
         self,
         url=None,

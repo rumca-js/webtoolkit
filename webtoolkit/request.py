@@ -1,4 +1,5 @@
 """
+Request API
 """
 
 import urllib.parse
@@ -80,7 +81,9 @@ class PageRequestObject(object):
 
 
 def request_to_json(request):
-    """TODO"""
+    """
+    Converts request to JSON
+    """
     if not request:
         return
 
@@ -123,11 +126,18 @@ def request_to_json(request):
 
 
 def encode_field(data):
+    """
+    Encodes field
+    """
     if data:
         return urllib.parse.quote(data, safe="")
 
 
 def json_to_request(json_data):
+    """
+    Converts JSON to request
+    """
+
     if not json_data:
         return
     if "url" not in json_data:
@@ -166,13 +176,17 @@ def json_to_request(json_data):
 
 
 def request_encode(request):
-    """TODO"""
+    """
+    Encodes request for calling it with http
+    https://server?encoded
+    """
     json_data = request_to_json(request)
     return urllib.parse.urlencode(json_data)
 
 
 def request_quote(request):
-    """TODO"""
+    """
+    """
     json_data = request_to_json(request)
 
     return urllib.parse.quote(json_data, safe="")
