@@ -49,6 +49,9 @@ HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS = 615 # this server too many requests
 
 
 def status_code_to_text(status_code):
+    """
+    Converts status code to text
+    """
     status_texts = {
         0: "HTTP_STATUS_UNKNOWN(0)",
 
@@ -93,6 +96,10 @@ def status_code_to_text(status_code):
 
 
 def is_status_code_valid(status_code) -> bool:
+    """
+    Returns indication if status code is valid (operational).
+    300 is operational, as it redirects to other location.
+    """
     if status_code is None:
         return False
 
@@ -101,7 +108,11 @@ def is_status_code_valid(status_code) -> bool:
 
 def is_status_code_invalid(status_code) -> bool:
     """
-    This function informs that status code is so bad, that further communication does not make any sense
+    Returns indication if status code is invalid (not operational).
+
+    If server error - page does not work, so it is invalid.
+    If user agent - possibly crawler is rejected, makes no sense to make further attempts, response
+      is invalid.
     """
     if status_code is None:
         return True
@@ -135,8 +146,9 @@ def is_status_code_invalid(status_code) -> bool:
 
 def is_status_code_uncertain(status_code) -> bool:
     """
-    Uncertain in a way that we do not know if page is valid, invalid.
-    Maybe it is valid with other use agent, etc.
+    Returns indication if we are not sure at what state the page is.
+
+    Further communication is possible, maybe with different crawler, or in another time.
     """
     if status_code == HTTP_STATUS_USER_AGENT:
         return True

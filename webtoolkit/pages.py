@@ -28,22 +28,22 @@ class DefaultContentPage(ContentInterface):
     def __init__(self, url, contents=""):
         super().__init__(url=url, contents=contents)
 
-    def get_title(self):
+    def get_title(self) -> str | None:
         return None
 
-    def get_description(self):
+    def get_description(self) -> str | None:
         return None
 
-    def get_language(self):
+    def get_language(self) -> str | None:
         return None
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> str | None:
         return None
 
-    def get_author(self):
+    def get_author(self) -> str | None:
         return None
 
-    def get_album(self):
+    def get_album(self) -> str | None:
         return None
 
     def get_tags(self):
@@ -55,7 +55,7 @@ class DefaultContentPage(ContentInterface):
         """
         return None
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return True
 
     def get_response(self):
@@ -67,6 +67,7 @@ class JsonPage(ContentInterface):
     JSON page
     """
     def __init__(self, url, contents):
+        """ Constructor """
         super().__init__(url=url, contents=contents)
 
         self.json_obj = None
@@ -82,31 +83,32 @@ class JsonPage(ContentInterface):
             except Exception as E:
                 print(str(E))
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         if self.json_obj:
             return True
+        return False
 
-    def get_title(self):
+    def get_title(self) -> str | None:
         if self.json_obj and "title" in self.json_obj:
             return str(self.json_obj["title"])
 
-    def get_description(self):
+    def get_description(self) -> str | None:
         if self.json_obj and "description" in self.json_obj:
             return str(self.json_obj["description"])
 
-    def get_language(self):
+    def get_language(self) -> str | None:
         if self.json_obj and "language" in self.json_obj:
             return str(self.json_obj["language"])
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> str | None:
         if self.json_obj and "thumbnail" in self.json_obj:
             return str(self.json_obj["thumbnail"])
 
-    def get_author(self):
+    def get_author(self) -> str | None:
         if self.json_obj and "author" in self.json_obj:
             return str(self.json_obj["author"])
 
-    def get_album(self):
+    def get_album(self) -> str | None:
         if self.json_obj and "album" in self.json_obj:
             return str(self.json_obj["album"])
 
@@ -118,13 +120,13 @@ class JsonPage(ContentInterface):
         if self.json_obj and "date_published" in self.json_obj:
             return date_str_to_date(self.json_obj["date_published"])
 
-    def get_page_rating(self):
+    def get_page_rating(self) -> int:
         return 0
 
 
 class RssPageEntry(ContentInterface):
     def __init__(self, feed_index, feed_entry, url, contents, page_object_properties):
-        """ """
+        """ Constructor """
         self.feed_index = feed_index
         self.feed_entry = feed_entry
         self.url = url
@@ -134,7 +136,7 @@ class RssPageEntry(ContentInterface):
         super().__init__(url=self.url, contents=contents)
 
     def get_properties(self):
-        """ """
+        """ Returns map of properties """
         output_map = {}
 
         link = None
@@ -207,16 +209,16 @@ class RssPageEntry(ContentInterface):
 
         return text
 
-    def get_title(self):
+    def get_title(self) -> str | None:
         return self.feed_entry.title
 
-    def get_description(self):
+    def get_description(self) -> str | None:
         if hasattr(self.feed_entry, "description"):
             return self.feed_entry.description
         else:
             return ""
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> str | None:
         if hasattr(self.feed_entry, "media_thumbnail"):
             if len(self.feed_entry.media_thumbnail) > 0:
                 thumb = self.feed_entry.media_thumbnail[0]
@@ -241,7 +243,7 @@ class RssPageEntry(ContentInterface):
 
         return None
 
-    def get_language(self):
+    def get_language(self) -> str | None:
         if "language" in self.page_object_properties:
             return self.page_object_properties["language"]
 
@@ -280,7 +282,7 @@ class RssPageEntry(ContentInterface):
                     )
                 return DateUtils.get_datetime_now_utc()
 
-    def get_author(self):
+    def get_author(self) -> str | None:
         author = None
         if not author and hasattr(self.feed_entry, "author"):
             author = self.feed_entry.author
@@ -290,7 +292,7 @@ class RssPageEntry(ContentInterface):
 
         return author
 
-    def get_album(self):
+    def get_album(self) -> str | None:
         return ""
 
     def get_tags(self):
@@ -306,6 +308,7 @@ class RssPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
+        """ Constructor """
         self.feed = None
 
         """
@@ -395,7 +398,7 @@ class RssPage(ContentInterface):
 
             yield entry_props
 
-    def get_contents_body_hash(self):
+    def get_body_hash(self):
         if not self.contents:
             return
 
@@ -416,14 +419,14 @@ class RssPage(ContentInterface):
         if entries:
             return calculate_hash(entries)
 
-    def get_title(self):
+    def get_title(self) -> str | None:
         if self.feed is None:
             return
 
         if "title" in self.feed.feed:
             return self.feed.feed.title
 
-    def get_description(self):
+    def get_description(self) -> str | None:
         if self.feed is None:
             return
 
@@ -433,18 +436,18 @@ class RssPage(ContentInterface):
         if "subtitle" in self.feed.feed:
             return self.feed.feed.subtitle
 
-    def get_link(self):
+    def get_link(self) -> str | None:
         if "link" in self.feed.feed:
             return self.feed.feed.link
 
-    def get_language(self):
+    def get_language(self) -> str | None:
         if self.feed is None:
             return
 
         if "language" in self.feed.feed:
             return self.feed.feed.language
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> str | None:
         if self.feed is None:
             return
 
@@ -492,14 +495,14 @@ class RssPage(ContentInterface):
 
         return image
 
-    def get_author(self):
+    def get_author(self) -> str | None:
         if self.feed is None:
             return
 
         if "author" in self.feed.feed:
             return self.feed.feed.author
 
-    def get_album(self):
+    def get_album(self) -> str | None:
         if self.feed is None:
             return
 
@@ -526,7 +529,7 @@ class RssPage(ContentInterface):
         props["contents"] = self.get_contents()
         return props
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         if self.feed and len(self.feed.entries) > 0:
             return True
 
@@ -540,14 +543,14 @@ class RssPage(ContentInterface):
 
         return False
 
-    def is_contents_rss(self):
+    def is_contents_rss(self) -> bool:
         """
         We want the checks to be simple yet effective. Check some tokens.
 
         There can be RSS sources in HTML, HTML inside RSS. Beware
         """
         if not self.contents:
-            return
+            return False
 
         # html_tags = self.get_position_of_html_tags()
         rss_tags = self.get_position_of_rss_tags()
@@ -557,7 +560,9 @@ class RssPage(ContentInterface):
         if rss_tags >= 0:
             return True
 
-    def get_charset(self):
+        return False
+
+    def get_charset(self) -> str | None:
         """
         TODO read from encoding property of xml
         """
@@ -572,7 +577,11 @@ class RssPage(ContentInterface):
 
 
 class RssContentReader(object):
+    """
+    RSS reader
+    """
     def __init__(self, url, contents):
+        """ Constructor """
         self.contents = contents
         self.process()
 
@@ -597,7 +606,9 @@ class RssContentReader(object):
 
 
 class OpmlPageEntry(ContentInterface):
+    """ OPML Page entry """
     def __init__(self, url, contents, opml_entry):
+        """ Constructor """
         super().__init__(url=url, contents=contents)
         self.opml_entry = opml_entry
         self.title = None
@@ -613,22 +624,22 @@ class OpmlPageEntry(ContentInterface):
         if "title" in self.opml_entry.attrib:
             self.title = self.opml_entry.attrib["title"]
 
-    def get_title(self):
+    def get_title(self) -> str | None:
         return self.title
 
-    def get_description(self):
+    def get_description(self) -> str | None:
         pass
 
-    def get_language(self):
+    def get_language(self) -> str | None:
         pass
 
-    def get_thumbnail(self):
+    def get_thumbnail(self) -> str | None:
         pass
 
-    def get_author(self):
+    def get_author(self) -> str | None:
         pass
 
-    def get_album(self):
+    def get_album(self) -> str | None:
         pass
 
     def get_tags(self):
@@ -642,6 +653,8 @@ class OpmlPage(ContentInterface):
 
     def __init__(self, url, contents):
         """
+        Constructor
+
         We could provide support for more items
         https://github.com/microsoft/rss-reader-wp/blob/master/RSSReader_WP7/sample-opml.xml
         """
@@ -684,9 +697,10 @@ class OpmlPage(ContentInterface):
 
         return result
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         if self.get_contents().find("<opml") >= 0:
             return True
+        return False
 
 
 class HtmlPage(ContentInterface):
@@ -702,6 +716,7 @@ class HtmlPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
+        """ Constructor """
         super().__init__(url=url, contents=contents)
 
         if self.contents:
@@ -1193,7 +1208,7 @@ class HtmlPage(ContentInterface):
 
         return [rating, 5]
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         This is a simple set of rules in which we reject the page:
          - status code
@@ -1204,7 +1219,7 @@ class HtmlPage(ContentInterface):
 
         return True
 
-    def is_contents_html(self):
+    def is_contents_html(self) -> bool:
         """
         We want the checks to be simple yet effective. Check some tokens.
 
@@ -1212,7 +1227,7 @@ class HtmlPage(ContentInterface):
         """
         if not self.contents:
             WebLogger.debug("Could not obtain contents for {}".format(self.url))
-            return
+            return False
 
         html_tags = self.get_position_of_html_tags()
         rss_tags = self.get_position_of_rss_tags()
@@ -1221,6 +1236,8 @@ class HtmlPage(ContentInterface):
             return html_tags < rss_tags
         if html_tags >= 0:
             return True
+
+        return False
 
     def get_body_text(self):
         if not self.contents:
@@ -1232,7 +1249,7 @@ class HtmlPage(ContentInterface):
 
         return body_find.get_text()
 
-    def get_contents_body_hash(self):
+    def get_body_hash(self):
         if not self.contents:
             return
 
@@ -1270,9 +1287,10 @@ class XmlPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
+        """ Constructor """
         super().__init__(url=url, contents=contents)
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         This is a simple set of rules in which we reject the page:
          - status code
@@ -1283,7 +1301,7 @@ class XmlPage(ContentInterface):
 
         return True
 
-    def is_contents_xml(self):
+    def is_contents_xml(self) -> bool:
         if not self.get_contents():
             return False
 
@@ -1292,6 +1310,8 @@ class XmlPage(ContentInterface):
         lower = contents.lower()
         if lower.find("<?xml") >= 0:
             return lower.find("<?xml") >= 0
+
+        return False
 
 
 class PageFactory(object):
@@ -1413,7 +1433,7 @@ class YouTubeVideoJson(object):
     def get_json_data(self):
         return json.dumps(self._json)
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self._json != {}
 
     def get_json(self):

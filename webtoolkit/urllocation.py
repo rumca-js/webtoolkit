@@ -1,8 +1,10 @@
+"""
+Internet location parsing and processing.
+"""
+from urllib.parse import unquote, urlparse, parse_qs
+
 from url_cleaner import UrlCleaner
 
-# import cleanurl
-
-from urllib.parse import unquote, urlparse, parse_qs
 from .webtools import (
     URL_TYPE_RSS,
     URL_TYPE_CSS,
@@ -14,12 +16,16 @@ from .webtools import (
 
 
 class UrlLocation(object):
+    """
+    Internet location parsing and processing class.
+    """
+
     def __init__(self, url):
         self.url = url
 
     def is_web_link(self):
         """
-        Hosts may redefine addresses, but these are NOT real web links
+        Host files may redefine addresses, but these are NOT real web links
         """
         if (
             self.url.startswith("http://")
@@ -51,6 +57,9 @@ class UrlLocation(object):
         return False
 
     def is_protocolled_link(self):
+        """
+        Returns information if link has a protocol indication
+        """
         if (
             self.url.startswith("http://")
             or self.url.startswith("https://")

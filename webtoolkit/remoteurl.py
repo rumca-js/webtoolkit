@@ -24,6 +24,7 @@ class RemoteUrl(ContentInterface):
         all_properties=None,
         social_properties=None,
     ):
+        """ The constructor """
         super().__init__(url=url, contents=None)
         self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server_location)
@@ -36,6 +37,7 @@ class RemoteUrl(ContentInterface):
             self.get_responses()
 
     def get_responses(self):
+        """ Provides URL responses """
         if self.all_properties is None:
             self.all_properties = self.server.get_getj(url=self.url)
 
@@ -45,6 +47,7 @@ class RemoteUrl(ContentInterface):
         return self.responses
 
     def get_response(self):
+        """ Provides URL response """
         responses = self.get_responses()
         if "Default" in responses:
             return responses["Default"]
@@ -52,16 +55,19 @@ class RemoteUrl(ContentInterface):
             return responses[url]
 
     def get_text(self):
+        """ Provides URL response text. Useful if link provides one response. """
         response = self.get_response()
         if response and response.get_text():
             return response.get_text()
 
     def get_binary(self):
+        """ Provides URL response binary """
         response = self.get_response()
         if response and respose.get_binary():
             return response.get_binary()
 
     def get_properties(self):
+        """ Provides URL meta properties. """
         if self.all_properties is None:
             self.get_responses()
             if self.all_properties is None:
@@ -73,10 +79,13 @@ class RemoteUrl(ContentInterface):
         return properties
 
     def get_canonical_link(self):
+        """ Provides URL canonical link. """
+
         if "link_canonical" in self.get_properties():
             return properties["link_canonical"]
 
     def is_valid(self):
+        """ Returns true if URL data is valid """
         response = self.get_response()
         if not response:
             return False
@@ -84,6 +93,7 @@ class RemoteUrl(ContentInterface):
         return response.is_valid()
 
     def is_invalid(self):
+        """ Returns true if URL data is invalid """
         response = self.get_response()
         if not response:
             return False
@@ -91,33 +101,43 @@ class RemoteUrl(ContentInterface):
         return response.is_invalid()
 
     def get_title(self):
+        """ Returns title """
         return self.get_properties().get("title")
 
     def get_description(self):
+        """ Returns description """
         return self.get_properties().get("description")
 
     def get_language(self):
+        """ Returns language """
         return self.get_properties().get("language")
 
     def get_thumbnail(self):
+        """ Returns thumbnail """
         return self.get_properties().get("thumbnail")
 
     def get_author(self):
+        """ Returns author """
         return self.get_properties().get("author")
 
     def get_album(self):
+        """ Returns album """
         return self.get_properties().get("album")
 
     def get_tags(self):
+        """ Returns tags. TODO return value? """
         return self.get_properties().get("tags")
 
     def get_date_published(self):
+        """ Returns date published. TODO - should be a date """
         return self.get_properties().get("date_published")  # TODO parse?
 
     def get_status_code(self):
+        """ Returns status code """
         return self.get_response().status_code
 
     def get_entries(self):
+        """ Returns entries within the link """
         entries = RemoteServer.read_properties_section("Entries", self.all_properties)
         if entries:
             return entries
@@ -142,15 +162,19 @@ class RemoteUrl(ContentInterface):
         return feeds
 
     def get_links(self):
+        """ Returns information about links. Canonical links, archive links, etc. """
         return self.server.get_linkj(self.url)
 
     def get_hash(self):
+        """ Returns URL hash """
         return self.get_response().get_hash()
 
     def get_body_hash(self):
+        """ Returns URL body hash """
         return self.get_response().get_body_hash()
 
     def get_meta_hash(self):
+        """ Returns URL meta hash """
         hash_section = RemoteServer.read_properties_section(
             "PropertiesHash", self.all_properties
         )
@@ -158,6 +182,7 @@ class RemoteUrl(ContentInterface):
             return json_decode_field(hash_section)
 
     def get_social_properties(self):
+        """ Returns URL social properties """
         if self.social_properties is None:
             self.social_properties = self.server.get_socialj(self.url)
 

@@ -292,7 +292,7 @@ class RssPageTest(FakeInternetTestCase):
         reader = RssPage("https://linkedin.com/test", webpage_old_pubdate_rss)
 
         # call tested function
-        hash = reader.get_contents_body_hash()
+        hash = reader.get_body_hash()
 
         entries = str(reader.feed.entries)
 

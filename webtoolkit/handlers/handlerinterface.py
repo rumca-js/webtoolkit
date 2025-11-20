@@ -68,7 +68,7 @@ class HandlerInterface(DefaultContentPage):
         if self.response:
             return self.response.get_text()
 
-    def get_contents_hash(self):
+    def get_hash(self):
         if self.response is None:
             self.get_response()
 
@@ -85,8 +85,8 @@ class HandlerInterface(DefaultContentPage):
         self.streams["Default"] = self.response
         return self.streams
 
-    def get_contents_body_hash(self):
-        return self.get_contents_hash()
+    def get_body_hash(self):
+        return self.get_hash()
 
     def get_title(self):
         if self.handler:

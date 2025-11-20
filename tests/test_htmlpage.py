@@ -513,13 +513,13 @@ class HtmlPageTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_get_contents_body_hash(self):
+    def test_get_body_hash(self):
         MockRequestCounter.mock_page_requests = 0
 
         reader = HtmlPage(
             "https://linkedin.com/test", webpage_meta_youtube_publish_date
         )
-        hash = reader.get_contents_body_hash()
+        hash = reader.get_body_hash()
         bodytext = str(reader.get_body_text())
 
         self.assertTrue(bodytext)

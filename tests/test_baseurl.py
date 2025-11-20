@@ -8,6 +8,7 @@ from webtoolkit import (
     YouTubeChannelHandler,
     YouTubeVideoHandler,
     BaseUrl,
+    RemoteServer,
 )
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
@@ -371,7 +372,7 @@ class BaseUrlTest(FakeInternetTestCase):
         all_properties = url.get_properties(full=True)
         self.assertTrue(len(all_properties) > 0)
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -395,7 +396,7 @@ class BaseUrlTest(FakeInternetTestCase):
         all_properties = url.get_properties(full=True)
         self.assertTrue(len(all_properties) > 0)
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -405,7 +406,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        entries_section = url.get_properties_section("Entries", all_properties)
+        entries_section = RemoteServer.read_properties_section("Entries", all_properties)
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
 
@@ -425,7 +426,7 @@ class BaseUrlTest(FakeInternetTestCase):
         all_properties = url.get_properties(full=True)
         self.assertTrue(len(all_properties) > 0)
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -435,7 +436,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        entries_section = url.get_properties_section("Entries", all_properties)
+        entries_section = RemoteServer.read_properties_section("Entries", all_properties)
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
 
@@ -456,7 +457,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -466,7 +467,7 @@ class BaseUrlTest(FakeInternetTestCase):
         #self.assertEqual(properties["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        entries_section = url.get_properties_section("Entries", all_properties)
+        entries_section = RemoteServer.read_properties_section("Entries", all_properties)
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
 
@@ -487,7 +488,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -513,7 +514,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -522,11 +523,11 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        streams_section = url.get_properties_section("Streams", all_properties)
+        streams_section = RemoteServer.read_properties_section("Streams", all_properties)
         self.assertTrue(streams_section)
         self.assertTrue(len(streams_section) > 0)
 
-        response_section = url.get_properties_section("Response", all_properties)
+        response_section = RemoteServer.read_properties_section("Response", all_properties)
 
         self.assertEqual(response_section["Content-Type"], "image/jpg")
 
@@ -546,7 +547,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -555,11 +556,11 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        streams_section = url.get_properties_section("Streams", all_properties)
+        streams_section = RemoteServer.read_properties_section("Streams", all_properties)
         self.assertTrue(streams_section)
         self.assertTrue(len(streams_section) > 0)
 
-        response_section = url.get_properties_section("Response", all_properties)
+        response_section = RemoteServer.read_properties_section("Response", all_properties)
 
         self.assertEqual(response_section["Content-Type"], "audio/midi")
 
@@ -578,7 +579,7 @@ class BaseUrlTest(FakeInternetTestCase):
         all_properties = url.get_properties(full=True)
         self.assertTrue(len(all_properties) > 0)
 
-        properties_section = url.get_properties_section("Properties", all_properties)
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
         self.assertTrue(properties_section)
 
         self.assertIn("title", properties_section)
@@ -587,11 +588,11 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
-        streams_section = url.get_properties_section("Streams", all_properties)
+        streams_section = RemoteServer.read_properties_section("Streams", all_properties)
         self.assertTrue(streams_section)
         self.assertTrue(len(streams_section) > 0)
 
-        response_section = url.get_properties_section("Response", all_properties)
+        response_section = RemoteServer.read_properties_section("Response", all_properties)
 
         self.assertEqual(response_section["Content-Type"], "video/mp4")
 
@@ -773,7 +774,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(result, url)
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_contents_hash__html(self):
+    def test_get_hash__html(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link ="https://linkedin.com"
@@ -781,13 +782,13 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_hash()
+        hash = url.get_hash()
 
         self.assertTrue(hash)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_contents_hash__rss(self):
+    def test_get_hash__rss(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -795,13 +796,13 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_hash()
+        hash = url.get_hash()
 
         self.assertTrue(hash)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_contents_hash__youtube_video(self):
+    def test_get_hash__youtube_video(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/watch?v=1234"
@@ -809,11 +810,11 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_hash()
+        hash = url.get_hash()
 
         self.assertTrue(hash)
 
-    def test_get_contents_hash__youtube_channel(self):
+    def test_get_hash__youtube_channel(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -821,13 +822,13 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_hash()
+        hash = url.get_hash()
 
         self.assertTrue(hash)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
-    def test_get_contents_body_hash__youtube_channel(self):
+    def test_get_body_hash__youtube_channel(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -835,13 +836,13 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_body_hash()
+        hash = url.get_body_hash()
 
         self.assertTrue(hash)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
-    def test_get_contents_body_hash__html(self):
+    def test_get_body_hash__html(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://linkedin.com"
@@ -849,19 +850,17 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_body_hash()
+        hash = url.get_body_hash()
 
         self.assertTrue(hash)
 
-        main_hash = url.get_contents_hash()
-
-        # print(url.get_contents())
+        main_hash = url.get_hash()
 
         self.assertTrue(hash != main_hash)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_contents_body_hash__rss(self):
+    def test_get_body_hash__rss(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -869,13 +868,29 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        hash = url.get_contents_body_hash()
+        hash = url.get_body_hash()
 
         self.assertTrue(hash)
 
-        main_hash = url.get_contents_hash()
+        main_hash = url.get_hash()
 
-        # print(url.get_contents())
+        self.assertTrue(hash != main_hash)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
+    def test_get_meta_hash__rss(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.reddit.com/r/searchengines/.rss"
+        url = MockUrl(request=self.get_request(test_link))
+        url.get_response()
+
+        # call tested function
+        hash = url.get_meta_hash()
+
+        self.assertTrue(hash)
+
+        main_hash = url.get_hash()
 
         self.assertTrue(hash != main_hash)
 

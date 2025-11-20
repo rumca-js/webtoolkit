@@ -53,25 +53,25 @@ class HttpPageHandlerTest(FakeInternetTestCase):
 
         self.assertEqual(response.get_content_type(), "text/html")
 
-    def test_get_contents_hash(self):
+    def test_get_hash(self):
         test_link = "https://linkedin.com"
         request = MockUrl(test_link).get_init_request()
 
         handler = HttpPageHandler(test_link, request=request, url_builder = MockUrl)
 
         # call tested function
-        hash = handler.get_contents_hash()
+        hash = handler.get_hash()
 
         self.assertTrue(hash)
 
-    def test_get_contents_body_hash(self):
+    def test_get_body_hash(self):
         test_link = "https://linkedin.com"
         request = MockUrl(test_link).get_init_request()
 
         handler = HttpPageHandler(test_link, request=request, url_builder = MockUrl)
 
         # call tested function
-        hash = handler.get_contents_body_hash()
+        hash = handler.get_body_hash()
 
         self.assertTrue(hash)
 

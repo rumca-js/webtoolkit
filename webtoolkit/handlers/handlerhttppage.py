@@ -66,7 +66,7 @@ class HttpPageHandler(HandlerInterface):
                 self.response.set_recognized_content_type("text/html")
 
         if self.p and self.response:
-            self.response.set_body_hash(self.get_contents_body_hash())
+            self.response.set_body_hash(self.get_body_hash())
 
         if self.response:
             return self.response
@@ -188,17 +188,17 @@ class HttpPageHandler(HandlerInterface):
         result.extend(self.p.get_page_rating_vector())
         return result
 
-    def get_contents_hash(self):
+    def get_hash(self):
         if not self.p:
-            return super().get_contents_hash()
+            return super().get_hash()
 
-        return self.p.get_contents_hash()
+        return self.p.get_hash()
 
-    def get_contents_body_hash(self):
+    def get_body_hash(self):
         if not self.p:
-            return super().get_contents_body_hash()
+            return super().get_body_hash()
 
-        return self.p.get_contents_body_hash()
+        return self.p.get_body_hash()
 
     def get_page_rating_status_code(self, status_code):
         rating = 0

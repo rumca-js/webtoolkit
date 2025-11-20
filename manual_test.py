@@ -1,3 +1,6 @@
+"""
+Provides manual tests
+"""
 import requests
 
 from webtoolkit import (
@@ -85,6 +88,12 @@ def run_with_base_url(test_url):
     if handler.get_title() is None:
         print("No title in url")
         return
+
+    if not handler.get_hash():
+        print("No hash")
+
+    if not handler.get_body_hash():
+        print("No body hash")
 
     entries_len = len(list(handler.get_entries()))
     print(f"Entries: {entries_len}")
@@ -199,6 +208,12 @@ def test_baseurl__remote_url():
     if not remote_url.get_title():
         print("No title")
         return
+
+    if not remote_url.get_hash():
+        print("No hash")
+
+    if not remote_url.get_body_hash():
+        print("No body hash")
 
     remote_responses = remote_url.get_responses()
     if not remote_responses:

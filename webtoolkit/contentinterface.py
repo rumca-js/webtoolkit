@@ -146,7 +146,7 @@ class ContentInterface(object):
 
         return result
 
-    def get_contents_hash(self):
+    def get_hash(self):
         """
         Returns contents hash
         """
@@ -154,11 +154,11 @@ class ContentInterface(object):
         if contents:
             return calculate_hash(contents)
 
-    def get_contents_body_hash(self):
+    def get_body_hash(self):
         """
         Returns contents body hash
         """
-        return self.get_contents_hash()
+        return self.get_hash()
 
     def get_properties(self):
         """

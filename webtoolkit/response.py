@@ -252,7 +252,7 @@ class PageResponseObject(object):
         if not self.body_hash:
             page = self.get_page()
             if page:
-                self.body_hash = page.get_contents_body_hash()
+                self.body_hash = page.get_body_hash()
         return self.body_hash
 
     def set_request(self, request):
@@ -506,9 +506,9 @@ def response_to_json(response, with_streams=False):
         response_data["Content-Length"] = response.get_content_length()
         response_data["Last-Modified"] = response.get_last_modified()
         response_data["Charset"] = response.get_encoding()
-        contents_hash = response.get_hash()
-        if contents_hash:
-            response_data["hash"] = json_encode_field(contents_hash)
+        hash = response.get_hash()
+        if hash:
+            response_data["hash"] = json_encode_field(hash)
         else:
             response_data["hash"] = None
         body_hash = response.get_body_hash()
