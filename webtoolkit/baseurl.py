@@ -472,13 +472,17 @@ class BaseUrl(ContentInterface):
         properties_hash = self.property_encode(calculate_hash(str(properties_data)))
         return properties_hash
 
-    def get_properties(self, full=False, include_social=False, check_robots=False):
-        """ Returns URL properties """
+    def get_properties(self):
+        """
+        Returns basic URL properties
+        """
+        return self.get_properties_data()
+
+    def get_all_properties(self, include_social=False):
+        """ Returns all URL properties """
         response = self.get_response()
 
-        properties_data = self.get_properties_data()
-        if not full:
-            return properties_data
+        properties_data = self.get_properties()
 
         all_properties = []
 

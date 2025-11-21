@@ -369,7 +369,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
         self.assertTrue(len(all_properties) > 0)
 
         properties_section = RemoteServer.read_properties_section("Properties", all_properties)
@@ -393,7 +393,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
         self.assertTrue(len(all_properties) > 0)
 
         properties_section = RemoteServer.read_properties_section("Properties", all_properties)
@@ -423,7 +423,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
         self.assertTrue(len(all_properties) > 0)
 
         properties_section = RemoteServer.read_properties_section("Properties", all_properties)
@@ -452,7 +452,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url = MockUrl(request=self.get_request(test_link))
 
         url.get_response()
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
 
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
@@ -483,7 +483,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
 
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
@@ -509,7 +509,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
 
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
@@ -542,7 +542,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         url.get_response()
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
 
         self.assertTrue(len(all_properties) > 0)
         self.assertEqual(all_properties[0]["name"], "Properties")
@@ -576,7 +576,7 @@ class BaseUrlTest(FakeInternetTestCase):
         url.get_response()
 
         # call tested function
-        all_properties = url.get_properties(full=True)
+        all_properties = url.get_all_properties()
         self.assertTrue(len(all_properties) > 0)
 
         properties_section = RemoteServer.read_properties_section("Properties", all_properties)

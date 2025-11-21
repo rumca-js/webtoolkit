@@ -1,5 +1,5 @@
 """
-Provides manual tests
+Set of manual, real world tests
 """
 import requests
 
@@ -196,7 +196,7 @@ def test_baseurl__remote_url():
     url = BaseUrl(url=test_url)
     response = url.get_response()
 
-    all_properties = url.get_properties(full=True)
+    all_properties = url.get_all_properties()
 
     remote_url = RemoteUrl(all_properties=all_properties)
     remote_response = remote_url.get_response()
