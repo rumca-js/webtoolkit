@@ -67,7 +67,7 @@ class RemoteUrl(ContentInterface):
             return response.get_binary()
 
     def get_properties(self):
-        """ Provides URL meta properties. """
+        """ Provides basic URL properties. """
         if self.all_properties is None:
             self.get_responses()
             if self.all_properties is None:
@@ -77,6 +77,10 @@ class RemoteUrl(ContentInterface):
             "Properties", self.all_properties
         )
         return properties
+
+    def get_all_properties(self):
+        """ Provides all URL properties. """
+        return self.all_properties
 
     def get_canonical_link(self):
         """ Provides URL canonical link. """
