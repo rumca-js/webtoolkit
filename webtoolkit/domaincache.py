@@ -13,10 +13,7 @@ options.mode_mapping
 import urllib.robotparser
 import asyncio
 
-from webtoolkit import (
-    UrlLocation,
-    BaseUrl,
-)
+from .urllocation import UrlLocation
 
 from webtoolkit.utils.dateutils import DateUtils
 
@@ -35,9 +32,6 @@ class DomainCacheInfo(object):
         self.robots_contents = None
         self.request = request
         self.url_builder = url_builder
-
-        if not self.url_builder:
-            self.url_builder = BaseUrl
 
         if self.respect_robots_txt:
             self.robots_contents = self.get_robots_txt_contents()
@@ -175,56 +169,49 @@ class DomainCacheInfo(object):
 class DomainCache(object):
     """
     DomainCache.get_object("https://youtube.com/mysite/something").is_allowed("url")
-    Url().get_domain_cache().is_allowed()
     """
 
     object = None  # singleton
     default_cache_size = 400
     respect_robots_txt = True
 
-    def get_object(domain_url, request=None, url_builder=None):
+    def get_object(url, url_builder):
+
         if DomainCache.object is None:
             DomainCache.object = DomainCache(
-                DomainCache.default_cache_size,
-                request=request,
+                cache_size=DomainCache.default_cache_size,
                 url_builder=url_builder,
             )
 
+        domain_url = UrlLocation(url).get_domain_only()
         return DomainCache.object.get_domain_info(domain_url)
 
     def __init__(
         self,
+        url_builder,
         cache_size=400,
         respect_robots_txt=True,
-        request=None,
-        url_builder=None,
     ):
         """
         @note Not public
         """
         self.cache_size = cache_size
         self.cache = {}
-        self.respect_robots_txt = respect_robots_txt
-        self.request = request
         self.url_builder = url_builder
 
     def get_domain_info(self, input_url):
-        domain_url = UrlLocation(input_url).get_domain_only()
-
-        if not domain_url in self.cache:
+        if not input_url in self.cache:
             self.remove_from_cache()
-            self.cache[domain_url] = {
+            self.cache[input_url] = {
                 "date": DateUtils.get_datetime_now_utc(),
-                "domain": self.read_info(domain_url),
+                "domain": self.read_info(input_url),
             }
 
-        return self.cache[domain_url]["domain"]
+        return self.cache[input_url]["domain"]
 
     def read_info(self, domain_url):
         return DomainCacheInfo(
             domain_url,
-            self.respect_robots_txt,
-            request=self.request,
             url_builder=self.url_builder,
         )
 

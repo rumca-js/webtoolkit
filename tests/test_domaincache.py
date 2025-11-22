@@ -17,7 +17,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
         cache_info = cache.get_domain_info("https://robots-txt.com/page.html")
 
         self.assertTrue(cache_info)
@@ -26,7 +26,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
         cache_info = cache.get_domain_info("https://robots-txt.com/page.html")
 
         self.assertEqual(cache_info.url, "https://robots-txt.com")
@@ -35,7 +35,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
         cache_info = cache.get_domain_info("https://robots-txt.com/page.html")
 
         self.assertEqual(
@@ -46,7 +46,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
         cache_info = cache.get_domain_info("https://robots-txt.com/page.html")
 
         self.assertTrue(cache_info.is_allowed("https://robots-txt.com"))
@@ -59,7 +59,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
 
         for key in range(1, 10):
             cache_info = cache.get_domain_info(
@@ -72,7 +72,7 @@ class DomainCacheInfoTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
-        cache = DomainCache(cache_size=5, respect_robots_txt=True)
+        cache = DomainCache(url_builder=MockUrl, cache_size=5, respect_robots_txt=True)
 
         cache_info = cache.get_domain_info(
             "https://page-with-http-status-500.com"

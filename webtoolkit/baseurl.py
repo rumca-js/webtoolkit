@@ -52,6 +52,7 @@ from .handlers import (
 from .crawlers import (
     RequestsCrawler,
 )
+from .domaincache import DomainCache
 
 
 class BaseUrl(ContentInterface):
@@ -623,7 +624,7 @@ class BaseUrl(ContentInterface):
         """
         TODO remove?
         """
-        domain_info = self.get_domain_info()
+        domain_info = DomainCache.get_object(url =self.request.url, url_builder=self.url_builder)
         return domain_info.is_allowed(self.request.url)
 
     def get_social_properties(self):

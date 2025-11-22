@@ -223,6 +223,15 @@ def test_baseurl__remote_url():
     print_bar()
 
 
+def test_baseurl__is_allowed():
+    test_url = "https://www.youtube.com/watch?v=Vzgimftolys&pp=ygUPbGludXMgdGVjaCB0aXBz"
+
+    print("Running RemoteUrl test {} with handler".format(test_url))
+
+    url = BaseUrl(url=test_url)
+    print("Robots allowed? {}".format(url.is_allowed()))
+
+
 def main():
     test_handler_vanilla_google()
     test_handler_youtube_channel_by_rss()
@@ -242,6 +251,7 @@ def main():
     test_baseurl__reddit__news()
 
     test_baseurl__remote_url()
+    test_baseurl__is_allowed()
 
 
 main()

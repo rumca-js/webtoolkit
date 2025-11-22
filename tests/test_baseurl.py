@@ -1137,3 +1137,12 @@ class BaseUrlTest(FakeInternetTestCase):
         data = url.response_to_data(response)
         self.assertTrue(data)
         self.assertIn("is_valid", data)
+
+    def test_is_allowed(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        test_channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = MockUrl(request=self.get_request(test_link))
+        self.assertFalse(url.is_allowed())
