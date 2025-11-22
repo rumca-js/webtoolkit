@@ -167,6 +167,16 @@ def json_to_request(json_data):
     request.handler_name = json_data.get("handler_name")
     request.handler_type = json_data.get("handler_type")
 
+    if request.ssl_verify == "True":
+        request.ssl_verify = True
+    if request.ssl_verify == "False":
+        request.ssl_verify = False
+
+    if request.respect_robots == "True":
+        request.respect_robots = True
+    if request.respect_robots == "False":
+        request.respect_robots = False
+
     if not request.settings:
         request.settings = {}
     if not request.cookies:
