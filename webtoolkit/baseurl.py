@@ -620,9 +620,9 @@ class BaseUrl(ContentInterface):
     def property_encode(self, byte_property):
         return base64.b64encode(byte_property).decode("utf-8")
 
-    def is_allowed(self):
+    def is_allowed(self) -> bool:
         """
-        TODO remove?
+        Returns indication is access is allowed for bots, robots
         """
         domain_info = DomainCache.get_object(url =self.request.url, url_builder=self.url_builder)
         return domain_info.is_allowed(self.request.url)
