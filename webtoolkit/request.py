@@ -79,6 +79,42 @@ class PageRequestObject(object):
 
         return string
 
+    def __eq__(self, other):
+        if self.url != other.url:
+            return False
+        if self.user_agent != other.user_agent:
+            return False
+        if self.request_headers != other.request_headers:
+            return False
+        if self.timeout_s != other.timeout_s:
+            return False
+        if self.delay_s != other.delay_s:
+            return False
+        if self.request_type != other.request_type:
+            return False
+        if self.ssl_verify != other.respect_robots:
+            return False
+        if self.respect_robots != other.respect_robots:
+            return False
+        if self.accept_types != other.accept_types:
+            return False
+        if self.bytes_limit != other.bytes_limit:
+            return False
+        if self.settings != other.settings:
+            return False
+        if self.cookies != other.cookies:
+            return False
+        if self.crawler_name != other.crawler_name:
+            return False
+        #if self.crawler_type != other.crawler_type:
+        if self.handler_name != other.handler_name:
+            return False
+        #if self.handler_type != other.handler_type:
+        return True
+
+    def __neq__(self, other):
+        return not self.__eq__(other)
+
 
 def request_to_json(request):
     """

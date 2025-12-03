@@ -1,4 +1,4 @@
-.PHONY: test
+.PHONY: test test-min test-man
 
 test: test-min test-man
 test-unit:
