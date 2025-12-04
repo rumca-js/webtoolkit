@@ -49,6 +49,9 @@ class RemoteUrl(ContentInterface):
     def get_response(self):
         """ Provides URL response """
         responses = self.get_responses()
+        if not responses:
+            return
+
         if "Default" in responses:
             return responses["Default"]
         for url in responses:
