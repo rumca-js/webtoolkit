@@ -31,6 +31,8 @@ class PageRequestObject(object):
         respect_robots=None,
         accept_types=None,
         bytes_limit=None,
+        http_proxy=None,
+        https_proxy=None,
         settings=None,
         cookies=None,
         crawler_name=None,
@@ -48,6 +50,8 @@ class PageRequestObject(object):
         self.respect_robots = respect_robots
         self.accept_types = accept_types
         self.bytes_limit = bytes_limit
+        self.http_proxy = http_proxy
+        self.https_proxy = https_proxy
         self.settings = settings
         self.cookies = cookies
         self.crawler_name = crawler_name
@@ -100,6 +104,10 @@ class PageRequestObject(object):
             return False
         if self.bytes_limit != other.bytes_limit:
             return False
+        if self.http_proxy != other.http_proxy:
+            return False
+        if self.https_proxy != other.https_proxy:
+            return False
         if self.settings != other.settings:
             return False
         if self.cookies != other.cookies:
@@ -145,6 +153,10 @@ def request_to_json(request):
         json["accept_types"] = request.accept_types
     if request.bytes_limit is not None:
         json["bytes_limit"] = request.bytes_limit
+    if request.http_proxy is not None:
+        json["http_proxy"] = request.http_proxy
+    if request.https_proxy is not None:
+        json["https_proxy"] = request.https_proxy
     if len(request.settings) > 0:
         json["settings"] = request.settings
     if len(request.cookies) > 0:
@@ -196,6 +208,8 @@ def json_to_request(json_data):
     request.bytes_limit = json_data.get("bytes_limit")
     if request.bytes_limit is not None:
         request.bytes_limit = int(request.bytes_limit)
+    request.http_proxy = json_data.get("http_proxy")
+    request.https_proxy = json_data.get("https_proxy")
     request.settings = json_data.get("settings")
     request.cookies = json_data.get("cookies")
     request.crawler_name = json_data.get("crawler_name")
