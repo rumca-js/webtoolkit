@@ -185,6 +185,11 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertEqual(p.get_domain(), "https://odysee.com")
 
+    def test_get_domain__no_www(self):
+        p = UrlLocation("http://www.m.youtube.com/watch?v=1235")
+        # call tested function
+        self.assertEqual(p.get_domain(no_www=True), "http://m.youtube.com")
+
     def test_get_domain_only(self):
         p = UrlLocation("http://test.com/my-site-test")
         # call tested function
@@ -196,6 +201,11 @@ class UrlLocationTest(FakeInternetTestCase):
         p = UrlLocation(test_link)
         # call tested function
         self.assertEqual(p.get_domain_only(), "dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion")
+
+    def test_get_domain_only__no_www(self):
+        p = UrlLocation("http://www.m.youtube.com/watch?v=1235")
+        # call tested function
+        self.assertEqual(p.get_domain_only(no_www=True), "m.youtube.com")
 
     def test_get_page_ext_html(self):
         p = UrlLocation("http://mytestpage.com/page.html")

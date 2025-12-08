@@ -209,7 +209,7 @@ class UrlLocation(object):
             return [rest[:smallest_position], rest[smallest_position:]]
         return [rest, ""]
 
-    def get_domain(self):
+    def get_domain(self, no_www=False):
         """
         for https://domain.com/test
 
@@ -224,7 +224,11 @@ class UrlLocation(object):
         if wh >= 0:
             parts[2] = parts[2][:wh]
 
-        text = parts[0] + parts[1] + parts[2].lower()
+        domain_part = parts[2].lower()
+        if no_www and domain_part.find("www.") >= 0:
+            domain_part = domain_part.replace("www.", "")
+
+        text = parts[0] + parts[1] + domain_part
 
         x = UrlLocation(text)
         if self.url and not x.is_protocolled_link():
@@ -240,7 +244,7 @@ class UrlLocation(object):
 
         return text
 
-    def get_domain_only(self):
+    def get_domain_only(self, no_www=False):
         """
         for https://domain.com/test
 
@@ -251,7 +255,10 @@ class UrlLocation(object):
 
         parts = self.parse_url()
         if parts:
-            return parts[2].lower()
+            domain_part = parts[2].lower()
+            if no_www and domain_part.find("www.") >= 0:
+                domain_part = domain_part.replace("www.", "")
+            return domain_part
 
     def get_scheme(self):
         """
