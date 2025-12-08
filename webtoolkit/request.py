@@ -257,6 +257,9 @@ def copy_request(request):
     """
     Copies data, not objects
     """
+    if not request:
+        return
+
     request_copy = copy.copy(request)
     request_copy.crawler_type=None
     request_copy.handler_type=None
