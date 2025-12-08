@@ -124,6 +124,9 @@ class RemoteServer(object):
             return json.get("status")
 
     def perform_remote_call_with_retry(self, link_call, request):
+        """
+        TODO This could be dangerous.
+
         start_time = time.time()
         while True:
             json_obj = self.perform_remote_call(self, link_call, request)
@@ -134,6 +137,9 @@ class RemoteServer(object):
 
             if time.time() - start_time > 200:
                 return json_obj
+        """
+
+        return self.perform_remote_call(self, link_call, request)
 
     def perform_remote_call(self, link_call, request):
         """
