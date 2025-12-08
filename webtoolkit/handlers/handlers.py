@@ -70,6 +70,8 @@ class RedditUrlHandler(DefaultUrlHandler):
             url = self.get_page_url(url_link)
             contents = url.get_contents()
 
+            self.streams[url_link] = url.get_response()
+
             if contents:
                 return contents
             else:
