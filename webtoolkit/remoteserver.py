@@ -119,9 +119,21 @@ class RemoteServer(object):
         link = self.remote_server
         link = f"{link}/pingj"
 
-        json = self.perform_remote_call(link, request)
+        json = self.perform_remote_call_with_retry(link, request)
         if json:
             return json.get("status")
+
+    def perform_remote_call_with_retry(self, link_call, request):
+        start_time = time.time()
+        while True:
+            json_obj = self.perform_remote_call(self, link_call, request)
+            if json_obj:
+                response = self.read_properties_section("Response", all_properties)
+                if response and response["status_code"] == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
+                    continue
+
+            if time.time() - start_time > 200:
+                return json_obj
 
     def perform_remote_call(self, link_call, request):
         """
@@ -173,7 +185,6 @@ class RemoteServer(object):
         if "success" in json_obj and not json_obj["success"]:
             print("Url:{} Remote error. Not a success".format(link_call))
             return
-
         return json_obj
 
     def get_properties(self, url=None, request=None):

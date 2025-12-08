@@ -2,6 +2,7 @@
 Request API
 """
 
+import copy
 import urllib.parse
 
 
@@ -250,3 +251,13 @@ def request_quote(request):
     json_data = request_to_json(request)
 
     return urllib.parse.quote(json_data, safe="")
+
+
+def copy_request(request):
+    """
+    Copies data, not objects
+    """
+    request_copy = copy.copy(request)
+    request_copy.crawler_type=None
+    request_copy.handler_type=None
+    return request_copy

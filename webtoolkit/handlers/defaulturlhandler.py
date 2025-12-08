@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from ..utils.dateutils import DateUtils
 from ..pages import DefaultContentPage
-from ..request import PageRequestObject
+from ..request import PageRequestObject, copy_request
 from ..webconfig import WebLogger
 from .handlerhttppage import HttpPageHandler
 
@@ -33,14 +33,13 @@ class DefaultUrlHandler(HttpPageHandler):
             return
 
         if self.request:
-            request = copy.copy(self.request)
+            request = copy_request(self.request)
         else:
             request = PageRequestObject(url)
 
         request.url = url
         request.handler_name = "HttpPageHandler"
-        request.handler_type = HttpPageHandler
-        request.crawler_type = None
+        #request.handler_type = HttpPageHandler
         if crawler_name:
             request.crawler_name = crawler_name
 

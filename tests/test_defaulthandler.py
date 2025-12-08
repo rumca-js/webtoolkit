@@ -22,6 +22,6 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
 
         self.assertTrue(url)
         self.assertEqual(url.request.url, "https://example.com")
-        self.assertEqual(url.request.handler_type, HttpPageHandler)
+        self.assertEqual(url.request.handler_name, "HttpPageHandler")
 
         self.assertEqual(handler.url, test_url)
