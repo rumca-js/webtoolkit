@@ -95,54 +95,54 @@ class RedditUrlHandler(DefaultUrlHandler):
         text = json_text[wh_semi + 1 : wh_colon].strip()
         return text
 
-    # TODO do not remove social data
-    # reddit is heavily scrape-ratioed
-    #def get_social_data(self):
-    #    """
-    #    If we did not receive social data, do not return anything
-    #    """
-    #    if self.social_data is None:
-    #        self.get_json_data()
+    def get_social_data(self):
+        """
+        Returns social data.
 
-    #    if len(self.social_data) > 0:
-    #        return super().get_social_data()
+        @note Reddit is heavily scrape-ratioed. Do not scrape social data if it is not necessary.
+        """
+        if self.social_data is None:
+            self.get_json_data()
 
-    #def get_json_data(self):
-    #    if self.social_data is not None:
-    #        return self.social_data
+        if len(self.social_data) > 0:
+            return super().get_social_data()
 
-    #    self.social_data = {}
+    def get_json_data(self):
+        if self.social_data is not None:
+            return self.social_data
 
-    #    json_text = self.get_json_text()
+        self.social_data = {}
 
-    #    if not json_text:
-    #        return self.social_data
+        json_text = self.get_json_text()
 
-    #    if self.post_id:
-    #        upvote_ratio = self.get_json_value(json_text, "upvote_ratio")
-    #        try:
-    #            upvote_ratio = float(upvote_ratio)
-    #        except ValueError:
-    #            upvote_ratio = None
+        if not json_text:
+            return self.social_data
 
-    #        score = self.get_json_value(json_text, "score")
-    #        try:
-    #            score = float(score)
-    #        except ValueError:
-    #            score = None
+        if self.post_id:
+            upvote_ratio = self.get_json_value(json_text, "upvote_ratio")
+            try:
+                upvote_ratio = float(upvote_ratio)
+            except ValueError:
+                upvote_ratio = None
 
-    #        self.social_data["upvote_ratio"] = upvote_ratio
-    #        self.social_data["rating"] = score
-    #    elif self.subreddit:
-    #        subscribers = self.get_json_value(json_text, "subreddit_subscribers")
-    #        try:
-    #            subscribers = int(subscribers)
-    #        except ValueError:
-    #            subscribers = None
+            score = self.get_json_value(json_text, "score")
+            try:
+                score = float(score)
+            except ValueError:
+                score = None
 
-    #        self.social_data["followers_count"] = subscribers
+            self.social_data["upvote_ratio"] = upvote_ratio
+            self.social_data["rating"] = score
+        elif self.subreddit:
+            subscribers = self.get_json_value(json_text, "subreddit_subscribers")
+            try:
+                subscribers = int(subscribers)
+            except ValueError:
+                subscribers = None
 
-    #    return self.social_data
+            self.social_data["followers_count"] = subscribers
+
+        return self.social_data
 
     def get_upvote_ratio(self):
         if self.social_data:
