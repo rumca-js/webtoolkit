@@ -18,15 +18,18 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         self.social_data = {}
         self.user_name = None
 
-        if request:
-            request.cookies = {}
-            request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
-
         super().__init__(
             url=url,
             request=request,
             url_builder=url_builder,
         )
+
+        if not self.is_handled_by():
+            return
+
+        if request:
+            request.cookies = {}
+            request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
 
     def is_handled_by(self):
         if not self.url:
@@ -170,6 +173,11 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             return self.get_channel_url()
 
     def get_response(self):
+        if self.request:
+            if not self.request.cookies or len(self.request.cookies) == 0:
+                self.request.cookies = {}
+                self.request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
+
         if self.code:
             return super().get_response()
         elif self.url:
