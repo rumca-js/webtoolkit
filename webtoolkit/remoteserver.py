@@ -139,7 +139,7 @@ class RemoteServer(object):
                 return json_obj
         """
 
-        return self.perform_remote_call(self, link_call, request)
+        return self.perform_remote_call(link_call, request)
 
     def perform_remote_call(self, link_call, request):
         """
