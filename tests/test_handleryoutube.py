@@ -223,6 +223,12 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         self.assertFalse(social_data["stars"])
         self.assertFalse(social_data["followers_count"])
 
+    def test_get_language(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        handler = YouTubeVideoHandler("https://www.youtube.com/watch?v=1234")
+        self.assertTrue(handler.get_language() is None)
+
 
 
 class YouTubeChannelHandlerTest(FakeInternetTestCase):
@@ -519,3 +525,9 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         streams = handler.get_streams()
 
         self.assertTrue(len(streams) > 0)
+
+    def test_get_language(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        handler = YouTubeVideoHandler("https://www.youtube.com/watch?v=1234")
+        self.assertTrue(handler.get_language() is None)
