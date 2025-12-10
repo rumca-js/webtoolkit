@@ -708,10 +708,20 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertIn(test_link_result, feeds)
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_get_feeds__odysee(self):
+    def test_get_feeds__odysee_channel(self):
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://odysee.com/@samtime:1?test"
         test_link_result = "https://odysee.com/$/rss/@samtime:1"
+        url = MockUrl(request=self.get_request(test_link))
+
+        feeds = url.get_feeds()
+        self.assertIn(test_link_result, feeds)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_feeds__odysee_video(self):
+        MockRequestCounter.mock_page_requests = 0
+        test_link = "https://odysee.com/@MetalRockRules!:1/Metallica---The-Memory-Remains--Music-Video-HD-Remastered-:6"
+        test_link_result = "https://odysee.com/$/rss/@MetalRockRules!:1"
         url = MockUrl(request=self.get_request(test_link))
 
         feeds = url.get_feeds()

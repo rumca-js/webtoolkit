@@ -8,7 +8,9 @@ from .handlerhttppage import HttpPageHandler
 
 class OdyseeChannelHandler(DefaultCompoundChannelHandler):
 
-    def __init__(self, url=None, contents=None, request=None, url_builder=None):
+    def __init__(self, url=None, contents=None, request=None, url_builder=None, channel_code=None):
+        if channel_code is not None:
+            url = self.code2url(channel_code)
 
         super().__init__(
             url,

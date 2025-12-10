@@ -8,8 +8,8 @@ class OdyseeVideoHandler(DefaultUrlHandler):
         super().__init__(
             url, contents=contents, request=request, url_builder=url_builder
         )
-        self.channel = None
-        self.video = None
+        self.channel_code = None
+        self.video_code = None
         self.url = self.input2url(url)
 
     def is_handled_by(self):
@@ -46,13 +46,13 @@ class OdyseeVideoHandler(DefaultUrlHandler):
             return
 
         first = lines[0]  # odysee.com
-        self.channel = lines[1]
-        self.video = lines[2]
-        wh = self.video.find("?")
+        self.channel_code = lines[1]
+        self.video_code = lines[2]
+        wh = self.video_code.find("?")
         if wh >= 0:
-            self.video = self.video[:wh]
+            self.video_code = self.video_code[:wh]
 
-        protocol_less = "/".join([first, self.channel, self.video])
+        protocol_less = "/".join([first, self.channel_code, self.video_code])
 
         return "https://" + protocol_less
 
@@ -64,17 +64,17 @@ class OdyseeVideoHandler(DefaultUrlHandler):
             return url
 
         first = lines[0]  # odysee.com
-        self.video = lines[1]
+        self.video_code = lines[1]
 
-        protocol_less = "/".join([first, self.video])
+        protocol_less = "/".join([first, self.video_code])
 
         return "https://" + protocol_less
 
     def get_video_code(self):
-        return self.video
+        return self.video_code
 
     def get_channel_code(self):
-        return self.channel
+        return self.channel_code
 
     def get_link_classic(self):
         if self.get_channel_code():
@@ -89,5 +89,5 @@ class OdyseeVideoHandler(DefaultUrlHandler):
 
     def get_feeds(self):
         from .handlerchannelodysee import OdyseeChannelHandler
-
-        return [OdyseeChannelHandler().code2feed(self.channel)]
+        feeds = OdyseeChannelHandler(channel_code=self.channel_code).get_feeds()
+        return feeds

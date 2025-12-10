@@ -114,6 +114,18 @@ class OdyseeVideoHandlerTest(FakeInternetTestCase):
 
         self.assertTrue(response)
 
+    def test_get_feeds__from_video(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        # call tested function
+        handler = OdyseeChannelHandler("https://odysee.com/@MetalRockRules!:1/Metallica---The-Memory-Remains--Music-Video-HD-Remastered-:6", url_builder=MockUrl)
+
+        feeds = handler.get_feeds()
+        self.assertEqual(len(feeds), 1)
+
+        self.assertEqual(feeds[0], "https://odysee.com/$/rss/@MetalRockRules!:1")
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
 
 class OdyseeChannelHandlerTest(FakeInternetTestCase):
     def setUp(self):
