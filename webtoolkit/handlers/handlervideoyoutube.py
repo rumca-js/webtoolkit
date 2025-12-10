@@ -162,3 +162,11 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     def get_thumbs_down(self):
         if self.return_dislike_json:
             return self.return_dislike_json.get_thumbs_down()
+
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None

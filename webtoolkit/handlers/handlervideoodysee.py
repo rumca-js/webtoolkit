@@ -91,3 +91,11 @@ class OdyseeVideoHandler(DefaultUrlHandler):
         from .handlerchannelodysee import OdyseeChannelHandler
         feeds = OdyseeChannelHandler(channel_code=self.channel_code).get_feeds()
         return feeds
+
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None

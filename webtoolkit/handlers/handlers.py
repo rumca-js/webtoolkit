@@ -163,6 +163,14 @@ class RedditUrlHandler(DefaultUrlHandler):
 
         return feeds
 
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None
+
 
 class GitHubUrlHandler(DefaultUrlHandler):
 
@@ -266,6 +274,14 @@ class GitHubUrlHandler(DefaultUrlHandler):
 
     def get_user_stars(self):
         return self.social_data.get("stars")
+
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None
 
 
 class ReturnDislike(DefaultUrlHandler):
@@ -479,6 +495,14 @@ class FourChanChannelHandler(DefaultChannelHandler):
 
         return feeds
 
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None
+
 
 class TwitterUrlHandler(DefaultUrlHandler):
 
@@ -501,3 +525,11 @@ class TwitterUrlHandler(DefaultUrlHandler):
             return True
         if self.url.find("https://twitter.com") >= 0:
             return True
+
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None

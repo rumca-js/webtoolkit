@@ -191,3 +191,11 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
                     self.code = handler.get_code()
 
                     return super().get_response()
+
+    def get_language(self):
+        """
+        Social media platforms host very different videos in different locations
+        Currently I have no means of identifying og:locale, or lang, it is commonly
+        locale of platform, not contents
+        """
+        return None
