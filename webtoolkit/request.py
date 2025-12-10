@@ -65,6 +65,22 @@ class PageRequestObject(object):
         if not self.cookies:
             self.cookies = {}
 
+    def get_proxies_map(self):
+        proxies = None
+        if self.http_proxy:
+            if not proxies:
+                proxies = {}
+
+            proxies["http"] = self.http_proxy
+
+        if self.https_proxy:
+            if not proxies:
+                proxies = {}
+
+            proxies["https"] = self.https_proxy
+
+        return proxies
+
     def __str__(self):
         string = ""
         if self.url:

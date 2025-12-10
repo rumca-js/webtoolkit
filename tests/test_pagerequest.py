@@ -57,3 +57,31 @@ class PageRequestObjectTest(FakeInternetTestCase):
 
         self.assertEqual(request.url, request_copy.url)
         self.assertNotEqual(request.crawler_type, request_copy.crawler_type)
+
+    def test_get_proxies_map__noproxies(self):
+        request = PageRequestObject(url="https://test.com")
+        crawler = MockCrawler(request = request)
+        request.crawler_type = crawler
+        request.http_proxy = None
+        request.https_proxy = None
+
+        # call tested function
+        proxies = request.get_proxies_map()
+
+        self.assertTrue(proxies is None)
+
+    def test_get_proxies_map__proxies(self):
+        request = PageRequestObject(url="https://test.com")
+        crawler = MockCrawler(request = request)
+        request.crawler_type = crawler
+        request.http_proxy = "http://192.168.0.1:8080"
+        request.https_proxy = "https://8.8.8.8:8080"
+
+        # call tested function
+        proxies = request.get_proxies_map()
+
+        self.assertIn("http", proxies)
+        self.assertIn("https", proxies)
+
+        self.assertEqual(proxies["http"], "http://192.168.0.1:8080")
+        self.assertEqual(proxies["https"], "https://8.8.8.8:8080")
