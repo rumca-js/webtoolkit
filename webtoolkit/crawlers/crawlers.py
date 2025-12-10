@@ -190,7 +190,7 @@ class RequestsCrawler(CrawlerInterface):
         """
         import requests
 
-        proxies = self.get_request_proxies(request)
+        proxies = request.get_proxies_map()
 
         return requests.get(
             request.url,
@@ -201,22 +201,6 @@ class RequestsCrawler(CrawlerInterface):
             cookies=request.cookies,
             stream=stream,
         )
-
-    def get_request_proxies(self, request):
-        proxies = None
-        if request.http_proxy:
-            if not proxies:
-                proxies = {}
-
-            proxies["http"] = request.http_proxy
-
-        if request.https_proxy:
-            if not proxies:
-                proxies = {}
-
-            proxies["https"] = request.http_proxy
-
-        return proxies
 
     def build_requests(self):
         """
