@@ -42,6 +42,22 @@ class ResponseHeaders(object):
         if "content-type" in self.headers:
             return self.headers["content-type"]
 
+    def get_content_encoding(self):
+        """
+        This is not UFT encoding,
+        but gzip, deflate and others
+        """
+        if "Content-Encoding" in self.headers:
+            return self.headers["Content-Encoding"]
+        if "content-encoding" in self.headers:
+            return self.headers["content-encoding"]
+
+    def get_content_language(self):
+        if "Content-Language" in self.headers.get("Content-Language"):
+            return self.headers["Content-Encoding"]
+        if "content-language" in self.headers:
+            return self.headers["content-language"]
+
     def get_content_type_keys(self):
         content_type = self.get_content_type()
         if content_type:
@@ -87,15 +103,19 @@ class ResponseHeaders(object):
         elements = content.split(";")
         for element in elements:
             wh = element.lower().find("charset")
+            # syntax charset=something
             if wh >= 0:
                 charset_elements = element.split("=")
                 if len(charset_elements) > 1:
                     charset = charset_elements[1]
 
                     if charset.startswith('"') or charset.startswith("'"):
-                        return charset[1:-1]
-                    else:
-                        return charset
+                        charset = charset[1:-1]
+                    if charset.find(",") >= 0:
+                        wh = charset.find(",")
+                        charset = charset[:wh]
+
+                    return charset
 
     def is_content_html(self):
         content = self.get_content_type()
@@ -218,7 +238,10 @@ class PageResponseObject(object):
                 self.text = self.binary.decode(self.encoding)
             except Exception as E:
                 WebLogger.exc(E, "Cannot properly decode text from {}".format(self.url))
-                self.text = self.binary.decode(self.encoding, errors="ignore")
+                try:
+                    self.text = self.binary.decode(self.encoding, errors="ignore")
+                except Exception as E:
+                    WebLogger.exc(E, "Cannot properly decode text from {}, even with ignoring errors".format(self.url))
                 self.add_error("Cannot properly decode text from {}".format(self.url))
 
         if self.text and not self.binary:
@@ -404,7 +427,11 @@ class PageResponseObject(object):
 
     def set_binary(self, binary, encoding="utf-8"):
         self.binary = binary
-        self.text = binary.decode(encoding)
+        try:
+            self.text = binary.decode(encoding)
+        except Exception as E:
+            self.add_error(f"Cannot decode binary data using encoding {encoding}")
+            WebLogger(f"Cannot decode binary data using encoding {encoding}")
 
     def add_error(self, error_text):
         self.errors.append(error_text)

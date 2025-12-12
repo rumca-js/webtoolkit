@@ -264,6 +264,14 @@ class PageResponseObjectTest(FakeInternetTestCase):
 
         self.assertEqual(response.get_encoding(), "UTF-8")
 
+    def test_get_encoding__comma(self):
+        headers = {"Content-Type": "text/html; charset=UTF-8,something"}
+        response = PageResponseObject(
+            "https://test.com", "", status_code=200, headers=headers
+        )
+
+        self.assertEqual(response.get_encoding(), "UTF-8")
+
     def test_is_content__html(self):
         headers = {"Content-Type": "text/html; charset=UTF-8"}
         response = PageResponseObject(
