@@ -1,15 +1,12 @@
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 
-from ..response import PageResponseObject
 from ..urllocation import UrlLocation
-from ..pages import RssPage
 from ..webtools import WebLogger
-from .defaulturlhandler import DefaultCompoundChannelHandler
-from .handlerhttppage import HttpPageHandler
+from .handleryoutube import YouTubeHandler
 
 
-class YouTubeChannelHandler(DefaultCompoundChannelHandler):
+class YouTubeChannelHandler(YouTubeHandler):
     """
     Natively since we inherit RssPage, the contents should be RssPage
     """
@@ -27,10 +24,6 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         if not self.is_handled_by():
             return
 
-        if request:
-            request.cookies = {}
-            request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
-
     def is_handled_by(self):
         if not self.url:
             return False
@@ -41,22 +34,19 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             short_url.startswith("www.youtube.com/channel")
             or short_url.startswith("youtube.com/channel")
             or short_url.startswith("m.youtube.com/channel")
-            or short_url.startswith("www.youtube.com/@")
-            or short_url.startswith("youtube.com/@")
-            or short_url.startswith("m.youtube.com/@")
-            or short_url.startswith("www.youtube.com/user")
-            or short_url.startswith("youtube.com/user")
-            or short_url.startswith("m.youtube.com/user")
         ):
             return True
-        if (
-            short_url.startswith("www.youtube.com/feeds")
-            or short_url.startswith("youtube.com/feeds")
-            or short_url.startswith("m.youtube.com/feeds")
-        ):
+        if self.is_feed_url(self.url):
+            return True
+        if self.is_channel_name(self.url):
             return True
 
-    def is_channel_name(self, url):
+        return False
+
+    def is_channel_name(self, url) -> bool:
+        """
+        For channel name it is more difficult to obtain channel code.
+        """
         if not url:
             return False
 
@@ -69,8 +59,25 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             or short_url.startswith("www.youtube.com/user")
             or short_url.startswith("youtube.com/user")
             or short_url.startswith("m.youtube.com/user")
+            or short_url.startswith("www.youtube.com/c/")
+            or short_url.startswith("youtube.com/c/")
+            or short_url.startswith("m.youtube.com/c/")
         ):
             return True
+        return False
+
+    def is_feed_url(self, url) -> bool:
+        if not url:
+            return False
+
+        short_url = UrlLocation(url).get_protocolless()
+        if (
+            short_url.startswith("www.youtube.com/feeds")
+            or short_url.startswith("youtube.com/feeds")
+            or short_url.startswith("m.youtube.com/feeds")
+        ):
+            return True
+        return False
 
     def input2url(self, item):
         code = self.input2code(item)
@@ -84,10 +91,14 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         return "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(code)
 
     def get_feeds(self):
-        if not self.code:
-            return []
-
+        """
+        Super class implementation may provide us feeds, start with that
+        """
         feeds = super().get_feeds()
+
+        if not self.code:
+            return feeds
+
         if self.code:
             feeds.append(
                 "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(
@@ -100,7 +111,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
     def input2code(self, url):
         wh = url.find("youtube.com")
         if wh == -1:
-            return None
+            return
 
         if self.is_channel_name(url):
             return

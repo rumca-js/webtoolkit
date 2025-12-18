@@ -3,6 +3,7 @@ from webtoolkit.utils.dateutils import DateUtils
 from webtoolkit import (
    YouTubeVideoHandler,
    YouTubeChannelHandler,
+   PageRequestObject,
 )
 
 from webtoolkit.tests.fakeinternet import (
@@ -19,11 +20,14 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/watch?v=123"
+        request = PageRequestObject(test_link)
 
         # call tested function
-        handler = YouTubeVideoHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
 
         self.assertEqual(handler.url, test_link)
+        self.assertTrue(len(handler.request.cookies) != 0)
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_is_handled_by_video(self):
@@ -238,9 +242,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
     def test_constructor__rss(self):
         MockRequestCounter.mock_page_requests = 0
 
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        request = PageRequestObject(test_link)
+
         # call tested function
         handler = YouTubeChannelHandler(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
+            request=request,
             url_builder=MockUrl
         )
 
@@ -248,6 +255,7 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
             handler.get_feeds()[0],
             "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
         )
+        self.assertTrue(len(handler.request.cookies) != 0)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -255,9 +263,12 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/1234"
+        request = PageRequestObject(test_link)
+
         # call tested function
-        handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeChannelHandler(request=request, url_builder=MockUrl)
         self.assertEqual(handler.url, test_link)
+        self.assertTrue(len(handler.request.cookies) != 0)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -265,9 +276,13 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/user/1234"
+        request = PageRequestObject(test_link)
+
         # call tested function
-        handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+        handler = YouTubeChannelHandler(request=request, url_builder=MockUrl)
+
         self.assertEqual(handler.url, test_link)
+        self.assertTrue(len(handler.request.cookies) != 0)
 
         # +1 - obtains channel code from HTML
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
@@ -276,8 +291,9 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/1234"
-        # call tested function
         handler = YouTubeChannelHandler(test_link, url_builder=MockUrl)
+
+        # call tested function
         self.assertTrue(handler.is_handled_by())
 
     def test_is_handled_by__user(self):

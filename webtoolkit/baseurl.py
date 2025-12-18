@@ -47,6 +47,7 @@ from .handlers import (
     TwitterUrlHandler,
     YouTubeVideoHandler,
     YouTubeChannelHandler,
+    YouTubeHandler,
 )
 
 from .crawlers import (
@@ -101,7 +102,10 @@ class BaseUrl(ContentInterface):
         return request
 
     def get_handlers(self):
-        """ Returns available handlers """
+        """
+        Returns available handlers.
+        Order is important - from the most precise handler to the most general.
+        """
         #fmt off
 
         return [
@@ -116,6 +120,7 @@ class BaseUrl(ContentInterface):
             FourChanChannelHandler,
             TwitterUrlHandler,
             YouTubeChannelHandler,      # present here, if somebody wants to call it by name
+            YouTubeHandler,
             HttpPageHandler,            # default
         ]
         #fmt on
