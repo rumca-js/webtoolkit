@@ -15,6 +15,7 @@ from webtoolkit import (
    CrawlerInterface,
    RequestsCrawler,
 )
+from webtoolkit.webconfig import WebConfig
 
 
 def print_bar():
@@ -50,6 +51,8 @@ def run_with_handler(test_url, handler):
     if response.is_invalid():
         print("Invalid response")
         return
+    if response.is_valid():
+        print("Response is OK")
     if response.get_text() is None:
         print("No text in response")
         return
@@ -233,6 +236,8 @@ def test_baseurl__is_allowed():
 
 
 def main():
+    WebConfig.use_print_logging()
+
     test_handler_vanilla_google()
     test_handler_youtube_channel_by_rss()
     test_handler_youtube_channel_by_channel()

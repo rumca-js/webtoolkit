@@ -301,9 +301,9 @@ class CrawlerCaller(object):
         if self.dead:
             return None
 
-        WebLogger.debug(f"{self.url}: Obtaining HTTP response")
+        WebLogger.debug(f"{self.url}: HTTP request")
         self.response = self.run_crawler()
-        WebLogger.debug(f"{self.url}: Obtaining HTTP response DONE")
+        WebLogger.debug(f"{self.url}: HTTP response:DONE")
 
         return self.response
 

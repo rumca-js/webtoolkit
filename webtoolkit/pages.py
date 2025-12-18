@@ -78,10 +78,12 @@ class JsonPage(ContentInterface):
                 self.json_obj = None
         except ValueError:
             # to be expected
-            try:
-                WebLogger.debug(f"Invalid json:{contents}")
-            except Exception as E:
-                print(str(E))
+            pass
+
+            #try:
+            #    WebLogger.debug(f"Invalid json:{contents}")
+            #except Exception as E:
+            #    print(str(E))
 
     def is_valid(self) -> bool:
         if self.json_obj:
