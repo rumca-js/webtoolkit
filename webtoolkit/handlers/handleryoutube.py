@@ -15,9 +15,6 @@ class YouTubeHandler(DefaultCompoundChannelHandler):
     """
 
     def __init__(self, url=None, request=None, url_builder=None):
-        self.social_data = {}
-        self.user_name = None
-
         super().__init__(
             url=url,
             request=request,
