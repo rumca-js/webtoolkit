@@ -74,15 +74,11 @@ class HttpPageHandler(HandlerInterface):
     def get_response_implementation(self):
         url = self.url
 
-        dap = UrlLocation(url)
-
         if self.is_handled_by():
-            if not dap.is_media():
-                builder = CrawlerCaller(url=url, request=self.request)
-                self.response = builder.get_response()
+            builder = CrawlerCaller(url=url, request=self.request)
+            self.response = builder.get_response()
 
-                if not self.response:
-                    return
+            return self.response
 
     def get_contents(self):
         """
@@ -285,7 +281,6 @@ class CrawlerCaller(object):
 
         self.request = request
         self.errors = []
-        self.dead = False
 
         if self.url is None:
             stack_lines = traceback.format_stack()
@@ -297,9 +292,6 @@ class CrawlerCaller(object):
     def get_response(self):
         if self.response:
             return self.response
-
-        if self.dead:
-            return None
 
         WebLogger.debug(f"{self.url}: HTTP request")
         self.response = self.run_crawler()
@@ -357,7 +349,5 @@ class CrawlerCaller(object):
         )
 
         response.errors.append("Url:{} No response from crawler".format(self.url))
-
-        self.dead = True
 
         return response
