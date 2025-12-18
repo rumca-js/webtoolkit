@@ -22,55 +22,6 @@ def print_bar():
     print("------------------------")
 
 
-class UrlBuilder(HttpPageHandler):
-    def __init__(self, url=None, request=None,url_builder=None, contents=None):
-        if request and request.crawler_type is None:
-            request.crawler_name = "RequestsCrawler"
-            request.crawler_type = RequestsCrawler(request.url)
-
-        super().__init__(url=url, request=request, url_builder = url_builder, contents=contents)
-
-
-def print_handler(handler):
-    print("Title: {}".format(handler.get_title()))
-    print("Description: {}".format(handler.get_description()))
-    print("Thumbnail: {}".format(handler.get_thumbnail()))
-
-
-def run_with_handler(test_url, handler):
-    print("Running {} with handler {}".format(test_url, handler.__name__))
-    request = PageRequestObject(url=test_url)
-    request.crawler_name = "RequestsCrawler"
-    request.crawler_type = RequestsCrawler(request.url)
-    handler = handler(request=request, url_builder=UrlBuilder)
-    response = handler.get_response()
-
-    if response is None:
-        print("Missing response!")
-        return
-    if response.is_invalid():
-        print("Invalid response")
-        return
-    if response.is_valid():
-        print("Response is OK")
-    if response.get_text() is None:
-        print("No text in response")
-        return
-
-    entries_len = len(list(handler.get_entries()))
-    print(f"Entries: {entries_len}")
-
-    streams_len = len(list(handler.get_streams()))
-    print(f"Streams: {streams_len}")
-
-    #print(response)
-    #print_handler(handler)
-
-    print_bar()
-
-    return response, handler
-
-
 def run_with_base_url(test_url):
     print("Running {} with BaseUrl".format(test_url))
 
@@ -161,7 +112,12 @@ def test_baseurl__youtube_video():
     return run_with_base_url(test_url)
 
 
-def test_baseurl__youtube_channel():
+def test_baseurl__youtube_channel_by_id():
+    test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+    response, handler = run_with_base_url(test_url)
+
+
+def test_baseurl__youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_base_url(test_url)
 
@@ -238,17 +194,10 @@ def test_baseurl__is_allowed():
 def main():
     WebConfig.use_print_logging()
 
-    test_handler_vanilla_google()
-    test_handler_youtube_channel_by_rss()
-    test_handler_youtube_channel_by_channel()
-    test_handler_youtube_video()
-    test_handler_youtube_channel_by_handle()
-    test_handler_odysee_video()
-    test_handler_odysee_channel()
-
     test_baseurl__vanilla_google()
     test_baseurl__youtube_video()
-    test_baseurl__youtube_channel()
+    test_baseurl__youtube_channel_by_id()
+    test_baseurl__youtube_channel_by_handle()
     test_baseurl__odysee_video()
     test_baseurl__odysee_channel()
     test_baseurl__github()
