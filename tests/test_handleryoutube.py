@@ -16,7 +16,7 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
 
-    def test_constructor(self):
+    def test_constructor__www(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/watch?v=123"
@@ -26,7 +26,32 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
 
         self.assertEqual(handler.url, test_link)
-        self.assertTrue(len(handler.request.cookies) != 0)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_constructor__no_www(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://youtube.com/watch?v=123"
+        request = PageRequestObject(test_link)
+
+        # call tested function
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
+
+        self.assertEqual(handler.url, test_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_constructor__m(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://m.youtube.com/watch?v=123"
+        request = PageRequestObject(test_link)
+
+        # call tested function
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
+
+        self.assertEqual(handler.url, test_link)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -233,6 +258,17 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         handler = YouTubeVideoHandler("https://www.youtube.com/watch?v=1234")
         self.assertTrue(handler.get_language() is None)
 
+    def test_update_request_for_services(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=1234"
+        request = PageRequestObject(test_link)
+
+        handler = YouTubeVideoHandler(request=request)
+        handler.update_request_for_services()
+
+        self.assertTrue(len(handler.request.cookies) != 0)
+
 
 
 class YouTubeChannelHandlerTest(FakeInternetTestCase):
@@ -255,7 +291,6 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
             handler.get_feeds()[0],
             "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM",
         )
-        self.assertTrue(len(handler.request.cookies) != 0)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -268,7 +303,6 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         # call tested function
         handler = YouTubeChannelHandler(request=request, url_builder=MockUrl)
         self.assertEqual(handler.url, test_link)
-        self.assertTrue(len(handler.request.cookies) != 0)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -282,9 +316,20 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
         handler = YouTubeChannelHandler(request=request, url_builder=MockUrl)
 
         self.assertEqual(handler.url, test_link)
-        self.assertTrue(len(handler.request.cookies) != 0)
 
         # +1 - obtains channel code from HTML
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_constructor__channel_no_www(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://youtube.com/channel/1234"
+        request = PageRequestObject(test_link)
+
+        # call tested function
+        handler = YouTubeChannelHandler(request=request, url_builder=MockUrl)
+        self.assertEqual(handler.url, test_link)
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_is_handled_by__channel(self):
@@ -545,5 +590,16 @@ class YouTubeChannelHandlerTest(FakeInternetTestCase):
     def test_get_language(self):
         MockRequestCounter.mock_page_requests = 0
 
-        handler = YouTubeVideoHandler("https://www.youtube.com/watch?v=1234")
+        handler = YouTubeChannelHandler("https://www.youtube.com/watch?v=1234")
         self.assertTrue(handler.get_language() is None)
+
+    def test_update_request_for_services(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=1234"
+        request = PageRequestObject(test_link)
+
+        handler = YouTubeChannelHandler(request=request)
+        handler.update_request_for_services()
+
+        self.assertTrue(len(handler.request.cookies) != 0)

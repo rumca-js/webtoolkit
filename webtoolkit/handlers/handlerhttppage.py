@@ -75,10 +75,27 @@ class HttpPageHandler(HandlerInterface):
         url = self.url
 
         if self.is_handled_by():
+            self.update_request_for_services()
             builder = CrawlerCaller(url=url, request=self.request)
             self.response = builder.get_response()
 
             return self.response
+
+    def update_request_for_services(self):
+        """
+        This could have been split into separate class, right now there is no need to.
+        """
+        url = self.url
+
+        location = UrlLocation(url)
+        domain_only = location.get_domain_only()
+        if domain_only.find("youtube.com"):
+            if self.request:
+                if self.request.cookies is None:
+                    self.request.cookies = {}
+
+                if "CONSENT" not in self.request.cookies:
+                    self.request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
 
     def get_contents(self):
         """

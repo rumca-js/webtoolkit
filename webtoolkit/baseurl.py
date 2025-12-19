@@ -47,7 +47,6 @@ from .handlers import (
     TwitterUrlHandler,
     YouTubeVideoHandler,
     YouTubeChannelHandler,
-    YouTubeHandler,
 )
 
 from .crawlers import (
@@ -120,7 +119,6 @@ class BaseUrl(ContentInterface):
             FourChanChannelHandler,
             TwitterUrlHandler,
             YouTubeChannelHandler,      # present here, if somebody wants to call it by name
-            YouTubeHandler,
             HttpPageHandler,            # default
         ]
         #fmt on

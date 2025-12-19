@@ -192,7 +192,7 @@ def test_baseurl__is_allowed():
 
 
 def main():
-    WebConfig.use_print_logging()
+    #WebConfig.use_print_logging()
 
     test_baseurl__vanilla_google()
     test_baseurl__youtube_video()

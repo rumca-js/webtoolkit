@@ -5,10 +5,10 @@ from ..utils.dateutils import DateUtils
 from ..urllocation import UrlLocation
 from ..pages import ReturnDislikeJson
 from ..webtools import WebLogger
-from .handleryoutube import YouTubeHandler
+from .defaulturlhandler import DefaultCompoundChannelHandler
 
 
-class YouTubeVideoHandler(YouTubeHandler):
+class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     def __init__(self, url=None, request=None, url_builder=None):
         super().__init__(
             url=url,

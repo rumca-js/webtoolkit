@@ -3,10 +3,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 from ..urllocation import UrlLocation
 from ..webtools import WebLogger
-from .handleryoutube import YouTubeHandler
+from .defaulturlhandler import DefaultCompoundChannelHandler
 
 
-class YouTubeChannelHandler(YouTubeHandler):
+class YouTubeChannelHandler(DefaultCompoundChannelHandler):
     """
     Natively since we inherit RssPage, the contents should be RssPage
     """
@@ -189,19 +189,7 @@ class YouTubeChannelHandler(YouTubeHandler):
                 self.request.cookies = {}
                 self.request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
 
-        if self.code:
-            return super().get_response()
-        elif self.url:
-            url = self.get_page_url(self.url)
-            if not url.get_response():
-                return
-
-            for feed in url.get_feeds():
-                handler = YouTubeChannelHandler(url=feed)
-                if handler.is_handled_by():
-                    self.code = handler.get_code()
-
-                    return super().get_response()
+        return super().get_response()
 
     def get_language(self):
         """
