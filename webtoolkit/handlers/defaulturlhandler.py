@@ -39,6 +39,7 @@ class DefaultUrlHandler(HttpPageHandler):
             request.url = url
             #request.handler_type = HttpPageHandler # object will be assigned by builder
 
+        # if we will not hardcode this handler, then it will recursively loop
         request.handler_name = "HttpPageHandler"
         request.handler_type = None  # object will be assigned by builder
 
