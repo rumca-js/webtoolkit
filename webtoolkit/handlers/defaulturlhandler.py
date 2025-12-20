@@ -33,7 +33,7 @@ class DefaultUrlHandler(HttpPageHandler):
             return
 
         if self.url == url and self.request is not None:
-            request = self.request
+            request = copy.copy(self.request)
         else:
             request = PageRequestObject(url)
             request.url = url
@@ -62,10 +62,9 @@ class DefaultUrlHandler(HttpPageHandler):
         if not url:
             return
 
+        request = PageRequestObject(url)
         if self.request:
-            request = copy.copy(self.request)
-        else:
-            request = PageRequestObject(url)
+            request.timeout_s = self.request.timeout_s
 
         request.url = url
 
