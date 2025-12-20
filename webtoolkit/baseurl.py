@@ -451,7 +451,7 @@ class BaseUrl(ContentInterface):
 
         handler = self.get_handler()
         if handler:
-            return handler.get_feeds()
+            return list(set(handler.get_feeds()))
 
         return result
 

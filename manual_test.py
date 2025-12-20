@@ -22,6 +22,13 @@ def print_bar():
     print("------------------------")
 
 
+def is_true(text, condition):
+    #if condition:
+    #    print(f[{text}] OK")
+    if not condition:
+        print(f"ERROR: {text}")
+
+
 def run_with_base_url(test_url):
     print("Running {} with BaseUrl".format(test_url))
 
@@ -116,18 +123,32 @@ def test_baseurl__youtube_video():
 def test_baseurl__youtube_channel_by_id():
     test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_base_url(test_url)
-    if handler:
-        print("Title: {}".format(handler.get_title()))
-        print("Feeds: {}".format(handler.get_feeds()))
+
+    entries_len = len(list(handler.get_entries()))
+    streams_len = len(list(handler.get_streams()))
+
+    is_true("Response is valid", response.is_valid())
+    is_true("Title", handler.get_title() == "Linus Tech Tips")
+    is_true("Streams_len", streams_len == 2)
+    is_true("Entries_len", entries_len == 15)
+    is_true("Feeds_len", len(handler.get_feeds()) == 1)
+
     return response, handler
 
 
 def test_baseurl__youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_base_url(test_url)
-    if handler:
-        print("Title: {}".format(handler.get_title()))
-        print("Feeds: {}".format(handler.get_feeds()))
+
+    entries_len = len(list(handler.get_entries()))
+    streams_len = len(list(handler.get_streams()))
+
+    is_true("Response is valid", response.is_valid())
+    is_true("Title", handler.get_title() == "Linus Tech Tips")
+    is_true("Streams_len", streams_len == 1)
+    is_true("Entries_len", entries_len == 0)
+    is_true("Feeds_len", len(handler.get_feeds()) == 1)
+
     return response, handler
 
 

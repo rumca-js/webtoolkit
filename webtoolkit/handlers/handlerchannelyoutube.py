@@ -94,19 +94,18 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         """
         Super class implementation may provide us feeds, start with that
         """
-        feeds = super().get_feeds()
+        feeds = set(super().get_feeds())
 
-        if not self.code:
-            return feeds
+        for feed in feeds:
+            handler = YouTubeChannelHandler(url=feed)
+            code = handler.get_code()
+            if not self.code and code:
+                self.code = code
 
         if self.code:
-            feeds.append(
-                "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(
-                    self.code
-                )
-            )
+            feeds.add(self.code2feed(self.code))
 
-        return feeds
+        return list(feeds)
 
     def input2code(self, url):
         wh = url.find("youtube.com")
