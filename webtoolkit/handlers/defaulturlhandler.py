@@ -32,13 +32,19 @@ class DefaultUrlHandler(HttpPageHandler):
             WebLogger.error("Default Url Handler - no url")
             return
 
-        request = PageRequestObject(url)
+        if self.url == url and self.request is not None:
+            request = self.request
+        else:
+            request = PageRequestObject(url)
+            request.url = url
+            #request.handler_type = HttpPageHandler # object will be assigned by builder
 
-        request.url = url
         request.handler_name = "HttpPageHandler"
-        #request.handler_type = HttpPageHandler # object will be assigned by builder
+        request.handler_type = None  # object will be assigned by builder
+
         if crawler_name:
             request.crawler_name = crawler_name
+            request.crawler_type = None
 
         if self.url_builder:
             url = self.url_builder(
