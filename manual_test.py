@@ -31,17 +31,17 @@ def run_with_base_url(test_url):
 
     if response is None:
         print("Missing response!")
-        return
+        return response, handler
     if response.is_invalid():
         print("Invalid response")
-        return
+        return response, handler
     if response.get_text() is None:
         print("No text in response")
-        return
+        return response, handler
 
     if handler.get_title() is None:
         print("No title in url")
-        return
+        return response, handler
 
     if not handler.get_hash():
         print("No hash")
@@ -57,8 +57,6 @@ def run_with_base_url(test_url):
 
     properties = url.get_social_properties()
     print(f"Social properties: {properties}")
-
-    print_bar()
 
     return response, handler
 
@@ -104,22 +102,32 @@ def test_handler_odysee_video():
 def test_baseurl__vanilla_google():
     test_url = "https://www.google.com"
     response,handler = run_with_base_url(test_url)
-    return response,handler
+    return response, handler
 
 
 def test_baseurl__youtube_video():
     test_url = "https://www.youtube.com/watch?v=9yanqmc01ck"
-    return run_with_base_url(test_url)
+    response, handler = run_with_base_url(test_url)
+    if handler:
+        print("Title: {}".format(handler.get_title()))
+    return response, handler
 
 
 def test_baseurl__youtube_channel_by_id():
     test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
     response, handler = run_with_base_url(test_url)
+    if handler:
+        print("Title: {}".format(handler.get_title()))
+        print("Feeds: {}".format(handler.get_feeds()))
+    return response, handler
 
 
 def test_baseurl__youtube_channel_by_handle():
     test_url = "https://www.youtube.com/@LinusTechTips"
     response, handler = run_with_base_url(test_url)
+    if handler:
+        print("Title: {}".format(handler.get_title()))
+    return response, handler
 
 
 def test_baseurl__odysee_channel():
@@ -194,18 +202,30 @@ def test_baseurl__is_allowed():
 def main():
     #WebConfig.use_print_logging()
 
+    print_bar()
     test_baseurl__vanilla_google()
+    print_bar()
     test_baseurl__youtube_video()
+    print_bar()
     test_baseurl__youtube_channel_by_id()
+    print_bar()
     test_baseurl__youtube_channel_by_handle()
+    print_bar()
     test_baseurl__odysee_video()
+    print_bar()
     test_baseurl__odysee_channel()
+    print_bar()
     test_baseurl__github()
+    print_bar()
     test_baseurl__reddit__channel()
+    print_bar()
     test_baseurl__reddit__news()
+    print_bar()
 
     test_baseurl__remote_url()
+    print_bar()
     test_baseurl__is_allowed()
+    print_bar()
 
 
 main()
