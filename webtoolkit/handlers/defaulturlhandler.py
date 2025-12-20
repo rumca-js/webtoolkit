@@ -35,7 +35,11 @@ class DefaultUrlHandler(HttpPageHandler):
         if self.url == url and self.request is not None:
             request = copy.copy(self.request)
         else:
-            request = PageRequestObject(url)
+            if self.url_builder:
+                # some handlers might provide custom crawlers for urls
+                request = self.url_builder(url).get_request_for_url(url)
+            else:
+                request = PageRequestObject(url)
             request.url = url
             #request.handler_type = HttpPageHandler # object will be assigned by builder
 
@@ -62,11 +66,15 @@ class DefaultUrlHandler(HttpPageHandler):
         if not url:
             return
 
-        request = PageRequestObject(url)
-        if self.request:
-            request.timeout_s = self.request.timeout_s
+        if self.url_builder:
+            # some handlers might provide custom crawlers for urls
+            request = self.url_builder(url).get_request_for_url(url)
+        else:
+            request = PageRequestObject(url)
 
         request.url = url
+        if self.request:
+            request.timeout_s = self.request.timeout_s
 
         request.crawler_type = None
         if crawler_name:
