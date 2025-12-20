@@ -127,6 +127,7 @@ def test_baseurl__youtube_channel_by_handle():
     response, handler = run_with_base_url(test_url)
     if handler:
         print("Title: {}".format(handler.get_title()))
+        print("Feeds: {}".format(handler.get_feeds()))
     return response, handler
 
 

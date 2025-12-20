@@ -161,6 +161,14 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
         return self.response
 
+    def get_feeds(self):
+        feeds = set()
+
+        for page_url in self.channel_sources_urls.values():
+            feeds.update(page_url.get_feeds())
+
+        return list(feeds)
+
     def get_streams(self):
         for page_url in self.channel_sources_urls.values():
             self.streams[page_url.url] = page_url.get_response()
