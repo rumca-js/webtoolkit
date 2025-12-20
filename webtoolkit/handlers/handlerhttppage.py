@@ -89,7 +89,7 @@ class HttpPageHandler(HandlerInterface):
 
         location = UrlLocation(url)
         domain_only = location.get_domain_only()
-        if domain_only.find("youtube.com"):
+        if domain_only.find("youtube.com") >= 0:
             if self.request:
                 if self.request.cookies is None:
                     self.request.cookies = {}
