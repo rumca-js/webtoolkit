@@ -108,6 +108,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     Default URL handler which is capable of obtaining data from many network sources automatically.
     """
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
+        self.responses = []
         self.channel_sources_urls = OrderedDict()
         super().__init__(url=url, request=request, url_builder=url_builder)
 
@@ -141,8 +142,13 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             return self.get_response().get_text()
 
     def get_response(self):
-        if self.response:
-            return self.response
+        responses = self.get_responses()
+        if responses and len(responses) > 0:
+            return responses[0]
+
+    def get_responses(self):
+        if self.responses and len(self.responses) > 0:
+            return self.responses
 
         handles = []
         with ThreadPoolExecutor() as executor:
@@ -152,14 +158,31 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             for handle in handles:
                 url = handle.result()
 
-                if self.response is None:
-                    self.response = url.get_response()
-
-                response = url.get_response()
+                url.get_response()
 
                 self.channel_sources_urls[url.url] = url
 
-        return self.response
+        # we capture responses using order of urls
+        for page_url in self.channel_sources_urls.values():
+            self.responses.append(page_url.get_response())
+
+        return self.responses
+
+    def is_valid(self):
+        is_valid = True
+        for page_url in self.channel_sources_urls.values():
+            response = url.get_response()
+            if not response.is_valid():
+                is_valid = False
+        return is_valid
+
+    def is_invalid(self):
+        is_invalid = True
+        for page_url in self.channel_sources_urls.values():
+            response = url.get_response()
+            if not response.is_invalid():
+                is_invalid = False
+        return is_invalid
 
     def get_feeds(self):
         feeds = set()

@@ -69,15 +69,14 @@ class HandlerInterface(DefaultContentPage):
             return self.response.get_text()
 
     def get_hash(self):
-        if self.response is None:
-            self.get_response()
+        response = self.get_response()
 
-        if self.response is not None:
-            text = self.response.get_text()
+        if response is not None:
+            text = response.get_text()
             if text:
                 return calculate_hash(text)
 
-            binary = self.response.get_binary()
+            binary = response.get_binary()
             if binary:
                 return calculate_hash_binary(binary)
 
