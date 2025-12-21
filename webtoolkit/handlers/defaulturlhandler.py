@@ -9,6 +9,7 @@ from ..utils.dateutils import DateUtils
 from ..pages import DefaultContentPage
 from ..request import PageRequestObject, copy_request
 from ..webconfig import WebLogger
+from ..webtools import calculate_hash
 from .handlerhttppage import HttpPageHandler
 
 
@@ -150,10 +151,14 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         if self.responses and len(self.responses) > 0:
             return self.responses
 
+        return self.get_responses_implementation(self.get_channel_sources())
+
+    def get_responses_implementation(self, channel_sources):
         handles = []
         with ThreadPoolExecutor() as executor:
-            for channel_source in self.get_channel_sources():
-                handles.append(executor.submit(self.get_response_source, channel_source))
+            for channel_source in channel_sources:
+                if channel_source not in self.channel_sources_urls:
+                    handles.append(executor.submit(self.get_response_source, channel_source))
 
             for handle in handles:
                 url = handle.result()
@@ -183,6 +188,13 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             if not response.is_invalid():
                 is_invalid = False
         return is_invalid
+
+    def get_hash(self):
+        text = ""
+        for page_url in self.channel_sources_urls.values():
+            response = page_url.get_response()
+            text += str(response.get_text())
+        return calculate_hash(text)
 
     def get_feeds(self):
         feeds = set()

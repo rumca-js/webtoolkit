@@ -455,6 +455,9 @@ class BaseUrl(ContentInterface):
 
         return result
 
+    def calculate_hash(self, text):
+        return calculate_hash(text)
+
     def get_hash(self):
         """ Returns hash for URL """
         handler = self.get_handler()

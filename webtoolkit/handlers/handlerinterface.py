@@ -80,6 +80,9 @@ class HandlerInterface(DefaultContentPage):
             if binary:
                 return calculate_hash_binary(binary)
 
+    def calculate_hash(self, text):
+        return calculate_hash(text)
+
     def get_streams(self):
         self.streams["Default"] = self.response
         return self.streams

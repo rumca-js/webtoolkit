@@ -94,6 +94,16 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         """
         Super class implementation may provide us feeds, start with that
         """
+        if self.code is None:
+            self.update_code()
+
+        feeds = set(super().get_feeds())
+        if self.code:
+            feeds.add(self.code2feed(self.code))
+
+        return list(feeds)
+
+    def update_code(self):
         feeds = set(super().get_feeds())
 
         for feed in feeds:
@@ -101,11 +111,6 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             code = handler.get_code()
             if not self.code and code:
                 self.code = code
-
-        if self.code:
-            feeds.add(self.code2feed(self.code))
-
-        return list(feeds)
 
     def input2code(self, url):
         wh = url.find("youtube.com")
@@ -182,13 +187,24 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         else:
             return self.get_channel_url()
 
-    def get_response(self):
-        if self.request:
-            if not self.request.cookies or len(self.request.cookies) == 0:
-                self.request.cookies = {}
-                self.request.cookies["CONSENT"] = "YES+cb.20210328-17-p0.en+F+678"
+    def get_responses(self):
+        code_was_none = False
+        if self.code is None:
+            code_was_none = True
 
-        return super().get_response()
+        responses = super().get_responses()
+
+        if code_was_none:
+            # if it was handle, then at first time obtain channel ID
+            # call second time to obtain rss feeds now
+            self.update_code()
+            if self.code:
+                feed = self.code2feed(self.code)
+                url = self.get_page_url(feed)
+                self.channel_sources_urls[url.url] = url
+                responses.append(url.get_response())
+
+        return responses
 
     def get_language(self):
         """
