@@ -9,20 +9,9 @@ import threading
 
 from ..pages import RssPage, HtmlPage
 from ..response import PageResponseObject, file_to_response
-from .crawlerinterface import CrawlerInterface
 from ..webconfig import WebLogger
-from ..statuses import (
-    HTTP_STATUS_UNKNOWN,
-    HTTP_STATUS_OK,
-    HTTP_STATUS_USER_AGENT,
-    HTTP_STATUS_TOO_MANY_REQUESTS,
-    HTTP_STATUS_CODE_EXCEPTION,
-    HTTP_STATUS_CODE_CONNECTION_ERROR,
-    HTTP_STATUS_CODE_TIMEOUT,
-    HTTP_STATUS_CODE_FILE_TOO_BIG,
-    HTTP_STATUS_CODE_PAGE_UNSUPPORTED,
-    HTTP_STATUS_CODE_SERVER_ERROR,
-)
+from ..statuses import *
+from .crawlerinterface import CrawlerInterface
 from .crawlerinterface import WebToolsTimeoutException
 
 
@@ -235,7 +224,8 @@ class RequestsCrawler(CrawlerInterface):
                 raise result["exception"]
             return result["response"]
 
-        self.request.headers = self.get_request_headers()
+        #TODO - headers are not set
+        # self.request.request_headers = self.get_request_headers()
         self.request.timeout_s = self.get_timeout_s()
 
         response = make_request_with_threading(
