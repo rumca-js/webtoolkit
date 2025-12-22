@@ -224,9 +224,7 @@ class RequestsCrawler(CrawlerInterface):
                 raise result["exception"]
             return result["response"]
 
-        #TODO - headers are not set
-        # self.request.request_headers = self.get_request_headers()
-        self.request.timeout_s = self.get_timeout_s()
+        self.update_request()
 
         response = make_request_with_threading(
             request=self.request,
@@ -296,3 +294,8 @@ class RequestsCrawler(CrawlerInterface):
             )
 
         return response
+
+    def update_request(self):
+        self.request.timeout_s = self.get_timeout_s()
+        #TODO - headers are not set
+        # self.request.request_headers = self.get_request_headers()

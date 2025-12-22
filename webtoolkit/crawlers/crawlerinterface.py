@@ -58,10 +58,9 @@ class CrawlerInterface(object):
         self.response = None
 
     def update_request(self):
-        # self.request.request_headers = self.get_request_headers()
-        # self.request.timeout_s = self.get_timeout_s()
-        # TODO
-        # Fill fields not set by default
+        """
+        Should be implemented by crawler - whatever is uses to perform request
+        """
         pass
 
     def set_url(self, url):
