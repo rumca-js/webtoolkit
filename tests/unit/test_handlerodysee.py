@@ -204,6 +204,7 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         request = MockUrl(test_link).get_init_request()
 
         handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
+        handler.get_response()
 
         # call tested function
         hash = handler.get_hash()
@@ -211,7 +212,36 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         self.assertTrue(hash)
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
+    def test_get_hash__no_response(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
+
+        # call tested function
+        hash = handler.get_hash()
+
+        self.assertFalse(hash)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_get_body_hash(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://odysee.com/@samtime:1?test"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = OdyseeChannelHandler(url = test_link, request=request, url_builder=MockUrl)
+        handler.get_response()
+
+        # call tested function
+        hash = handler.get_body_hash()
+
+        self.assertTrue(hash)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+
+    def test_get_body_hash__no_response(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://odysee.com/@samtime:1?test"
@@ -222,8 +252,8 @@ class OdyseeChannelHandlerTest(FakeInternetTestCase):
         # call tested function
         hash = handler.get_body_hash()
 
-        self.assertTrue(hash)
-        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+        self.assertFalse(hash)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_contents(self):
         MockRequestCounter.mock_page_requests = 0
