@@ -37,14 +37,11 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(response.get_hash())
         self.assertTrue(response.get_body_hash())
 
-        properties = url.get_social_properties()
-        print(f"Social properties: {properties}")
-
-        return response, handler
+        return response, handler, url
 
     def test_baseurl__vanilla_google(self):
         test_url = "https://www.google.com"
-        response,handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "HttpPageHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
@@ -54,11 +51,14 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(len(list(handler.get_entries())), 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
         return response, handler
 
     def test_baseurl__youtube_video(self):
         test_url = "https://www.youtube.com/watch?v=9yanqmc01ck"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeVideoHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
@@ -67,11 +67,12 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(len(list(handler.get_entries())), 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        return response, handler
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
 
     def test_baseurl__youtube_channel_by_id(self):
         test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
@@ -84,16 +85,15 @@ class TestBaseUrl(unittest.TestCase):
 
         self.assertTrue(response.is_valid())
 
-        return response, handler
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
 
     def test_baseurl__youtube_channel_by_handle(self):
         test_url = "https://www.youtube.com/@LinusTechTips"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
-
-        print(response.request.request_headers)
 
         self.assertEqual(handler.get_title(), "Linus Tech Tips")
         self.assertTrue(handler.get_code())
@@ -103,46 +103,72 @@ class TestBaseUrl(unittest.TestCase):
 
         self.assertTrue(response.is_valid())
 
-        return response, handler
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
 
     def test_baseurl__odysee_channel(self):
         test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "OdyseeChannelHandler")
         self.assertTrue(len(list(handler.get_entries())) > 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
     def test_baseurl__odysee_video(self):
         test_url = "https://odysee.com/servo-browser-finally-hits-a-major:24fc604b8d282b226091928dda97eb0099ab2f05"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "OdyseeVideoHandler")
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
     def test_baseurl__github(self):
         test_url = "https://github.com/rumca-js/crawler-buddy"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "GitHubUrlHandler")
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
     def test_baseurl__reddit__channel(self):
         test_url = "https://www.reddit.com/r/wizardposting"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "RedditUrlHandler")
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-    def test_baseurl__reddit__news(self):
+    def test_baseurl__reddit__post(self):
         test_url = "https://www.reddit.com/r/wizardposting/comments/1olomjs/screw_human_skeletons_im_gonna_get_more_creative/"
-        response, handler = self.run_with_base_url(test_url)
+        response, handler, url = self.run_with_base_url(test_url)
 
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
+
+    def test_baseurl__social_properties__reddit__channel(self):
+        test_url = "https://www.reddit.com/r/wizardposting"
+
+        response, handler, url = self.run_with_base_url(test_url)
+
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
+    def test_baseurl__social_properties__reddit__post(self):
+        test_url = "https://www.reddit.com/r/wizardposting/comments/1olomjs/screw_human_skeletons_im_gonna_get_more_creative/"
+
+        response, handler, url = self.run_with_base_url(test_url)
+
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
 
     def test_baseurl__remote_url(self):
         test_url = "https://www.google.com"
