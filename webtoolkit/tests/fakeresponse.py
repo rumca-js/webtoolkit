@@ -1,8 +1,5 @@
 """
-This module provides replacement for the Internet.
-
- - when test make requests to obtain a page, we return artificial data here
- - when there is a request to obtain youtube JSON data, we provide artificial data, etc.
+This module provides responses, fakes, mocks.
 """
 
 import logging
