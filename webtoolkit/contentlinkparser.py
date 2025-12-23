@@ -123,51 +123,62 @@ class ContentLinkParser(ContentInterface):
         all_matches = re.findall('href="([a-zA-Z0-9./\-_?&=@#;:]+)', cont)
 
         for item in all_matches:
-            ready_url = None
-
-            item = item.strip()
-
-            # exclude mailto: tel: sms:
-            pattern = "^[a-zA-Z0-9]+:"
-            if re.match(pattern, item):
-                if (
-                    not item.startswith("http")
-                    and not item.startswith("ftp")
-                    and not item.startswith("smb")
-                ):
-                    wh = item.find(":")
-                    item = item[wh + 1 :]
-
-            if item.startswith("//"):
-                if not item.startswith("http"):
-                    item = "https:" + item
-
-            if item.startswith("/"):
-                item = self.join_url_parts(domain, item)
-
-            # for urls like user@domain.com/location
-            pattern = "^[a-zA-Z0-9]+@"
-            if re.match(pattern, item):
-                wh = item.find("@")
-                item = item[wh + 1 :]
-
-            # not absolute path
-            if not (item.startswith("http") and not item.startswith("ftp")):
-                if item.count(".") <= 0:
-                    item = self.join_url_parts(url, item)
-                else:
-                    if not item.startswith("http"):
-                        item = "https://" + item
-
-            if item.startswith("https:&#x2F;&#x2F") or item.startswith(
-                "http:&#x2F;&#x2F"
-            ):
-                item = ContentLinkParser.decode_url(item)
-
+            item = self.process_ahref_item(url, domain, item)
             if item:
                 links.add(item)
 
         return links
+
+    def process_ahref_item(self, url, domain, item):
+        item = item.strip()
+
+        # exclude mailto: tel: sms:
+        pattern = "^[a-zA-Z0-9]+:"
+        if re.match(pattern, item):
+            if (
+                not item.startswith("http")
+                and not item.startswith("ftp")
+                and not item.startswith("smb")
+            ):
+                wh = item.find(":")
+                item = item[wh + 1 :]
+
+        if item.startswith("//"):
+            if not item.startswith("http"):
+                item = "https:" + item
+
+        if item.startswith("/"):
+            item = self.join_url_parts(domain, item)
+
+        # for urls like user@domain.com/location
+        pattern = "^[a-zA-Z0-9]+@"
+        if re.match(pattern, item):
+            wh = item.find("@")
+            item = item[wh + 1 :]
+
+        # not absolute path
+        if (not item.startswith("http")
+            and not item.startswith("https")
+            and not item.startswith("ftp")
+            and not item.startswith("smb")):
+
+            location = UrlLocation("https://" + item)
+            domain = location.get_domain_only()
+
+            if domain.count(".") <= 0:
+                item = self.join_url_parts(url, item)
+
+        if (not item.startswith("http")
+            and not item.startswith("https")
+            and not item.startswith("ftp")
+            and not item.startswith("smb")):
+            item = "https://" + item
+
+        if item.startswith("https:&#x2F;&#x2F") or item.startswith(
+            "http:&#x2F;&#x2F"
+        ):
+            item = ContentLinkParser.decode_url(item)
+        return item
 
     def filter_link_html(links):
         result = set()
