@@ -103,8 +103,6 @@ class MockCrawler(CrawlerInterface):
 class YtdlpCrawlerMock(CrawlerInterface):
 
     def run(self):
-        from utils.programwrappers import ytdlp
-
         MockRequestCounter.requested(self.request.url, crawler_data=self.request)
 
         h = YouTubeVideoHandler(self.request.url)
