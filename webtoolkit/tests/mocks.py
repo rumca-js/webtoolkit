@@ -8,6 +8,8 @@ from webtoolkit import (
     BaseUrl,
     CrawlerInterface,
     PageRequestObject,
+    PageResponseObject,
+    YouTubeVideoHandler,
 )
 
 from webtoolkit.tests.fakeresponse import TestResponseObject
