@@ -215,6 +215,15 @@ class TestResponseObject(PageResponseObject):
         elif url.startswith("https://www.youtube.com/feeds/videos.xml"):
             headers["Content-Type"] = "application/+rss"
 
+        elif url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.startswith("https://www.reddit.com") and url.endswith(".rss"):
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.startswith("https://www.reddit.com") and url.endswith(".json"):
+            headers["Content-Type"] = "text/json"
+
         self.headers = ResponseHeaders(headers=headers)
 
     def set_status(self, url):
