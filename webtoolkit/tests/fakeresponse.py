@@ -209,6 +209,12 @@ class TestResponseObject(PageResponseObject):
         elif url == "https://rss-page-with-broken-content-type.com/feed":
             headers["Content-Type"] = "text/html"
 
+        elif url.startswith("https://odysee.com/$/rss"):
+            headers["Content-Type"] = "application/+rss"
+
+        elif url.startswith("https://www.youtube.com/feeds/videos.xml"):
+            headers["Content-Type"] = "application/+rss"
+
         self.headers = ResponseHeaders(headers=headers)
 
     def set_status(self, url):
