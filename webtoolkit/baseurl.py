@@ -596,12 +596,8 @@ class BaseUrl(ContentInterface):
         """
         response_data = response_to_json(response)
 
-        respect_robots_txt = False
-        is_allowed = True
-        if (self.request.respect_robots):
-            is_allowed = self.is_allowed()
-
-        response_data["is_allowed"] = is_allowed
+        if self.request.respect_robots:
+            response_data["is_allowed"] = self.is_allowed()
 
         return response_data
 
