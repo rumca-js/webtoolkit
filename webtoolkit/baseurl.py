@@ -588,7 +588,12 @@ class BaseUrl(ContentInterface):
         return properties
 
     def response_to_data(self, response):
-        """ Returns response JSON """
+        """
+        Returns response JSON.
+
+        If respect robots is not enabled, then we do not check robots.txt file.
+        If we would check it, it would require additional call to fetch robots.
+        """
         response_data = response_to_json(response)
 
         respect_robots_txt = False
