@@ -22,6 +22,8 @@ class ContentLinkParser(ContentInterface):
     def __init__(self, url, contents):
         super().__init__(url=url, contents=contents)
         self.url = UrlLocation(url).get_no_arg_link()
+        if url is None or url == "http://" or url == "https://":
+            WebLogger.error("Incorrect ContentInterface argument")
 
     def get_links(self):
         links = set()
