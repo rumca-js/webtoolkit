@@ -47,7 +47,7 @@ class FakeInternetTestCase(unittest.TestCase):
 
         BaseUrl.get_request_for_url = self.get_request_for_url
 
-    def get_getj(self, request=None, url=None):
+    def get_getj(self, url=None, request=None):
         # print("FakeInternet:get_getj: Url:{}".format(url))
 
         if url and not request:
@@ -60,7 +60,7 @@ class FakeInternetTestCase(unittest.TestCase):
         data = FakeInternetData(request.url)
         return data.get_getj(request, url)
 
-    def get_socialj(self, url):
+    def get_socialj(self, url=None, request=None):
         MockRequestCounter.requested(url=url)
 
         data = FakeInternetData(url)

@@ -20,12 +20,21 @@ class RemoteUrl(ContentInterface):
     def __init__(
         self,
         url=None,
+        request=None,
         remote_server_location=None,
         all_properties=None,
         social_properties=None,
     ):
-        """ The constructor """
+        """
+        The constructor.
+
+        Can operate in two modes:
+         - fetching if url and request is passed
+         - access to data passed by all_properties or social_properties
+        """
         super().__init__(url=url, contents=None)
+        self.request = request
+
         self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server_location)
 
@@ -39,7 +48,7 @@ class RemoteUrl(ContentInterface):
     def get_responses(self):
         """ Provides URL responses """
         if self.all_properties is None:
-            self.all_properties = self.server.get_getj(url=self.url)
+            self.all_properties = self.server.get_getj(url=self.url, request=self.request)
 
         if not self.responses:
             self.responses = RemoteServer.get_responses(self.all_properties)
@@ -191,6 +200,6 @@ class RemoteUrl(ContentInterface):
     def get_social_properties(self):
         """ Returns URL social properties """
         if self.social_properties is None:
-            self.social_properties = self.server.get_socialj(self.url)
+            self.social_properties = self.server.get_socialj(url=self.url, request=self.request)
 
         return self.social_properties
