@@ -20,10 +20,12 @@ class ContentLinkParser(ContentInterface):
     """
 
     def __init__(self, url, contents):
+        """
+        Url can be None
+        Conents cannot be
+        """
         super().__init__(url=url, contents=contents)
         self.url = UrlLocation(url).get_no_arg_link()
-        if url is None or url == "http://" or url == "https://":
-            WebLogger.error("Incorrect ContentInterface argument")
 
     def get_links(self):
         links = set()
@@ -150,6 +152,9 @@ class ContentLinkParser(ContentInterface):
                 item = "https:" + item
 
         if item.startswith("/"):
+            if not ContentLinkParser.is_link_valid(domain):
+                return
+
             item = self.join_url_parts(domain, item)
 
         # for urls like user@domain.com/location
@@ -166,8 +171,12 @@ class ContentLinkParser(ContentInterface):
 
             location = UrlLocation("https://" + item)
             domain = location.get_domain_only()
+            if not ContentLinkParser.is_link_valid(domain):
+                return
 
             if domain.count(".") <= 0:
+                if not ContentLinkParser.is_link_valid(url):
+                    return
                 item = self.join_url_parts(url, item)
 
         if (not item.startswith("http")
@@ -194,6 +203,9 @@ class ContentLinkParser(ContentInterface):
     def filter_link_in_domain(links, domain):
         result = set()
 
+        if not ContentLinkParser.is_link_valid(domain):
+            return result
+
         for link in links:
             if link.find(domain) >= 0:
                 result.add(link)
@@ -211,6 +223,9 @@ class ContentLinkParser(ContentInterface):
 
     def filter_link_out_domain(links, domain):
         result = set()
+
+        if not ContentLinkParser.is_link_valid(domain):
+            return result
 
         for link in links:
             if link.find(domain) < 0:
@@ -232,6 +247,9 @@ class ContentLinkParser(ContentInterface):
         for link in links:
             p = UrlLocation(link)
             new_link = p.get_domain()
+            if not ContentLinkParser.is_link_valid(new_link):
+                continue
+
             if new_link == "https://" or new_link == "http://":
                 WebLogger.debug(
                     "Incorrect link to add: {}".format(new_link), stack=True
@@ -265,6 +283,22 @@ class ContentLinkParser(ContentInterface):
             links.remove("https://")
 
         return links
+
+    def is_link_valid(link):
+        if link is None:
+            return False
+        if link == "":
+            return False
+        if link == "http://":
+            return False
+        if link == "https://":
+            return False
+        if link == "ftp://":
+            return False
+        if link == "smb://":
+            return False
+
+        return True
 
     def get_links_inner(self):
         links = self.get_links()

@@ -303,6 +303,9 @@ class UrlLocation(object):
         return
 
     def get_no_arg_link(self):
+        if not self.url:
+            return
+
         url = self.url
         if url.find("?") >= 0:
             wh = url.find("?")

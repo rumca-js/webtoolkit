@@ -42,12 +42,138 @@ contents_with_links = """
 
 
 class ContentLinkParserTest(FakeInternetTestCase):
+
+    def test_get_links_https__https(self):
+        p = ContentLinkParser(
+            "https://test_get_links.com/test",
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links_https("https")
+        for link in links:
+            print(link)
+
+        self.assertTrue("https://www.youtube.com" in links)
+        self.assertTrue("https://www.youtube.com:443" in links)
+        self.assertTrue("https://www.youtube.com:443/location" in links)
+        self.assertTrue("https://www.youtube.com/location" in links)
+        self.assertTrue("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertTrue("https://linkedin.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        self.assertFalse("https://test.com/location" in links)
+        self.assertFalse("https://test_get_links.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/location" in links)
+        self.assertFalse("https://renegat0x0.ddns.net" in links)
+        self.assertFalse("https://www.cedarpolicy.com" in links)
+        self.assertFalse("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertFalse("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertFalse("https://encoded.link2.com" in links)
+        self.assertFalse("https://encoded.link3.com" in links)
+        self.assertEqual(len(links), 6)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
+    def test_get_links_https__http(self):
+        p = ContentLinkParser(
+            "https://test_get_links.com/test",
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links_https("https")
+        for link in links:
+            print(link)
+
+        self.assertTrue("https://www.youtube.com" in links)
+        self.assertTrue("https://www.youtube.com:443" in links)
+        self.assertTrue("https://www.youtube.com:443/location" in links)
+        self.assertTrue("https://www.youtube.com/location" in links)
+        self.assertTrue("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertTrue("https://linkedin.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        self.assertFalse("https://test.com/location" in links)
+        self.assertFalse("https://test_get_links.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/location" in links)
+        self.assertFalse("https://renegat0x0.ddns.net" in links)
+        self.assertFalse("https://www.cedarpolicy.com" in links)
+        self.assertFalse("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertFalse("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertFalse('https://encoded.link2.com"product-page' in links)
+        self.assertFalse("https://encoded.link3.com<product-page" in links)
+        self.assertEqual(len(links), 6)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
+    def test_get_links_https_encoded__https(self):
+        p = ContentLinkParser(
+            "https://test_get_links.com/test",
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links_https_encoded("https")
+        for link in links:
+            print(link)
+
+        self.assertFalse("https://www.youtube.com" in links)
+        self.assertFalse("https://www.youtube.com:443" in links)
+        self.assertFalse("https://www.youtube.com:443/location" in links)
+        self.assertFalse("https://www.youtube.com/location" in links)
+        self.assertFalse("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertFalse("https://linkedin.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        self.assertFalse("https://test.com/location" in links)
+        self.assertFalse("https://test_get_links.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/location" in links)
+        self.assertFalse("https://renegat0x0.ddns.net" in links)
+        self.assertTrue("https://www.cedarpolicy.com" in links)
+        self.assertTrue("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertTrue("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertTrue('https://encoded.link2.com"product-page' in links)
+        self.assertTrue("https://encoded.link3.com<product-page" in links)
+        self.assertEqual(len(links), 6)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
+    def test_get_links_https_encoded__http(self):
+        p = ContentLinkParser(
+            "https://test_get_links.com/test",
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links_https_encoded("http")
+        for link in links:
+            print(link)
+
+        self.assertFalse("https://www.youtube.com" in links)
+        self.assertFalse("https://www.youtube.com:443" in links)
+        self.assertFalse("https://www.youtube.com:443/location" in links)
+        self.assertFalse("https://www.youtube.com/location" in links)
+        self.assertFalse("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertFalse("https://linkedin.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        self.assertFalse("https://test.com/location" in links)
+        self.assertFalse("https://test_get_links.com/location" in links)
+        self.assertFalse("https://test_get_links.com/test/location" in links)
+        self.assertFalse("https://renegat0x0.ddns.net" in links)
+        self.assertFalse("https://www.cedarpolicy.com" in links)
+        self.assertFalse("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertFalse("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertFalse('https://encoded.link2.com"product-page' in links)
+        self.assertFalse("https://encoded.link3.com<product-page" in links)
+        self.assertEqual(len(links), 0)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
     def test_get_links(self):
         p = ContentLinkParser(
             "https://test_get_links.com/test",
             contents_with_links,
         )
 
+        # call tested function
         links = p.get_links()
         for link in links:
             print(link)
@@ -66,7 +192,7 @@ class ContentLinkParserTest(FakeInternetTestCase):
         self.assertTrue("https://www.cedarpolicy.com" in links)
         self.assertTrue("https://old.reddit.com/r/Oberon/comments" in links)
         self.assertTrue("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
-        self.assertTrue("https://encoded.link2.com" in links)
+        self.assertTrue('https://encoded.link2.com' in links)
         self.assertTrue("https://encoded.link3.com" in links)
         self.assertEqual(len(links), 16)
         self.assertTrue("https://" not in links)
@@ -78,6 +204,7 @@ class ContentLinkParserTest(FakeInternetTestCase):
             contents_with_links,
         )
 
+        # call tested function
         domains = p.get_domains()
         for link in domains:
             print(link)
@@ -96,3 +223,73 @@ class ContentLinkParserTest(FakeInternetTestCase):
         self.assertTrue("https://" not in domains)
         self.assertTrue("http://" not in domains)
         self.assertTrue("https://www.youtube.com:443" not in domains)
+
+    def test_get_links__no_url(self):
+        p = ContentLinkParser(
+            "https://",
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links()
+        for link in links:
+            print(link)
+
+        self.assertTrue("https://www.youtube.com" in links)
+        self.assertTrue("https://www.youtube.com:443" in links)
+        self.assertTrue("https://www.youtube.com:443/location" in links)
+        self.assertTrue("https://www.youtube.com/location" in links)
+        self.assertTrue("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertTrue("https://linkedin.com/location" in links)
+        self.assertTrue("https://test.com/location" in links)
+        self.assertTrue("https://renegat0x0.ddns.net" in links)
+        self.assertTrue("https://www.cedarpolicy.com" in links)
+        self.assertTrue("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertTrue("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertTrue("https://encoded.link2.com" in links)
+        self.assertTrue("https://encoded.link3.com" in links)
+        self.assertEqual(len(links), 13)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/location" in links)
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/test/location" in links)
+
+    def test_get_links__none_url(self):
+        p = ContentLinkParser(
+            None,
+            contents_with_links,
+        )
+
+        # call tested function
+        links = p.get_links()
+        for link in links:
+            print(link)
+
+        self.assertTrue("https://www.youtube.com" in links)
+        self.assertTrue("https://www.youtube.com:443" in links)
+        self.assertTrue("https://www.youtube.com:443/location" in links)
+        self.assertTrue("https://www.youtube.com/location" in links)
+        self.assertTrue("https://www.youtube.com/location?v=12323&test=q#whatever" in links)
+        self.assertTrue("https://linkedin.com/location" in links)
+        self.assertTrue("https://test.com/location" in links)
+        self.assertTrue("https://renegat0x0.ddns.net" in links)
+        self.assertTrue("https://www.cedarpolicy.com" in links)
+        self.assertTrue("https://old.reddit.com/r/Oberon/comments" in links)
+        self.assertTrue("https://encoded.link.com/product-page/interceptor-carrier-board" in links)
+        self.assertTrue("https://encoded.link2.com" in links)
+        self.assertTrue("https://encoded.link3.com" in links)
+        self.assertEqual(len(links), 13)
+        self.assertTrue("https://" not in links)
+        self.assertTrue("http://" not in links)
+
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/test/from?site=github.com/bellard" in links)
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/location" in links)
+        # test_get_links was not passed as an argument
+        self.assertFalse("https://test_get_links.com/test/location" in links)
