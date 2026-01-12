@@ -7,6 +7,7 @@ response = url.get_response()
 """
 
 import base64
+from typing import Any, Callable, Optional, Type
 
 from .utils.dateutils import DateUtils
 
@@ -470,12 +471,13 @@ class BaseUrl(ContentInterface):
         if handler:
             return handler.get_body_hash()
 
-    def get_meta_hash(self):
-        """ Returns meta hash for URL """
-        response = self.get_response()
-
+    def get_meta_hash(self) -> Optional[str]:
+        """
+        Calculates and returns a hash of the page's metadata properties.
+        :return: A base64-encoded hash of the properties.
+        """
+        self.get_response()
         properties_data = self.get_properties_data()
-
         properties_hash = self.property_encode(calculate_hash(str(properties_data)))
         return properties_hash
 
