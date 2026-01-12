@@ -1,6 +1,7 @@
 """
 Crawler interface can be implemented to provide new mechanisms of crawling
 """
+
 import json
 import os
 import base64
@@ -46,6 +47,7 @@ class CrawlerInterface(object):
     Crawler is a tool that allows to obtain contents from the internet.
     There are various tools.
     """
+
     def __init__(self, url=None, request=None):
         """
         @param response_file If set, response is stored in a file

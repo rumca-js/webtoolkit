@@ -25,6 +25,7 @@ class DefaultContentPage(ContentInterface):
     """
     Default content page that does not throw exceptions
     """
+
     def __init__(self, url, contents=""):
         super().__init__(url=url, contents=contents)
 
@@ -66,8 +67,9 @@ class JsonPage(ContentInterface):
     """
     JSON page
     """
+
     def __init__(self, url, contents):
-        """ Constructor """
+        """Constructor"""
         super().__init__(url=url, contents=contents)
 
         self.json_obj = None
@@ -80,9 +82,9 @@ class JsonPage(ContentInterface):
             # to be expected
             pass
 
-            #try:
+            # try:
             #    WebLogger.debug(f"Invalid json:{contents}")
-            #except Exception as E:
+            # except Exception as E:
             #    print(str(E))
 
     def is_valid(self) -> bool:
@@ -128,7 +130,7 @@ class JsonPage(ContentInterface):
 
 class RssPageEntry(ContentInterface):
     def __init__(self, feed_index, feed_entry, url, contents, page_object_properties):
-        """ Constructor """
+        """Constructor"""
         self.feed_index = feed_index
         self.feed_entry = feed_entry
         self.url = url
@@ -138,7 +140,7 @@ class RssPageEntry(ContentInterface):
         super().__init__(url=self.url, contents=contents)
 
     def get_properties(self):
-        """ Returns map of properties """
+        """Returns map of properties"""
         output_map = {}
 
         link = None
@@ -310,7 +312,7 @@ class RssPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
-        """ Constructor """
+        """Constructor"""
         self.feed = None
 
         """
@@ -582,8 +584,9 @@ class RssContentReader(object):
     """
     RSS reader
     """
+
     def __init__(self, url, contents):
-        """ Constructor """
+        """Constructor"""
         self.contents = contents
         self.process()
 
@@ -608,9 +611,10 @@ class RssContentReader(object):
 
 
 class OpmlPageEntry(ContentInterface):
-    """ OPML Page entry """
+    """OPML Page entry"""
+
     def __init__(self, url, contents, opml_entry):
-        """ Constructor """
+        """Constructor"""
         super().__init__(url=url, contents=contents)
         self.opml_entry = opml_entry
         self.title = None
@@ -718,7 +722,7 @@ class HtmlPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
-        """ Constructor """
+        """Constructor"""
         super().__init__(url=url, contents=contents)
 
         if self.contents:
@@ -1139,9 +1143,9 @@ class HtmlPage(ContentInterface):
         #        props["robots_txt_url"] = UrlLocation(self.url).get_robots_txt_url()
         #        props["site_maps_urls"] = self.get_site_maps()
 
-        #props["links"] = self.get_links()
-        #props["links_inner"] = self.get_links_inner()
-        #props["links_outer"] = self.get_links_outer()
+        # props["links"] = self.get_links()
+        # props["links_inner"] = self.get_links_inner()
+        # props["links_outer"] = self.get_links_outer()
 
         props["favicons"] = self.get_favicons()
         props["contents"] = self.get_contents()
@@ -1289,7 +1293,7 @@ class XmlPage(ContentInterface):
     """
 
     def __init__(self, url, contents):
-        """ Constructor """
+        """Constructor"""
         super().__init__(url=url, contents=contents)
 
     def is_valid(self) -> bool:

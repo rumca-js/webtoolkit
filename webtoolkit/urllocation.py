@@ -1,6 +1,7 @@
 """
 Internet location parsing and processing.
 """
+
 from urllib.parse import unquote, urlparse, parse_qs
 
 from url_cleaner import UrlCleaner

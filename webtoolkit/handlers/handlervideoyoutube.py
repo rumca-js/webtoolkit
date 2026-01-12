@@ -137,7 +137,9 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         return super().get_social_data()
 
     def get_return_dislike_url_link(self):
-        return "https://returnyoutubedislikeapi.com/votes?videoId=" + self.get_video_code()
+        return (
+            "https://returnyoutubedislikeapi.com/votes?videoId=" + self.get_video_code()
+        )
 
     def get_view_count(self):
         """ """

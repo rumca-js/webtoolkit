@@ -586,7 +586,10 @@ class TestResponseObject(PageResponseObject):
         elif url.startswith("https://youtube.com/user"):
             return youtube_channel_html_linus_tech_tips
 
-        elif url == "https://www.youtube.com/feeds/videos.xml?channel_id=2020-year-channel":
+        elif (
+            url
+            == "https://www.youtube.com/feeds/videos.xml?channel_id=2020-year-channel"
+        ):
             return webpage_old_pubdate_rss
 
         elif url == "https://www.youtube.com/feeds/videos.xml?channel_id=nopubdate":
@@ -712,7 +715,7 @@ class FakeInternetData(object):
             {
                 "name": "Streams",
                 "data": {
-                    self.url : self.response,
+                    self.url: self.response,
                 },
             }
         )
@@ -833,8 +836,7 @@ class FakeInternetData(object):
             self.response["Content-Type"] = "application/rss+xml"
             self.properties["feeds"] = [url]
         elif (
-            url
-            == "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id"
+            url == "https://www.youtube.com/feeds/videos.xml?channel_id=1234-channel-id"
         ):
             self.set_entries(13)
             self.response["Content-Type"] = "application/rss+xml"

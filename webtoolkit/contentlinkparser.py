@@ -164,10 +164,12 @@ class ContentLinkParser(ContentInterface):
             item = item[wh + 1 :]
 
         # not absolute path
-        if (not item.startswith("http")
+        if (
+            not item.startswith("http")
             and not item.startswith("https")
             and not item.startswith("ftp")
-            and not item.startswith("smb")):
+            and not item.startswith("smb")
+        ):
 
             location = UrlLocation("https://" + item)
             domain = location.get_domain_only()
@@ -179,15 +181,15 @@ class ContentLinkParser(ContentInterface):
                     return
                 item = self.join_url_parts(url, item)
 
-        if (not item.startswith("http")
+        if (
+            not item.startswith("http")
             and not item.startswith("https")
             and not item.startswith("ftp")
-            and not item.startswith("smb")):
+            and not item.startswith("smb")
+        ):
             item = "https://" + item
 
-        if item.startswith("https:&#x2F;&#x2F") or item.startswith(
-            "http:&#x2F;&#x2F"
-        ):
+        if item.startswith("https:&#x2F;&#x2F") or item.startswith("http:&#x2F;&#x2F"):
             item = ContentLinkParser.decode_url(item)
         return item
 

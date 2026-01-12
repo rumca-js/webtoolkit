@@ -202,9 +202,7 @@ class RequestsCrawler(CrawlerInterface):
 
         def request_with_timeout(request, stream, result):
             try:
-                result["response"] = self.make_requests_call(
-                    request, stream
-                )
+                result["response"] = self.make_requests_call(request, stream)
             except Exception as e:
                 result["exception"] = e
 
@@ -297,5 +295,5 @@ class RequestsCrawler(CrawlerInterface):
 
     def update_request(self):
         self.request.timeout_s = self.get_timeout_s()
-        #TODO - headers are not set
+        # TODO - headers are not set
         # self.request.request_headers = self.get_request_headers()

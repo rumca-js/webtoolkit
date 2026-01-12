@@ -131,10 +131,10 @@ class PageRequestObject(object):
             return False
         if self.crawler_name != other.crawler_name:
             return False
-        #if self.crawler_type != other.crawler_type:
+        # if self.crawler_type != other.crawler_type:
         if self.handler_name != other.handler_name:
             return False
-        #if self.handler_type != other.handler_type:
+        # if self.handler_type != other.handler_type:
         return True
 
     def __neq__(self, other):
@@ -262,8 +262,7 @@ def request_encode(request):
 
 
 def request_quote(request):
-    """
-    """
+    """ """
     json_data = request_to_json(request)
 
     return urllib.parse.quote(json_data, safe="")
@@ -277,6 +276,6 @@ def copy_request(request):
         return
 
     request_copy = copy.copy(request)
-    request_copy.crawler_type=None
-    request_copy.handler_type=None
+    request_copy.crawler_type = None
+    request_copy.handler_type = None
     return request_copy

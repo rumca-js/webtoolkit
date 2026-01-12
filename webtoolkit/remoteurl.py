@@ -8,6 +8,7 @@ url = RemoteUrl("https://127.0.0.1:8080")
 response = url.get_response()
 print(response.status_code)
 """
+
 from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Set
 
@@ -52,9 +53,11 @@ class RemoteUrl(ContentInterface):
             self.get_responses()
 
     def get_responses(self):
-        """ Provides URL responses """
+        """Provides URL responses"""
         if self.all_properties is None:
-            self.all_properties = self.server.get_getj(url=self.url, request=self.request)
+            self.all_properties = self.server.get_getj(
+                url=self.url, request=self.request
+            )
 
         if not self.responses and self.all_properties:
             self.responses = RemoteServer.get_responses(self.all_properties)
@@ -62,7 +65,7 @@ class RemoteUrl(ContentInterface):
         return self.responses
 
     def get_response(self):
-        """ Provides URL response """
+        """Provides URL response"""
         responses = self.get_responses()
         if not responses:
             return
@@ -73,13 +76,13 @@ class RemoteUrl(ContentInterface):
             return responses[url]
 
     def get_text(self):
-        """ Provides URL response text. Useful if link provides one response. """
+        """Provides URL response text. Useful if link provides one response."""
         response = self.get_response()
         if response and response.get_text():
             return response.get_text()
 
     def get_binary(self):
-        """ Provides URL response binary """
+        """Provides URL response binary"""
         response = self.get_response()
         if response and respose.get_binary():
             return response.get_binary()
@@ -107,12 +110,12 @@ class RemoteUrl(ContentInterface):
         return self.all_properties
 
     def get_canonical_link(self):
-        """ Returns URL canonical link. """
+        """Returns URL canonical link."""
 
         return self.get_properties().get("link_canonical")
 
     def is_valid(self):
-        """ Returns true if URL data is valid """
+        """Returns true if URL data is valid"""
         response = self.get_response()
         if not response:
             return False
@@ -120,7 +123,7 @@ class RemoteUrl(ContentInterface):
         return response.is_valid()
 
     def is_invalid(self) -> bool:
-        """ Returns true if URL data is invalid """
+        """Returns true if URL data is invalid"""
         response = self.get_response()
         if not response:
             return False
@@ -128,39 +131,39 @@ class RemoteUrl(ContentInterface):
         return response.is_invalid()
 
     def get_title(self):
-        """ Returns title """
+        """Returns title"""
         return self.get_properties().get("title")
 
     def get_description(self):
-        """ Returns description """
+        """Returns description"""
         return self.get_properties().get("description")
 
     def get_language(self):
-        """ Returns language """
+        """Returns language"""
         return self.get_properties().get("language")
 
     def get_thumbnail(self):
-        """ Returns thumbnail """
+        """Returns thumbnail"""
         return self.get_properties().get("thumbnail")
 
     def get_author(self):
-        """ Returns author """
+        """Returns author"""
         return self.get_properties().get("author")
 
     def get_album(self):
-        """ Returns album """
+        """Returns album"""
         return self.get_properties().get("album")
 
     def get_tags(self):
-        """ Returns tags. TODO return value? """
+        """Returns tags. TODO return value?"""
         return self.get_properties().get("tags")
 
     def get_date_published(self):
-        """ Returns date published. TODO - should be a date """
+        """Returns date published. TODO - should be a date"""
         return self.get_properties().get("date_published")  # TODO parse?
 
     def get_status_code(self):
-        """ Returns status code """
+        """Returns status code"""
         return self.get_response().status_code
 
     def get_entries(self):
@@ -229,5 +232,7 @@ class RemoteUrl(ContentInterface):
         :return: A dictionary of social media properties.
         """
         if self.social_properties is None:
-            self.social_properties = self.server.get_socialj(url=self.url, request=self.request)
+            self.social_properties = self.server.get_socialj(
+                url=self.url, request=self.request
+            )
         return self.social_properties

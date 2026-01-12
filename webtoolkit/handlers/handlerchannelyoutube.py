@@ -150,20 +150,20 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
         wh1 = url.find("youtube.com/user")
         if wh1 >= 0:
             start = wh1 + len("youtube.com/user") + 1
-            wh2 = url.find("/", start+1)
+            wh2 = url.find("/", start + 1)
             if wh2 == -1:
-                return url[start-1:]
+                return url[start - 1 :]
             else:
-                return url[start-1:wh2]
+                return url[start - 1 : wh2]
 
         wh1 = url.find("youtube.com/@")
         if wh1 >= 0:
             start = wh1 + len("youtube.com/@") + 1
             wh2 = url.find("/", start + 1)
             if wh2 == -1:
-                return url[start-1:]
+                return url[start - 1 :]
             else:
-                return url[start-1:wh2]
+                return url[start - 1 : wh2]
 
     def input2code_channel(self, url):
         wh = url.rfind("/")

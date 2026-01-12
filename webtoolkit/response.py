@@ -27,6 +27,7 @@ class ResponseHeaders(object):
     """
     Response headers
     """
+
     def __init__(self, headers):
         self.headers = dict(headers)
 
@@ -170,6 +171,7 @@ class PageResponseObject(object):
     """
     Response object
     """
+
     STATUS_CODE_OK = 200
     STATUS_CODE_ERROR = 500
     STATUS_CODE_UNDEF = 0
@@ -241,7 +243,12 @@ class PageResponseObject(object):
                 try:
                     self.text = self.binary.decode(self.encoding, errors="ignore")
                 except Exception as E:
-                    WebLogger.exc(E, "Cannot properly decode text from {}, even with ignoring errors".format(self.url))
+                    WebLogger.exc(
+                        E,
+                        "Cannot properly decode text from {}, even with ignoring errors".format(
+                            self.url
+                        ),
+                    )
                 self.add_error("Cannot properly decode text from {}".format(self.url))
 
         if self.text and not self.binary:
@@ -636,7 +643,7 @@ def file_to_response(file_name):
     """
     path = Path(file_name)
     if not path.exists():
-        return 
+        return
 
     with open(file_name, "r") as fh:
         json_text = fh.read()

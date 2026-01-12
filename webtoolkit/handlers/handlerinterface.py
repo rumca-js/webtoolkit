@@ -1,13 +1,14 @@
 """
 Handler interface that can be implemented to provide more complex logic for reading meta data.
 """
+
 from webtoolkit import DefaultContentPage, calculate_hash_binary, calculate_hash
 
 
 class HandlerInterface(DefaultContentPage):
     """
     Handler interface can be implemented to provide more complex means for obtaining data from the internet.
-    For example to obtain data about YouTube video you can fetch JSON file from yt-dlp, but also ask 
+    For example to obtain data about YouTube video you can fetch JSON file from yt-dlp, but also ask
     return dislike page to obtain dislike ratio.
     """
 

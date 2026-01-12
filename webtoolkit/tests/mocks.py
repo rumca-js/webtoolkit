@@ -127,7 +127,9 @@ class YtdlpCrawlerMock(CrawlerInterface):
             "view_count" : "2",
             "like_count" : 5,
             "live_status" : "False"
-            }""".replace("${date}", self.get_now())
+            }""".replace(
+                "${date}", self.get_now()
+            )
         if code == "666":
             status_code = 401
         if code == "555555":
@@ -144,7 +146,9 @@ class YtdlpCrawlerMock(CrawlerInterface):
             "view_count" : "2",
             "like_count" : 5,
             "live_status" : "True"
-            }""".replace("${date}", self.get_now())
+            }""".replace(
+                "${date}", self.get_now()
+            )
         if code == "archived":
             yt_text = """{"_filename" : "555555 live video.txt",
             "title" : "555555 live video",
@@ -159,7 +163,9 @@ class YtdlpCrawlerMock(CrawlerInterface):
             "view_count" : "2",
             "like_count" : 5,
             "live_status" : "False"
-            }""".replace("${date}", self.get_now())
+            }""".replace(
+                "${date}", self.get_now()
+            )
         else:
             yt_text = """{"_filename" : "test.txt",
             "title" : "test.txt",
@@ -174,7 +180,9 @@ class YtdlpCrawlerMock(CrawlerInterface):
             "view_count" : "2",
             "like_count" : 5,
             "live_status" : "False"
-            }""".replace("${date}", self.get_now())
+            }""".replace(
+                "${date}", self.get_now()
+            )
 
         headers = {}
         headers["Content-Type"] = "text/json"

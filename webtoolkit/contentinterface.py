@@ -20,6 +20,7 @@ class ContentInterface(object):
     """
     Content interface
     """
+
     def __init__(self, url, contents):
         self.url = url
         self.contents = contents

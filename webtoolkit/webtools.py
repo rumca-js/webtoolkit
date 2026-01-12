@@ -33,6 +33,7 @@ Main classes are:
     - PageRequestObject - request
     - PageResponseObject - page response, interface for all implementations
 """
+
 import base64
 import hashlib
 import html

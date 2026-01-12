@@ -1,6 +1,7 @@
 """
 Default url handler.
 """
+
 import copy
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
@@ -42,7 +43,7 @@ class DefaultUrlHandler(HttpPageHandler):
             else:
                 request = PageRequestObject(url)
             request.url = url
-            #request.handler_type = HttpPageHandler # object will be assigned by builder
+            # request.handler_type = HttpPageHandler # object will be assigned by builder
 
         # if we will not hardcode this handler, then it will recursively loop
         request.handler_name = "HttpPageHandler"
@@ -108,6 +109,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     """
     Default URL handler which is capable of obtaining data from many network sources automatically.
     """
+
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.responses = []
         self.channel_sources_urls = OrderedDict()
@@ -158,7 +160,9 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         with ThreadPoolExecutor() as executor:
             for channel_source in channel_sources:
                 if channel_source not in self.channel_sources_urls:
-                    handles.append(executor.submit(self.get_response_source, channel_source))
+                    handles.append(
+                        executor.submit(self.get_response_source, channel_source)
+                    )
 
             for handle in handles:
                 url = handle.result()

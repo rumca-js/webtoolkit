@@ -60,6 +60,7 @@ class BaseUrl(ContentInterface):
     """
     Base Url class capable of reading network pages.
     """
+
     def __init__(self, url=None, request=None, url_builder=None):
         """
         Constructor
@@ -106,7 +107,7 @@ class BaseUrl(ContentInterface):
         Returns available handlers.
         Order is important - from the most precise handler to the most general.
         """
-        #fmt off
+        # fmt off
 
         return [
             YouTubeVideoHandler,
@@ -119,13 +120,13 @@ class BaseUrl(ContentInterface):
             InternetArchive,
             FourChanChannelHandler,
             TwitterUrlHandler,
-            YouTubeChannelHandler,      # present here, if somebody wants to call it by name
-            HttpPageHandler,            # default
+            YouTubeChannelHandler,  # present here, if somebody wants to call it by name
+            HttpPageHandler,  # default
         ]
-        #fmt on
+        # fmt on
 
     def get_handler_by_name(self, handler_name):
-        """ Returns handler class """
+        """Returns handler class"""
         handlers = self.get_handlers()
         for handler in handlers:
             if handler.__name__ == handler_name:
@@ -219,8 +220,10 @@ class BaseUrl(ContentInterface):
             if self.response:
                 if not self.response.is_valid():
                     WebLogger.error(
-                        "Url:{} Response is invalid:{}".format(self.request.url, self.response),
-                        detail_text = str(response_to_json(self.response))
+                        "Url:{} Response is invalid:{}".format(
+                            self.request.url, self.response
+                        ),
+                        detail_text=str(response_to_json(self.response)),
                     )
 
             return self.response
@@ -257,7 +260,7 @@ class BaseUrl(ContentInterface):
         return RequestsCrawler(self.request.url).ping()
 
     def get_handler_implementation(self):
-        """ Returns handler """
+        """Returns handler"""
         url = self.request.url
         if not url:
             return
@@ -270,7 +273,11 @@ class BaseUrl(ContentInterface):
 
         handlers = self.get_handlers()
         for handler in handlers:
-            if self.request.handler_name and self.request.handler_name != "" and self.request.handler_name != handler.__name__:
+            if (
+                self.request.handler_name
+                and self.request.handler_name != ""
+                and self.request.handler_name != handler.__name__
+            ):
                 continue
             if self.request.handler_type and self.request.handler_type != handler:
                 continue
@@ -290,7 +297,7 @@ class BaseUrl(ContentInterface):
             raise NotImplementedError("Protocol has not been implemented")
 
     def get_cleaned_link(self):
-        """ Returns cleaned up link. Free of unwanted args, tracking, sanitized. """
+        """Returns cleaned up link. Free of unwanted args, tracking, sanitized."""
         url = self.request.url
 
         url = url.strip()
@@ -311,7 +318,7 @@ class BaseUrl(ContentInterface):
             return self.request.url
 
     def get_urls(self):
-        """ Returns various link versions for URL """
+        """Returns various link versions for URL"""
         properties = {}
         properties["link"] = self.request.url
         properties["link_request"] = self.request_url
@@ -321,7 +328,7 @@ class BaseUrl(ContentInterface):
         return properties
 
     def get_canonical_url(self):
-        """ Returns canonical link """
+        """Returns canonical link"""
         if self.handler:
             return self.handler.get_canonical_url()
 
@@ -332,7 +339,7 @@ class BaseUrl(ContentInterface):
                 return handler.get_canonical_url()
 
     def get_urls_archive(self):
-        """ Returns archive link for URL """
+        """Returns archive link for URL"""
         p = UrlLocation(self.request.url)
         short_url = p.get_protocolless()
 
@@ -349,7 +356,7 @@ class BaseUrl(ContentInterface):
         return "{}".format(self.request)
 
     def is_valid(self):
-        """ Returns indication if URL is valid """
+        """Returns indication if URL is valid"""
         if not self.handler:
             return False
 
@@ -365,54 +372,54 @@ class BaseUrl(ContentInterface):
         return True
 
     def get_title(self):
-        """ Returns title """
+        """Returns title"""
         if self.handler:
             return self.handler.get_title()
 
     def get_description(self):
-        """ Returns description """
+        """Returns description"""
         if self.handler:
             return self.handler.get_description()
 
     def get_language(self):
-        """ Returns language """
+        """Returns language"""
         if self.handler:
             return self.handler.get_language()
 
     def get_thumbnail(self):
-        """ Returns thumbnail """
+        """Returns thumbnail"""
         if self.handler:
             return self.handler.get_thumbnail()
 
     def get_author(self):
-        """ Returns author """
+        """Returns author"""
         if self.handler:
             return self.handler.get_author()
 
     def get_album(self):
-        """ Returns album """
+        """Returns album"""
         if self.handler:
             return self.handler.get_album()
 
     def get_tags(self):
-        """ Returns tags """
+        """Returns tags"""
         if self.handler:
             return self.handler.get_tags()
 
     def get_date_published(self):
-        """ Returns date published """
+        """Returns date published"""
         if self.handler:
             return self.handler.get_date_published()
 
     def get_status_code(self) -> int | None:
-        """ Returns status code """
+        """Returns status code"""
         if self.response:
             return self.response.get_status_code()
 
         return 0
 
     def get_entries(self):
-        """ Returns entries list """
+        """Returns entries list"""
 
         handler = self.get_handler()
         if handler:
@@ -447,7 +454,7 @@ class BaseUrl(ContentInterface):
             return u
 
     def get_feeds(self):
-        """ Returns feeds found for URL """
+        """Returns feeds found for URL"""
         result = []
 
         handler = self.get_handler()
@@ -460,13 +467,13 @@ class BaseUrl(ContentInterface):
         return calculate_hash(text)
 
     def get_hash(self):
-        """ Returns hash for URL """
+        """Returns hash for URL"""
         handler = self.get_handler()
         if handler:
             return handler.get_hash()
 
     def get_body_hash(self):
-        """ Returns body hash for URL """
+        """Returns body hash for URL"""
         handler = self.get_handler()
         if handler:
             return handler.get_body_hash()
@@ -488,7 +495,7 @@ class BaseUrl(ContentInterface):
         return self.get_properties_data()
 
     def get_all_properties(self, include_social=False):
-        """ Returns all URL properties """
+        """Returns all URL properties"""
         response = self.get_response()
 
         properties_data = self.get_properties()
@@ -542,8 +549,8 @@ class BaseUrl(ContentInterface):
         return all_properties
 
     def get_properties_data(self):
-        """ Returns simple meta properties.
-        TODO there should two functions: get_all_properties and get_properties """
+        """Returns simple meta properties.
+        TODO there should two functions: get_all_properties and get_properties"""
         properties = super().get_properties()
         page_handler = self.get_handler()
 
@@ -569,7 +576,10 @@ class BaseUrl(ContentInterface):
                     properties["channel_name"] = page_handler.get_channel_name()
                     properties["channel_url"] = page_handler.get_channel_url()
 
-            if type(page_handler) is HttpPageHandler and type(page_handler.p) is HtmlPage:
+            if (
+                type(page_handler) is HttpPageHandler
+                and type(page_handler.p) is HtmlPage
+            ):
                 properties["favicon"] = page_handler.p.get_favicon()
                 properties["meta title"] = page_handler.p.get_meta_field("title")
                 properties["meta description"] = page_handler.p.get_meta_field(
@@ -578,7 +588,9 @@ class BaseUrl(ContentInterface):
                 properties["meta keywords"] = page_handler.p.get_meta_field("keywords")
 
                 properties["og:title"] = page_handler.p.get_og_field("title")
-                properties["og:description"] = page_handler.p.get_og_field("description")
+                properties["og:description"] = page_handler.p.get_og_field(
+                    "description"
+                )
                 properties["og:image"] = page_handler.p.get_og_field("image")
                 properties["og:site_name"] = page_handler.p.get_og_field("site_name")
                 properties["schema:thumbnailUrl"] = page_handler.p.get_schema_field(
@@ -633,11 +645,13 @@ class BaseUrl(ContentInterface):
         """
         Returns indication is access is allowed for bots, robots
         """
-        domain_info = DomainCache.get_object(url =self.request.url, url_builder=self.url_builder)
+        domain_info = DomainCache.get_object(
+            url=self.request.url, url_builder=self.url_builder
+        )
         return domain_info.is_allowed(self.request.url)
 
     def get_social_properties(self):
-        """ Returns social properties """
+        """Returns social properties"""
         url = self.request.url
 
         json_obj = {}
