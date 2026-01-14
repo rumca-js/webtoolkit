@@ -164,7 +164,9 @@ class RemoteUrl(ContentInterface):
 
     def get_status_code(self):
         """Returns status code"""
-        return self.get_response().status_code
+        response = self.get_response()
+        if response:
+            return response.status_code
 
     def get_entries(self):
         """
