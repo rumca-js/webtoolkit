@@ -376,6 +376,8 @@ class UrlLocation(object):
             parsed_url = urlparse(url)
             query_params = parse_qs(parsed_url.query)
             param_value = query_params.get("q", [None])[0]
+            if not param_value:
+                return url
 
             param_value = unquote(param_value)
             param_value = UrlLocation.get_cleaned_link(param_value)

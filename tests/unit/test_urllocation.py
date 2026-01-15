@@ -592,6 +592,28 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_cleaned_link__normal_youtube(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCxHcoI9ndIdAihEB7ODTOfQ"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, test_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_cleaned_link__normal_youtube(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, test_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_is_onion(self):
         # True cases
 
