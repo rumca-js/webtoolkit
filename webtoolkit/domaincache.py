@@ -176,6 +176,9 @@ class DomainCache(object):
     respect_robots_txt = True
 
     def get_object(url, url_builder):
+        """
+        API
+        """
 
         if DomainCache.object is None:
             DomainCache.object = DomainCache(
@@ -193,7 +196,7 @@ class DomainCache(object):
         respect_robots_txt=True,
     ):
         """
-        @note Not public
+        @note Not API
         """
         self.cache_size = cache_size
         self.cache = {}
@@ -209,6 +212,18 @@ class DomainCache(object):
 
         return self.cache[input_url]["domain"]
 
+    def get_length(self):
+        """
+        Returns length of cache
+        """
+        return len(self.cache)
+
+    def get_max_length(self):
+        """
+        Returns length of cache
+        """
+        return self.cache_size)
+
     def read_info(self, domain_url):
         return DomainCacheInfo(
             domain_url,
@@ -216,7 +231,7 @@ class DomainCache(object):
         )
 
     def remove_from_cache(self):
-        if len(self.cache) < self.cache_size:
+        if self.get_length() < self.get_max_length():
             return
 
         thelist = []
