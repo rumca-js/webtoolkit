@@ -222,7 +222,7 @@ class DomainCache(object):
         """
         Returns length of cache
         """
-        return self.cache_size)
+        return self.cache_size
 
     def read_info(self, domain_url):
         return DomainCacheInfo(
