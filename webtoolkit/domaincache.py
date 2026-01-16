@@ -177,17 +177,27 @@ class DomainCache(object):
 
     def get_object(url, url_builder):
         """
-        API
+        API - returns information about url
         """
 
+        domain = DomainCache.get(url_builder=url_builder)
+        domain_url = UrlLocation(url).get_domain_only()
+        return domain.get_domain_info(domain_url)
+
+    def get(url_builder=None, cache_size=400):
+        """
+        API - Returns domain cache object
+        """
         if DomainCache.object is None:
+            if not cache_size:
+                cache_size=DomainCache.default_cache_size
+
             DomainCache.object = DomainCache(
-                cache_size=DomainCache.default_cache_size,
+                cache_size=cache_size,
                 url_builder=url_builder,
             )
 
-        domain_url = UrlLocation(url).get_domain_only()
-        return DomainCache.object.get_domain_info(domain_url)
+        return DomainCache.object
 
     def __init__(
         self,
