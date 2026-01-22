@@ -639,3 +639,16 @@ class UrlLocationTest(FakeInternetTestCase):
         self.assertEqual(cleaned_link, "https://gzeek.pl")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_up_domain(self):
+        p = UrlLocation("http://www.m.youtube.com/watch?v=1235")
+        # call tested function
+        self.assertEqual(p.up_domain().url, "http://m.youtube.com")
+
+        p = UrlLocation("http://m.youtube.com/watch?v=1235")
+        # call tested function
+        self.assertEqual(p.up_domain().url, "http://youtube.com")
+
+        p = UrlLocation("http://youtube.com/watch?v=1235")
+        # call tested function
+        self.assertEqual(p.up_domain(), None)
