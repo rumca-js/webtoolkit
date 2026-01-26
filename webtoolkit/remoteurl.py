@@ -208,14 +208,18 @@ class RemoteUrl(ContentInterface):
         Retrieves the hash of the response.
         :return: The hash of the response, or None if not available.
         """
-        return self.get_response().get_hash()
+        response = self.get_response()
+        if response:
+            return response.get_hash()
 
     def get_body_hash(self):
         """
         Retrieves the body hash of the response.
         :return: The body hash, or None if not available.
         """
-        return self.get_response().get_body_hash()
+        response = self.get_response()
+        if response:
+            return response.get_body_hash()
 
     def get_meta_hash(self):
         """
