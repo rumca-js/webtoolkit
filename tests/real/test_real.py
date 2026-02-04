@@ -37,6 +37,9 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(response.get_hash())
         self.assertTrue(response.get_body_hash())
 
+        print("Hash {}".format(response.get_hash()))
+        print("Body hash {}".format(response.get_body_hash()))
+
         return response, handler, url
 
     def test_baseurl__vanilla_google(self):
@@ -160,6 +163,7 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         properties = url.get_social_properties()
+        self.assertTrue(properties)
         self.assertTrue(len(properties) > 0)
 
     def test_baseurl__social_properties__reddit__post(self):
@@ -168,6 +172,7 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         properties = url.get_social_properties()
+        self.assertTrue(properties)
         self.assertTrue(len(properties) > 0)
 
     def test_baseurl__remote_url(self):
@@ -194,6 +199,9 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(remote_url.get_title())
         self.assertTrue(remote_url.get_hash())
         self.assertTrue(remote_url.get_body_hash())
+
+        self.assertEqual(remote_url.get_hash(), response.get_hash())
+        self.assertEqual(remote_url.get_body_hash(), response.get_body_hash())
 
         remote_responses = remote_url.get_responses()
         self.assertTrue(remote_responses)
