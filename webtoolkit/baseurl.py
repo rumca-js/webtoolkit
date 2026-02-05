@@ -94,11 +94,17 @@ class BaseUrl(ContentInterface):
         request.crawler_name = "RequestsCrawler"
         request.crawler_type = RequestsCrawler(url)
 
+        if request.timeout_s is None or request.timeout_s == 0:
+            request.timeout_s = 60 * 5
+
         return request
 
     def get_request_for_request(self, request):
         request.crawler_name = "RequestsCrawler"
         request.crawler_type = RequestsCrawler(request.url)
+
+        if request.timeout_s is None or request.timeout_s == 0:
+            request.timeout_s = 60 * 5
 
         return request
 
