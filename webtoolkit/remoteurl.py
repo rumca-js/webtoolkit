@@ -43,14 +43,17 @@ class RemoteUrl(ContentInterface):
         """
         super().__init__(url=url, contents=None)
         self.request = request
-        self.remote_server_location = remote_server_location
-        self.server = RemoteServer(remote_server_location)
+        self.remote_server_location=remote_server_location
+        self.server = RemoteServer(remote_server=self.remote_server_location)
         self.all_properties = all_properties
         self.social_properties = social_properties
 
         self.responses = None
         if self.all_properties:
             self.get_responses()
+
+    def get_remote_server_location():
+        return RemoteServer.get_remote_server_location()
 
     def get_responses(self):
         """Provides URL responses"""

@@ -25,14 +25,15 @@ class RemoteServer(object):
     def __init__(self, remote_server=None, timeout_s=30):
         self.remote_server = remote_server
         if not self.remote_server:
-            CRAWLER_BUDDY_SERVER = os.environ.get("CRAWLER_BUDDY_SERVER")
-            CRAWLER_BUDDY_PORT = os.environ.get("CRAWLER_BUDDY_PORT")
-            if CRAWLER_BUDDY_SERVER and CRAWLER_BUDDY_PORT:
-                self.remote_server = (
-                    f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
-                )
+            self.remote_server = RemoteServer.get_remote_server_location()
 
         self.timeout_s = timeout_s
+
+    def get_remote_server_location():
+        CRAWLER_BUDDY_SERVER = os.environ.get("CRAWLER_BUDDY_SERVER")
+        CRAWLER_BUDDY_PORT = os.environ.get("CRAWLER_BUDDY_PORT")
+        if CRAWLER_BUDDY_SERVER and CRAWLER_BUDDY_PORT:
+            return f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
 
     def get_getj(self, request=None, url=None):
         """
@@ -145,6 +146,9 @@ class RemoteServer(object):
         """
         @param link_call Remote server endpoint
         @param url Url for which we call Remote server
+
+        Note: there should always be a timeout. Server might stop responding,
+        it could have hanged, etc.
         """
         url = request.url
 
@@ -154,8 +158,10 @@ class RemoteServer(object):
 
         text = None
 
-        timeout_s = 50
+        # it is hard to think of a good deafult value
+        timeout_s = 60
         if request.timeout_s is not None:
+            # remote server will have timeout_s we add some wiggle room for transmission
             timeout_s = request.timeout_s
             timeout_s += 5
 
