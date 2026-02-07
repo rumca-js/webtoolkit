@@ -101,9 +101,16 @@ class RemoteUrl(ContentInterface):
             if self.all_properties is None:
                 return {}
 
+
         properties = RemoteServer.read_properties_section(
             "Properties", self.all_properties
         )
+
+        date_published = properties.get("date_published")
+        if date_published:
+            if isinstance(date_published, str):
+                properties["date_published"] = date_str_to_date(date_published)
+
         return properties
 
     def get_all_properties(self):
@@ -163,10 +170,8 @@ class RemoteUrl(ContentInterface):
         return self.get_properties().get("tags")
 
     def get_date_published(self):
-        """Returns date published. TODO - should be a date"""
-        date_published = self.get_properties().get("date_published")
-        if date_published:
-            return date_str_to_date(date_published)
+        """Returns date published."""
+        return self.get_properties().get("date_published")
 
     def get_status_code(self):
         """Returns status code"""
