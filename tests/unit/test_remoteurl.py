@@ -7,7 +7,12 @@ from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
 
 all_properties = [
    {
-       "data" : {},
+       "data" : {
+           "title" : "Example Page Title",
+           "link": "https://example.com",
+           "feeds": "https://example.com/rss",
+           "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
+       },
        "name" : "Properties",
    },
    {
@@ -50,7 +55,7 @@ class RemoteUrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
 
-    def test_constructor__all_properties(self):
+    def test_constructor__all_properties__response(self):
         u = RemoteUrl(all_properties=all_properties)
 
         response = u.get_response()
@@ -59,6 +64,20 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertEqual(response.get_status_code(), 200)
         self.assertTrue(response.request)
         self.assertEqual(response.request.crawler_name, "Fake Properties Crawler2")
+
+    def test_constructor__title(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        response = u.get_response()
+
+        self.assertEqual(u.get_title(), "Example Page Title")
+
+    def test_constructor__date_published(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        response = u.get_response()
+
+        self.assertNotEqual(u.get_date_published(), "Sat, 07 Feb 2026 12:00:00 GMT")
 
     def test_get_response(self):
         u = RemoteUrl("https://linkedin.com")

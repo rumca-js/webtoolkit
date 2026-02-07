@@ -17,6 +17,7 @@ from .remoteserver import RemoteServer
 from .request import PageRequestObject
 from .response import PageResponseObject
 from .webtools import json_decode_field
+from .webtools import date_str_to_date
 
 
 class RemoteUrl(ContentInterface):
@@ -163,7 +164,9 @@ class RemoteUrl(ContentInterface):
 
     def get_date_published(self):
         """Returns date published. TODO - should be a date"""
-        return self.get_properties().get("date_published")  # TODO parse?
+        date_published = self.get_properties().get("date_published")
+        if date_published:
+            return date_str_to_date(date_published)
 
     def get_status_code(self):
         """Returns status code"""
