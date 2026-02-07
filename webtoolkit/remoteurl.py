@@ -186,6 +186,11 @@ class RemoteUrl(ContentInterface):
         """
         entries = RemoteServer.read_properties_section("Entries", self.all_properties)
         if entries:
+            for index, entry in enumerate(entries):
+                date_published = entries[index].get("date_published")
+                if date_published:
+                    if isinstance(date_published, str):
+                        entries[index]["date_published"] = date_str_to_date(date_published)
             return entries
         return []
 

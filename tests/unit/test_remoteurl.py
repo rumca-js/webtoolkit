@@ -48,6 +48,15 @@ all_properties = [
        },
        "name" : "Response",
    },
+   {
+       "data" : 
+       [
+           {"title" : "0", "link" : "https://0.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
+           {"title" : "1", "link" : "https://1.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
+           {"title" : "2", "link" : "https://2.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
+       ],
+       "name" : "Entries",
+   },
 ]
 
 
@@ -78,6 +87,15 @@ class RemoteUrlTest(FakeInternetTestCase):
         response = u.get_response()
 
         self.assertNotEqual(u.get_date_published(), "Sat, 07 Feb 2026 12:00:00 GMT")
+
+    def test_constructor__get_entries(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        entries = u.get_entries()
+
+        self.assertTrue(entries)
+        self.assertEqual(len(entries), 3)
+        self.assertNotEqual(entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT")
 
     def test_get_response(self):
         u = RemoteUrl("https://linkedin.com")
