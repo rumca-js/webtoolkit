@@ -1,4 +1,7 @@
+import gc
+
 from webtoolkit import ContentLinkParser
+from webtoolkit.utils.memorychecker import MemoryChecker
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
@@ -42,6 +45,17 @@ contents_with_links = """
 
 
 class ContentLinkParserTest(FakeInternetTestCase):
+    def setUp(self):
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+        #print(f"Memory increase {memory_increase} setup")
+
+    def tearDown(self):
+        gc.collect()
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
 
     def test_get_links_https__https(self):
         p = ContentLinkParser(

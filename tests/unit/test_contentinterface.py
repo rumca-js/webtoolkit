@@ -1,5 +1,6 @@
 import os
 from webtoolkit import ContentInterface
+from webtoolkit.utils.memorychecker import MemoryChecker
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 
@@ -56,7 +57,22 @@ wall_street_journal_date_human_date_ue_format = """
 
 
 class ContentInterfacePageTest(FakeInternetTestCase):
+    def setUp(self):
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+        #print(f"Memory increase {memory_increase} setup")
+
+    def tearDown(self):
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
+            print(f"Memory increase {memory_increase}")
+
     def test_guess_date_for_full_date(self):
+        # TODO why?
+        self.ignore_memory = True
+
         p = ContentInterface(
             "https://linkedin.com/test",
             wall_street_journal_date_full_date,

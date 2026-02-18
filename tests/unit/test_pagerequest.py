@@ -15,6 +15,7 @@ from webtoolkit import (
     HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS,
     HTTP_STATUS_CODE_EXCEPTION,
 )
+from webtoolkit.utils.memorychecker import MemoryChecker
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 from webtoolkit.tests.mocks import MockCrawler
@@ -23,6 +24,16 @@ from webtoolkit.tests.mocks import MockCrawler
 class PageRequestObjectTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
+
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+        #print(f"Memory increase {memory_increase} setup")
+
+    def tearDown(self):
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
 
     def test_request_to_json(self):
         request = PageRequestObject(url="https://test.com")
