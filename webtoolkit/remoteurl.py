@@ -106,10 +106,12 @@ class RemoteUrl(ContentInterface):
             "Properties", self.all_properties
         )
 
-        date_published = properties.get("date_published")
-        if date_published:
-            if isinstance(date_published, str):
-                properties["date_published"] = date_str_to_date(date_published)
+        date_published = None
+        if properties:
+            date_published = properties.get("date_published")
+            if date_published:
+                if isinstance(date_published, str):
+                    properties["date_published"] = date_str_to_date(date_published)
 
         return properties
 
