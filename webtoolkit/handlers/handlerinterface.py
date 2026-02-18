@@ -26,7 +26,6 @@ class HandlerInterface(DefaultContentPage):
         self.dead = None
         self.code = None  # social media handle, ID of channel, etc.
         self.request = request
-        self.handler = None  # for example rss UrlHandler
         self.url_builder = url_builder
 
     def is_handled_by(self):
@@ -215,3 +214,8 @@ class HandlerInterface(DefaultContentPage):
         json_obj["followers_count"] = self.get_followers_count()
 
         return json_obj
+
+    def close(self):
+        self.response = None
+        self.request = None
+        self.streams = {}

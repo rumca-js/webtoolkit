@@ -278,3 +278,9 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             date_published = url.get_date_published()
             if date_published:
                 return date_published
+
+    def close(self):
+        for page_url in self.channel_sources_urls.values():
+            page_url.close()
+
+        super().close()

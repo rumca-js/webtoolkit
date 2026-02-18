@@ -353,7 +353,17 @@ class CrawlerCaller(object):
                     self.errors.append(error)
 
             response.crawl_time_s = end_time - start_time
+
         crawler.close()
+
+        # TODO?
+        ## optimization. request has crawler which has request
+        #if self.request.crawler_type:
+        #    del self.request.crawler_type
+        #    self.request.crawler_type = None
+        #if self.request.handler_type:
+        #    del self.request.handler_type
+        #    self.request.handler_type = None
 
         if response:
             return response

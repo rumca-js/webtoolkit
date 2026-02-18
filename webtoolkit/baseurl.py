@@ -669,3 +669,24 @@ class BaseUrl(ContentInterface):
 
         json_data = handler.get_json_data()
         return handler.get_social_data()
+
+    def close(self):
+        """
+        Should this exist at all?
+        """
+        streams = {}
+        if self.handler:
+            streams = self.handler.get_streams()
+
+        if streams:
+            for key, response in streams.items():
+                if response.request is not None:
+                    response.request.crawler_type = None
+                    response.request.handler_type = None
+                response.request = None
+
+        if self.handler:
+            self.handler.close()
+
+        self.request = None
+        self.response = None

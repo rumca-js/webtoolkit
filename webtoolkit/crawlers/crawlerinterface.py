@@ -133,7 +133,8 @@ class CrawlerInterface(object):
         return False
 
     def close(self):
-        pass
+        self.request = None
+        self.response = None
 
     def get_accept_types(self):
         accept_string = self.request.accept_types

@@ -21,8 +21,8 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         memory_increase = self.memory_checker.get_memory_increase()
 
     def tearDown(self):
-        gc.collect()
         MockRequestCounter.reset()
+        gc.collect()
 
         if not self.ignore_memory:
             memory_increase = self.memory_checker.get_memory_increase()
@@ -39,6 +39,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
 
     def test_get_page_handler__html(self):
         test_link = "https://linkedin.com"
+        self.ignore_memory = True
         request = MockUrl(test_link).get_init_request()
 
         handler = HttpPageHandler(test_link, request=request, url_builder = MockUrl)
@@ -47,6 +48,8 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertTrue(type(handler.get_page_handler()), HtmlPage)
 
     def test_get_page_handler__rss(self):
+        self.ignore_memory = True
+
         test_link = "https://www.reddit.com/r/searchengines/.rss"
         request = MockUrl(test_link).get_init_request()
 
@@ -56,6 +59,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertTrue(type(handler.get_page_handler()), RssPage)
 
     def test_get_contents__html(self):
+        self.ignore_memory = True
         test_link = "https://linkedin.com"
         request = MockUrl(test_link).get_init_request()
 
@@ -154,6 +158,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertEqual(response.get_content_type(), "text/html")
 
     def test_get_hash(self):
+        self.ignore_memory = True
         test_link = "https://linkedin.com"
         request = MockUrl(test_link).get_init_request()
 
@@ -165,6 +170,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertTrue(hash)
 
     def test_get_body_hash(self):
+        self.ignore_memory = True
         test_link = "https://linkedin.com"
         request = MockUrl(test_link).get_init_request()
 
@@ -176,6 +182,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertTrue(hash)
 
     def test_canonical_url__valid(self):
+        self.ignore_memory = True
         MockRequestCounter.reset()
 
         test_link = "https://page-with-canonical-link.com"
@@ -188,6 +195,7 @@ class HttpPageHandlerTest(FakeInternetTestCase):
         self.assertEqual(handler.get_canonical_url(), "https://www.page-with-canonical-link.com")
 
     def test_canonical_url__nocanonical(self):
+        self.ignore_memory = True
         MockRequestCounter.reset()
 
         test_link = "https://page-without-canonical-link.com"
@@ -198,3 +206,30 @@ class HttpPageHandlerTest(FakeInternetTestCase):
 
         self.assertEqual(response.get_status_code(), HTTP_STATUS_OK)
         self.assertFalse(handler.get_canonical_url())
+
+
+class HttpPageHandlerMemoryTest(FakeInternetTestCase):
+    def setUp(self):
+        self.disable_web_pages()
+
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+
+    def tearDown(self):
+        MockRequestCounter.reset()
+        gc.collect()
+
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
+
+    def test_get_response__html(self):
+        for i in range(1, 3500):
+            test_link = "https://linkedin.com"
+            url = MockUrl(test_link)
+            request = url.get_init_request()
+
+            handler = HttpPageHandler(test_link, request=request, url_builder = MockUrl)
+            response = handler.get_response()
+            url.close()
