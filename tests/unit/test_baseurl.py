@@ -1,3 +1,10 @@
+"""
+This test uses MockUrl to test BaseUrl, because some of BaseUrl functions need to be overriden.
+
+@note some tests do not check memory as it is not reliable
+"""
+
+import gc
 from webtoolkit import (
     HttpPageHandler,
     HtmlPage,
@@ -10,6 +17,7 @@ from webtoolkit import (
     BaseUrl,
     RemoteServer,
 )
+from webtoolkit.utils.memorychecker import MemoryChecker
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler, MockUrl
@@ -18,6 +26,18 @@ from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler, MockUrl
 class BaseUrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
+
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+
+    def tearDown(self):
+        MockRequestCounter.reset()
+        gc.collect()
+
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
 
     def get_request(self, url):
         request = PageRequestObject(url)
@@ -51,6 +71,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_cleaned_link__stupid_google_link(self):
+        self.ignore_memory = True # TODO should work
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.google.com/url?q=https://forum.ddopl.com/&sa=Udupa"
@@ -62,6 +83,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_cleaned_link__stupid_google_link2(self):
+        self.ignore_memory = True # TODO should work
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://worldofwarcraft.blizzard.com/&ved=2ahUKEwjtx56Pn5WFAxU2DhAIHYR1CckQFnoECCkQAQ&usg=AOvVaw1pDkx5K7B5loKccvg_079-"
@@ -74,6 +96,9 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_cleaned_link__stupid_youtube_link(self):
+        # TODO sometimes does not work
+        self.ignore_memory = True
+
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810"
@@ -103,6 +128,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_handler__https_html_page(self):
+        self.ignore_memory = True # TODO does not work
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://multiple-favicons.com/page.html"
@@ -116,6 +142,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_handler__http_html_page(self):
+        self.ignore_memory = True # TODO does not work
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "http://multiple-favicons.com/page.html"
@@ -129,6 +156,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_handler__reddit(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -159,6 +187,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_handler__rss_page(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         # call tested function
@@ -171,6 +200,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_handler__youtube_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -180,7 +210,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         handler = url.get_handler()
 
-        self.assertTrue(type(handler), Url.youtube_channel_handler)
+        self.assertEqual(type(handler), YouTubeChannelHandler)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -193,7 +223,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         handler = url.get_handler()
 
-        self.assertTrue(type(handler), Url.youtube_video_handler)
+        self.assertEqual(type(handler), YouTubeVideoHandler)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -222,43 +252,8 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_get_handler__rss_page(self):
-        MockRequestCounter.mock_page_requests = 0
-
-        test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
-        url = MockUrl(request=self.get_request(test_link))
-
-        # call tested function
-        handler = url.get_type()
-
-        self.assertTrue(type(handler), HtmlPage)
-
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
-
-    def test_get_handler__youtube_channel(self):
-        MockRequestCounter.mock_page_requests = 0
-
-        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        url = MockUrl(request=self.get_request(test_link))
-
-        # call tested function
-        handler = url.get_type()
-
-        self.assertTrue(type(handler), YouTubeChannelHandler)
-
-    def test_get_handler__youtube_video(self):
-        MockRequestCounter.mock_page_requests = 0
-
-        test_link = "https://www.youtube.com/watch?v=1234"
-
-        # call tested function
-        handler = MockUrl(test_link).get_type()
-
-        self.assertTrue(type(handler), YouTubeVideoHandler)
-
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
-
     def test_get_properties__rss__basic(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
@@ -278,6 +273,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_properties__youtube_channel__basic(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -384,6 +380,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_properties__rss__advanced(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
@@ -413,6 +410,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_properties__youtube_channel__advanced(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -444,6 +442,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_properties__odysee_channel__advanced(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://odysee.com/$/rss/@DistroTube:2"
@@ -672,6 +671,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_last_modified(self):
+        self.ignore_memory = True # TODO does not work
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://page-with-last-modified-header.com"
@@ -687,6 +687,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_find_rss_url__youtube(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -698,6 +699,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_feeds__youtube_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -709,6 +711,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_feeds__odysee_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://odysee.com/@samtime:1?test"
         test_link_result = "https://odysee.com/$/rss/@samtime:1"
@@ -729,6 +732,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_feeds__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
 
@@ -740,6 +744,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_feeds__opml(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
         test_link = "https://opml-file-example.com/ompl.xml"
         test_link_result = "https://www.opmllink1.com"
@@ -753,6 +758,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_find_rss_url__youtube_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -766,7 +772,9 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_find_rss_url__odysee(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
+
         test_link = "https://odysee.com/@samtime:1?test"
         url = MockUrl(request=self.get_request(test_link))
 
@@ -775,7 +783,9 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_find_rss_url__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
+
         test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
         url = MockUrl(request=self.get_request(test_link))
         url.get_response()
@@ -799,6 +809,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_hash__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -824,7 +835,10 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertTrue(hash)
 
+        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
     def test_get_hash__youtube_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -839,6 +853,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_body_hash__youtube_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -854,6 +869,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
     def test_get_body_hash__html(self):
         MockRequestCounter.mock_page_requests = 0
+        self.ignore_memory = True # TODO does not work sometimes
 
         test_link = "https://linkedin.com"
         url = MockUrl(request=self.get_request(test_link))
@@ -871,6 +887,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_body_hash__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -889,6 +906,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_meta_hash__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -944,6 +962,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_urls__reddit(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.reddit.com/r/searchengines/.rss"
@@ -977,6 +996,7 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_urls__youtube_rss_channel(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -1133,11 +1153,26 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_response_to_data(self):
+    def test_response_to_data__html(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link ="https://linkedin.com"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        # call tested function
+        response = url.get_response()
+
+        data = url.response_to_data(response)
+        self.assertTrue(data)
+        self.assertIn("is_valid", data)
+
+    def test_response_to_data__rss(self):
+        self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-        channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
         url = MockUrl(request=self.get_request(test_link))
 
@@ -1156,3 +1191,71 @@ class BaseUrlTest(FakeInternetTestCase):
 
         url = MockUrl(request=self.get_request(test_link))
         self.assertFalse(url.is_allowed())
+
+
+class BaseUrlMemoryTest(FakeInternetTestCase):
+    """
+    I think that after 1k of responses it should indicate memory errors
+    """
+    def setUp(self):
+        self.disable_web_pages()
+
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+
+    def tearDown(self):
+        MockRequestCounter.reset()
+        gc.collect()
+
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
+
+    def get_request(self, url):
+        request = PageRequestObject(url)
+        request.crawler_name = "MockCrawler"
+        request.crawler_type = MockCrawler(url)
+        return request
+
+    def test_get_response__html(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        for i in range(1, 1000):
+            test_link ="https://linkedin.com"
+            url = MockUrl(request=self.get_request(test_link))
+            response = url.get_response()
+
+    def test_get_request__rss_page(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        for i in range(1, 1000):
+            test_link = "https://www.codeproject.com/WebServices/NewsRSS.aspx"
+            url = MockUrl(request=self.get_request(test_link))
+            response = url.get_response()
+
+    def test_get_request__reddit(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        for i in range(1, 1000):
+            test_link = "https://www.reddit.com/r/searchengines/.rss"
+            url = MockUrl(request=self.get_request(test_link))
+            response = url.get_response()
+
+    def test_get_request__youtube_channel(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        for i in range(1, 1000):
+            test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+            url = MockUrl(request=self.get_request(test_link))
+            response = url.get_response()
+
+    def test_get_request__youtube_video(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        for i in range(1, 1000):
+            test_link = "https://www.youtube.com/watch?v=1234"
+            url = MockUrl(request=self.get_request(test_link))
+            response = url.get_response()

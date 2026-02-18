@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from webtoolkit.utils.memorychecker import MemoryChecker
+
 from webtoolkit import UrlLocation, RemoteUrl
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
@@ -63,6 +65,16 @@ all_properties = [
 class RemoteUrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
+
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+        #print(f"Memory increase {memory_increase} setup")
+
+    def tearDown(self):
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
 
     def test_constructor__all_properties__response(self):
         u = RemoteUrl(all_properties=all_properties)
