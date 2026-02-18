@@ -1,4 +1,6 @@
+import gc
 from webtoolkit import HtmlPage, calculate_hash
+from webtoolkit.utils.memorychecker import MemoryChecker
 
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 
@@ -278,6 +280,19 @@ webpage_html_canonical_2 = """<html>
 
 
 class HtmlPageTest(FakeInternetTestCase):
+    def setUp(self):
+        self.ignore_memory = False
+        self.memory_checker = MemoryChecker()
+        memory_increase = self.memory_checker.get_memory_increase()
+        #print(f"Memory increase {memory_increase} setup")
+
+    def tearDown(self):
+        gc.collect()
+
+        if not self.ignore_memory:
+            memory_increase = self.memory_checker.get_memory_increase()
+            self.assertEqual(memory_increase, 0)
+
     def test_default_language(self):
         MockRequestCounter.mock_page_requests = 0
 
