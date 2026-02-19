@@ -342,7 +342,11 @@ class CrawlerCaller(object):
         crawler.make_request(self.request)
 
         start_time = time.time()
-        crawler.run()
+        try:
+            crawler.run()
+        except Exception as E:
+            response.add_error(f"Exception when running crawler {E}")
+
         end_time = time.time()
 
         response = crawler.get_response()
@@ -354,7 +358,10 @@ class CrawlerCaller(object):
 
             response.crawl_time_s = end_time - start_time
 
-        crawler.close()
+        try:
+            crawler.close()
+        except Exception as E:
+            response.add_error(f"Exception when closing crawler {E}")
 
         # TODO?
         ## optimization. request has crawler which has request
