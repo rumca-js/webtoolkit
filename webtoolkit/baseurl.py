@@ -680,6 +680,9 @@ class BaseUrl(ContentInterface):
 
         if streams:
             for key, response in streams.items():
+                if response is None: # exists in real life
+                    continue
+
                 if response.request is not None:
                     response.request.crawler_type = None
                     response.request.handler_type = None
