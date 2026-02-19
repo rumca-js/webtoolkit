@@ -24,6 +24,7 @@ class DomainCacheInfo(object):
     """
 
     def __init__(self, url, respect_robots_txt=True, request=None, url_builder=None):
+        print("Creating domain cache")
         p = UrlLocation(url)
 
         self.respect_robots_txt = respect_robots_txt
