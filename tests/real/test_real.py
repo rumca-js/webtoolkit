@@ -259,7 +259,7 @@ class TestMemoryBaseUrl(unittest.TestCase):
             memory_increase = self.memory_checker.get_memory_increase()
             self.assertTrue(memory_increase < 40)
 
-    def run_with_base_url(self, test_url):
+    def call_url(self, test_url):
         print("Running {} with BaseUrl".format(test_url))
 
         url = BaseUrl(url=test_url)
@@ -269,43 +269,49 @@ class TestMemoryBaseUrl(unittest.TestCase):
         handler = url.get_handler()
         return response, handler, url
 
-    def test_vanilla_google(self):
+    def test_get_response__vanilla_google(self):
         for i in range(1, self.num_iterations):
             test_url = "https://www.google.com"
-            response, handler, url = self.run_with_base_url(test_url)
+            response, handler, url = self.call_url(test_url)
             if response and not response.is_valid():
                 print("Response is invalid")
             url.close()
 
-    def test_reddit__channel(self):
+    def test_get_response__reddit__channel(self):
         """
-        10 - 15MB
-        20 - 21MB
-        30 - 26MB
-        100 - 12MB
         """
         for i in range(1, self.num_iterations):
             test_url = "https://www.reddit.com/r/wizardposting"
-            response, handler, url = self.run_with_base_url(test_url)
+            response, handler, url = self.call_url(test_url)
             if response and not response.is_valid():
                 print("Response is invalid")
             url.close()
 
-    def test_github(self):
+    def test_get_response__github(self):
         """
-        100 - 37MB
         """
         for i in range(1, self.num_iterations):
             test_url = "https://github.com/rumca-js/crawler-buddy"
-            response, handler, url = self.run_with_base_url(test_url)
+            response, handler, url = self.call_url(test_url)
             if response and not response.is_valid():
                 print("Response is invalid")
             url.close()
 
-    def test_youtube_channel_by_id(self):
+    def test_get_response__youtube_channel_by_id(self):
         for i in range(1, self.num_iterations):
             test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
-            response, handler, url = self.run_with_base_url(test_url)
+            response, handler, url = self.call_url(test_url)
             if response and not response.is_valid():
                 print("Response is invalid")
+            url.close()
+
+    def test_get_social_data(self):
+        for i in range(1, self.num_iterations):
+            test_url = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+            url = BaseUrl(url=test_url)
+            response = None
+            handler = None
+            social = url.get_social_properties()
+
             url.close()
