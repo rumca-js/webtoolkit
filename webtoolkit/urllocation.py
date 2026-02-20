@@ -329,6 +329,8 @@ class UrlLocation(object):
 
         if p.is_onion():
             return p.url
+        if not p.is_web_link():
+            return p.url
 
         domain = p.get_domain()
         if not domain:
@@ -337,6 +339,8 @@ class UrlLocation(object):
         domain_lower = domain.lower()
 
         url = domain_lower + url[len(domain) :]
+        if not url:
+            return
 
         url = UrlLocation.get_google_redirect_fix(url)
         url = UrlLocation.get_google_redirect_fix2(url)
@@ -353,10 +357,16 @@ class UrlLocation(object):
             query_params = parse_qs(parsed_url.query)
             param_value = query_params.get("url", [None])[0]
             if param_value:
+                location = UrlLocation(param_value)
+                if not location.is_protocolled_link():
+                    param_value = location.get_protocol_url()
                 param_value = UrlLocation.get_cleaned_link(param_value)
                 return param_value
             param_value = query_params.get("q", [None])[0]
             if param_value:
+                location = UrlLocation(param_value)
+                if not location.is_protocolled_link():
+                    param_value = location.get_protocol_url()
                 param_value = UrlLocation.get_cleaned_link(param_value)
                 return param_value
 
@@ -366,6 +376,11 @@ class UrlLocation(object):
         stupid_google_string = "https://www.google.com/amp/s"
         if url.find(stupid_google_string) >= 0:
             url = url[len(stupid_google_string) + 1 :]
+
+            location = UrlLocation(url)
+            if not location.is_protocolled_link():
+                url = location.get_protocol_url()
+
             return UrlLocation.get_cleaned_link(url)
 
         return url
@@ -380,6 +395,11 @@ class UrlLocation(object):
                 return url
 
             param_value = unquote(param_value)
+
+            location = UrlLocation(param_value)
+            if not location.is_protocolled_link():
+                param_value = location.get_protocol_url()
+
             param_value = UrlLocation.get_cleaned_link(param_value)
             return param_value
 
@@ -392,6 +412,10 @@ class UrlLocation(object):
             query_params = parse_qs(parsed_url.query)
             param_value = query_params.get("url", [None])[0]
             if param_value:
+                location = UrlLocation(param_value)
+                if not location.is_protocolled_link():
+                    param_value = location.get_protocol_url()
+
                 param_value = UrlLocation.get_cleaned_link(param_value)
                 return param_value
 
@@ -412,6 +436,9 @@ class UrlLocation(object):
         return url
 
     def get_trackless_url(url):
+        if not url:
+            return
+
         scheme = UrlLocation(url).get_scheme()
         if scheme == "http" or scheme == "https":
             c = UrlCleaner()

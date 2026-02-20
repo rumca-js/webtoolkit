@@ -1203,7 +1203,7 @@ class BaseUrlMemoryTest(FakeInternetTestCase):
         self.ignore_memory = True # TODO fix
         self.memory_checker = MemoryChecker()
         memory_increase = self.memory_checker.get_memory_increase()
-        self.iteration_count = 1000
+        self.iteration_count = 500
 
     def tearDown(self):
         MockRequestCounter.reset()

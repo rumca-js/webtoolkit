@@ -628,6 +628,17 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_cleaned_link__exclamation(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "?"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, test_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_is_onion(self):
         # True cases
 
