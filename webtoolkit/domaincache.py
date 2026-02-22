@@ -191,7 +191,7 @@ class DomainCache(object):
         """
         if DomainCache.object is None:
             if not cache_size:
-                cache_size=DomainCache.default_cache_size
+                cache_size = DomainCache.default_cache_size
 
             DomainCache.object = DomainCache(
                 cache_size=cache_size,

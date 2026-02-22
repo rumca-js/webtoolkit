@@ -578,7 +578,10 @@ class BaseUrl(ContentInterface):
             TODO detect type of handler. IsChannel?
             """
             if is_channel:
-                if page_handler.get_channel_name():
+                if (
+                    type(page_handler) is not HttpPageHandler
+                    and page_handler.get_channel_name()
+                ):
                     properties["channel_name"] = page_handler.get_channel_name()
                     properties["channel_url"] = page_handler.get_channel_url()
 
@@ -680,7 +683,7 @@ class BaseUrl(ContentInterface):
 
         if streams:
             for key, response in streams.items():
-                if response is None: # exists in real life
+                if response is None:  # exists in real life
                     continue
 
                 if response.request is not None:

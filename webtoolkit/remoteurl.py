@@ -44,7 +44,7 @@ class RemoteUrl(ContentInterface):
         """
         super().__init__(url=url, contents=None)
         self.request = request
-        self.remote_server_location=remote_server_location
+        self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server=self.remote_server_location)
         self.all_properties = all_properties
         self.social_properties = social_properties
@@ -100,7 +100,6 @@ class RemoteUrl(ContentInterface):
             self.get_responses()
             if self.all_properties is None:
                 return {}
-
 
         properties = RemoteServer.read_properties_section(
             "Properties", self.all_properties
@@ -192,7 +191,9 @@ class RemoteUrl(ContentInterface):
                 date_published = entries[index].get("date_published")
                 if date_published:
                     if isinstance(date_published, str):
-                        entries[index]["date_published"] = date_str_to_date(date_published)
+                        entries[index]["date_published"] = date_str_to_date(
+                            date_published
+                        )
             return entries
         return []
 

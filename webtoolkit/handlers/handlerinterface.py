@@ -134,6 +134,12 @@ class HandlerInterface(DefaultContentPage):
     def get_response(self):
         raise NotImplementedError
 
+    def get_channel_name(self):
+        pass
+
+    def get_channel_url(self):
+        pass
+
     def ping(self, timeout_s=120):
         """
         @param timeout_s 0 is unlimited

@@ -365,10 +365,10 @@ class CrawlerCaller(object):
 
         # TODO?
         ## optimization. request has crawler which has request
-        #if self.request.crawler_type:
+        # if self.request.crawler_type:
         #    del self.request.crawler_type
         #    self.request.crawler_type = None
-        #if self.request.handler_type:
+        # if self.request.handler_type:
         #    del self.request.handler_type
         #    self.request.handler_type = None
 
