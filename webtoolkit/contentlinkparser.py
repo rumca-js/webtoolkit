@@ -25,7 +25,7 @@ class ContentLinkParser(ContentInterface):
         Conents cannot be
         """
         super().__init__(url=url, contents=contents)
-        self.url = UrlLocation(url).get_no_arg_link()
+        self.url = UrlLocation(url).get_no_arg_link().url
 
     def get_links(self):
         links = set()
@@ -120,7 +120,7 @@ class ContentLinkParser(ContentInterface):
         links = set()
 
         url = self.url
-        domain = UrlLocation(self.url).get_domain()
+        domain = UrlLocation(self.url).get_domain().url
 
         cont = str(self.get_contents())
 
@@ -248,7 +248,7 @@ class ContentLinkParser(ContentInterface):
         result = set()
         for link in links:
             p = UrlLocation(link)
-            new_link = p.get_domain()
+            new_link = p.get_domain().url
             if not ContentLinkParser.is_link_valid(new_link):
                 continue
 
@@ -306,7 +306,7 @@ class ContentLinkParser(ContentInterface):
         links = self.get_links()
         links = ContentLinkParser.filter_link_html(links)
         return ContentLinkParser.filter_link_in_domain(
-            links, UrlLocation(self.url).get_domain()
+            links, UrlLocation(self.url).get_domain().url
         )
 
     def get_links_outer(self):
@@ -314,6 +314,6 @@ class ContentLinkParser(ContentInterface):
         links = ContentLinkParser.filter_link_html(links)
 
         in_domain = ContentLinkParser.filter_link_in_domain(
-            links, UrlLocation(self.url).get_domain()
+            links, UrlLocation(self.url).get_domain().url
         )
         return links - in_domain

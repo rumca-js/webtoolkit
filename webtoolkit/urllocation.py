@@ -3,6 +3,7 @@ Internet location parsing and processing.
 """
 
 from urllib.parse import unquote, urlparse, parse_qs
+import mimetypes
 
 from url_cleaner import UrlCleaner
 
@@ -16,6 +17,21 @@ from .webtools import (
 )
 
 
+BINARY_EXTENSIONS = {
+    # Executables
+    "exe", "msi", "bat", "cmd", "sh",
+    
+    # Compiled binaries
+    "bin", "dll", "so", "dylib", "o", "a",
+    
+    # System / disk images
+    "iso", "img",
+    
+    # Packages / installers
+    "apk", "deb", "rpm", "pkg"
+}
+
+
 class UrlLocation(object):
     """
     Internet location parsing and processing class.
@@ -23,6 +39,18 @@ class UrlLocation(object):
 
     def __init__(self, url):
         self.url = url
+
+    def up(self, skip_internal=False):
+        """
+        Returns UrlLocation
+        """
+        if self.is_domain():
+            return self._up_domain()
+        else:
+            if skip_internal:
+                domain = self.get_domain()
+                return domain
+            return self._up_not_domain()
 
     def is_web_link(self):
         """
@@ -73,21 +101,91 @@ class UrlLocation(object):
             return True
         return False
 
+
     def is_onion(self):
         domain = self.get_domain()
         if domain:
-            return domain.endswith(".onion")
+            return domain.url.endswith(".onion")
+
+    def is_domain(self):
+        if not self.url:
+            return False
+
+        if self.is_onion():
+            return False
+
+        url = self.get_full_url()
+        if url == self.get_domain().url:
+            return True
+
+        return False
+
+    def is_image(self):
+        if self.is_domain():
+            return False
+        ext = self.get_page_ext()
+        if not ext:
+            return False
+
+        mime_type = self.guess_type()
+        return mime_type.find("image") >= 0
+
+    def is_audio(self):
+        if self.is_domain():
+            return False
+        ext = self.get_page_ext()
+        if not ext:
+            return False
+
+        mime_type = self.guess_type()
+        return mime_type.find("audio") >= 0
+
+    def is_video(self):
+        if self.is_domain():
+            return False
+        ext = self.get_page_ext()
+        if not ext:
+            return False
+
+        mime_type = self.guess_type()
+        return mime_type.find("video") >= 0
+
+    def is_binary(self):
+        """
+        analysis based on extension mostly
+        """
+        if self.is_domain():
+            return False
+        ext = self.get_page_ext()
+        if not ext:
+            return False
+
+        if ext in BINARY_EXTENSIONS:
+            return True
+
+        return False
+
+    def is_media(self):
+        """
+        Media = image OR audio OR video
+        """
+        return (
+            self.is_image() or
+            self.is_audio() or
+            self.is_video()
+        )
+
+    def guess_type(self):
+        mime_type, encoding = mimetypes.guess_type(self.url)
+        if mime_type is None:
+            return ""
+        return mime_type.lower()
 
     def get_protocolless(self):
         protocol_pos = self.url.find("://")
         if protocol_pos >= 0:
             return self.url[protocol_pos + 3 :]
 
-        return self.url
-
-    def get_full_url(self):
-        if self.url.lower().find("http") == -1:
-            return "https://" + self.url
         return self.url
 
     def get_port(self):
@@ -214,10 +312,12 @@ class UrlLocation(object):
         """
         for https://domain.com/test
 
-        @return https://domain.com
+        TODO - should not return url None
+
+        Returns UrlLocation
         """
         if not self.url:
-            return
+            return UrlLocation(url=None)
 
         parts = self.parse_url()
 
@@ -233,17 +333,18 @@ class UrlLocation(object):
 
         x = UrlLocation(text)
         if self.url and not x.is_protocolled_link():
-            return
+            return UrlLocation(url=None)
 
         if text.strip() == "http://" or text.strip() == "https://":
-            return
+            return UrlLocation(url=None)
 
         # if passed email, with user
         wh = text.find("@")
         if wh >= 0:
-            return parts[0] + parts[1] + text[wh + 1 :]
+            url = parts[0] + parts[1] + text[wh + 1 :]
+            return UrlLocation(url)
 
-        return text
+        return UrlLocation(text)
 
     def get_domain_only(self, no_www=False):
         """
@@ -269,52 +370,52 @@ class UrlLocation(object):
         if parts:
             return parts[0]
 
-    def is_domain(self):
-        if not self.url:
-            return False
-
-        if self.is_onion():
-            return False
-
-        url = self.get_full_url()
-        if url == self.get_domain():
-            return True
-
-        return False
-
     def get_page_ext(self):
         """
         @return extension, or none
         """
-        url = self.get_no_arg_link()
+        location = self.get_no_arg_link()
 
         # domain level does not say anything if it is HTML page, or not
-        if url == self.get_domain():
+        if self.is_domain():
             return
 
-        if url.endswith("/"):
-            return
+        if location.url.endswith("/"):
+            location.url = location.url[:-1]
 
-        sp = url.split(".")
+        sp = location.url.split(".")
         if len(sp) > 1:
             ext = sp[-1]
             if len(ext) < 5:
                 return ext
 
-        return
-
     def get_no_arg_link(self):
+        """
+        TODO should not return UrlLocation with None
+
+        Returns UrlLocation
+        """
         if not self.url:
-            return
+            return UrlLocation(url=None)
 
         url = self.url
         if url.find("?") >= 0:
             wh = url.find("?")
-            return url[:wh]
+            return UrlLocation(url[:wh])
         else:
-            return url
+            return UrlLocation(url)
+
+    def get_clean(self):
+        """
+        Returns UrlLocation
+        """
+        link = UrlLocation.get_cleaned_link(self.url)
+        return UrlLocation(link)
 
     def get_cleaned_link(url):
+        """
+        TODO remove?
+        """
         if not url:
             return
 
@@ -332,7 +433,7 @@ class UrlLocation(object):
         if not p.is_web_link():
             return p.url
 
-        domain = p.get_domain()
+        domain = p.get_domain().url
         if not domain:
             return
 
@@ -348,7 +449,7 @@ class UrlLocation(object):
         url = UrlLocation.get_linkedin_redirect_fix(url)
         url = UrlLocation.get_trackless_url(url)
 
-        return url
+        return url.url
 
     def get_google_redirect_fix(url):
         stupid_google_string = "https://www.google.com/url"
@@ -436,6 +537,9 @@ class UrlLocation(object):
         return url
 
     def get_trackless_url(url):
+        """
+        Returns UrlLocation
+        """
         if not url:
             return
 
@@ -448,12 +552,23 @@ class UrlLocation(object):
             # cleaned = cleaned.url
             # changes structure of link
 
-            return cleaned
-        return url
+            return UrlLocation(cleaned)
+        return UrlLocation(url)
+
+    def get_full_url(self):
+        """
+        Returns full url, with scheme
+        """
+        if self.url.lower().find("http") == -1:
+            return "https://" + self.url
+        return self.url
 
     def get_url_full(domain, url):
         """
+        joins domain with url (url can be inside of domain etc)
+
         TODO change function name
+
         formats:
         href="images/facebook.png"
         href="/images/facebook.png"
@@ -467,7 +582,8 @@ class UrlLocation(object):
             if url.startswith("//"):
                 ready_url = "https:" + url
             elif url.startswith("/"):
-                domain = UrlLocation(domain).get_domain()
+                domain = UrlLocation(domain).get_domain().url
+
                 if not domain.endswith("/"):
                     domain = domain + "/"
                 if url.startswith("/"):
@@ -480,37 +596,148 @@ class UrlLocation(object):
                 ready_url = domain + url
         return ready_url
 
-    def up(self, skip_internal=False):
+    def is_link(self):
         if self.is_domain():
-            return self.up_domain()
-        else:
-            if skip_internal:
-                domain = self.get_domain()
-                return UrlLocation(domain)
-            return self.up_not_domain()
+            return True
 
-    def up_domain(self):
+        ext = self.get_page_ext()
+        if not ext:
+            return True
+
+        if self.is_media():
+            return False
+        if self.is_binary():
+            return False
+
+        if ext in ["css", "js", "woff2", "tff"]:
+            return False
+
+        return True
+
+    def get_type_for_link(self):
+        the_type = self.get_type_by_ext()
+        if the_type:
+            return the_type
+
+        ext = self.get_page_ext()
+        if not ext:
+            return URL_TYPE_HTML
+
+        return URL_TYPE_UNKNOWN
+
+    def is_html(self):
+        return self.get_type() == URL_TYPE_HTML
+
+    def is_rss(self):
+        return self.get_type() == URL_TYPE_RSS
+
+    def get_type(self):
+        the_type = self.get_type_by_ext()
+        if the_type:
+            return the_type
+
+        ext = self.get_page_ext()
+        if not ext:
+            return URL_TYPE_HTML
+
+        return ext
+
+    def get_type_by_ext(self):
         """
-        https://github.com
+        TODO - crude, hardcoded
         """
-        domain = self.url
-        if domain.count(".") == 1:
-            return None
+        if self.is_analytics():
+            return
 
-        else:
-            parts = self.parse_url()
-            if len(parts) < 3:
-                return
+        ext_mapping = {
+            "css": URL_TYPE_CSS,
+            "js": URL_TYPE_JAVASCRIPT,
+            "html": URL_TYPE_HTML,
+            "htm": URL_TYPE_HTML,
+            "php": URL_TYPE_HTML,
+            "aspx": URL_TYPE_HTML,
+            "woff2": URL_TYPE_FONT,
+            "tff": URL_TYPE_FONT,
+        }
 
-            sp = parts[2].split(".")
-            url = parts[0] + parts[1] + ".".join(sp[1:])
-            return UrlLocation(url)
+        ext = self.get_page_ext()
+        if ext:
+            if ext in ext_mapping:
+                return ext_mapping[ext]
 
-    def up_not_domain(self):
-        url = self.url
-        wh = self.url.rfind("/")
-        if wh >= 0:
-            return UrlLocation(self.url[:wh])
+        # if not found, we return none
+
+    def get_robots_txt_url(self):
+        if self.is_onion():
+            return
+
+        return self.get_domain().url + "/robots.txt"
+
+    def is_link_in_domain(self, address):
+        if not address.startswith(self.get_domain().url):
+            return False
+        return True
+
+    def split(self):
+        result = []
+        parts = self.parse_url()
+
+        if len(parts) > 2:
+            # protocol + sep + domain
+            result.extend(parts[0:3])
+
+        if len(parts) > 3:
+            for part in parts[3:]:
+                if part.startswith("\\"):
+                    part = part[1:]
+                if part.startswith("/"):
+                    part = part[1:]
+                if part.endswith("\\"):
+                    part = part[:-1]
+                if part.endswith("/"):
+                    part = part[:-1]
+
+                if part.find("\\") >= 0:
+                    result.extend(part.split("\\"))
+                elif part.find("/") >= 0:
+                    result.extend(part.split("/"))
+                else:
+                    result.append(part)
+
+        return result
+
+    def join(self, parts):
+        result = ""
+
+        result = parts[0] + parts[1] + parts[2]
+
+        for part in parts[3:]:
+            if result.endswith("/"):
+                result = result[:-1]
+            if result.endswith("\\"):
+                result = result[:-1]
+
+            if part.startswith("/"):
+                part = part[1:]
+            if part.startswith("\\"):
+                part = part[1:]
+
+            if part.endswith("/"):
+                part = part[:-1]
+            if part.endswith("\\"):
+                part = part[:-1]
+
+            if part.startswith("?") or part.startswith("#"):
+                result = result + part
+            else:
+                result = result + "/" + part
+
+        return UrlLocation(result)
+
+    def get_params(self):
+        parsed_url = urlparse(self.url)
+        params = parse_qs(parsed_url.query)
+        return params
 
     def is_mainstream(self):
         dom = self.get_domain_only()
@@ -633,151 +860,26 @@ class UrlLocation(object):
 
         return False
 
-    def is_link(self):
-        return self.get_type_for_link() == URL_TYPE_HTML
-
-    def get_type_for_link(self):
-        the_type = self.get_type_by_ext()
-        if the_type:
-            return the_type
-
-        ext = self.get_page_ext()
-        if not ext:
-            return URL_TYPE_HTML
-
-        return URL_TYPE_UNKNOWN
-
-    def is_media(self):
+    def _up_domain(self):
         """
-        TODO - crude, hardcoded
+        https://github.com
         """
-        ext = self.get_page_ext()
-        if not ext:
-            return False
+        domain = self.url
+        if domain.count(".") == 1:
+            return None
 
-        ext_mapping = [
-            "mp3",
-            "mp4",
-            "avi",
-            "ogg",
-            "flac",
-            "rmvb",
-            "wmv",
-            "wma",
-        ]
+        else:
+            parts = self.parse_url()
+            if len(parts) < 3:
+                return
 
-        return ext in ext_mapping
+            sp = parts[2].split(".")
+            url = parts[0] + parts[1] + ".".join(sp[1:])
+            return UrlLocation(url)
 
-    def is_html(self):
-        return self.get_type() == URL_TYPE_HTML
+    def _up_not_domain(self):
+        url = self.url
+        wh = self.url.rfind("/")
+        if wh >= 0:
+            return UrlLocation(self.url[:wh])
 
-    def is_rss(self):
-        return self.get_type() == URL_TYPE_RSS
-
-    def get_type(self):
-        the_type = self.get_type_by_ext()
-        if the_type:
-            return the_type
-
-        ext = self.get_page_ext()
-        if not ext:
-            return URL_TYPE_HTML
-
-        return ext
-
-    def get_type_by_ext(self):
-        """
-        TODO - crude, hardcoded
-        """
-        if self.is_analytics():
-            return
-
-        ext_mapping = {
-            "css": URL_TYPE_CSS,
-            "js": URL_TYPE_JAVASCRIPT,
-            "html": URL_TYPE_HTML,
-            "htm": URL_TYPE_HTML,
-            "php": URL_TYPE_HTML,
-            "aspx": URL_TYPE_HTML,
-            "woff2": URL_TYPE_FONT,
-            "tff": URL_TYPE_FONT,
-        }
-
-        ext = self.get_page_ext()
-        if ext:
-            if ext in ext_mapping:
-                return ext_mapping[ext]
-
-        # if not found, we return none
-
-    def get_robots_txt_url(self):
-        if self.is_onion():
-            return
-
-        return self.get_domain() + "/robots.txt"
-
-    def is_link_in_domain(self, address):
-        if not address.startswith(self.get_domain()):
-            return False
-        return True
-
-    def split(self):
-        result = []
-        parts = self.parse_url()
-
-        if len(parts) > 2:
-            # protocol + sep + domain
-            result.extend(parts[0:3])
-
-        if len(parts) > 3:
-            for part in parts[3:]:
-                if part.startswith("\\"):
-                    part = part[1:]
-                if part.startswith("/"):
-                    part = part[1:]
-                if part.endswith("\\"):
-                    part = part[:-1]
-                if part.endswith("/"):
-                    part = part[:-1]
-
-                if part.find("\\") >= 0:
-                    result.extend(part.split("\\"))
-                elif part.find("/") >= 0:
-                    result.extend(part.split("/"))
-                else:
-                    result.append(part)
-
-        return result
-
-    def join(self, parts):
-        result = ""
-
-        result = parts[0] + parts[1] + parts[2]
-
-        for part in parts[3:]:
-            if result.endswith("/"):
-                result = result[:-1]
-            if result.endswith("\\"):
-                result = result[:-1]
-
-            if part.startswith("/"):
-                part = part[1:]
-            if part.startswith("\\"):
-                part = part[1:]
-
-            if part.endswith("/"):
-                part = part[:-1]
-            if part.endswith("\\"):
-                part = part[:-1]
-
-            if part.startswith("?") or part.startswith("#"):
-                result = result + part
-            else:
-                result = result + "/" + part
-
-        return result
-
-    def get_params(self):
-        parsed_url = urlparse(self.url)
-        params = parse_qs(parsed_url.query)
-        return params

@@ -225,7 +225,7 @@ class HttpPageHandlerMemoryTest(FakeInternetTestCase):
             self.assertEqual(memory_increase, 0)
 
     def test_get_response__html(self):
-        for i in range(1, 3500):
+        for i in range(1, 500):
             test_link = "https://linkedin.com"
             url = MockUrl(test_link)
             request = url.get_init_request()

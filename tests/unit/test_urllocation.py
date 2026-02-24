@@ -109,100 +109,88 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_get_domain__http(self):
         p = UrlLocation("http://test.com/my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "http://test.com")
+        self.assertEqual(p.get_domain().url, "http://test.com")
 
     def test_get_domain__http_digits(self):
         p = UrlLocation("http://127.0.0.1/my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "http://127.0.0.1")
+        self.assertEqual(p.get_domain().url, "http://127.0.0.1")
 
     def test_get_domain__ftp(self):
         p = UrlLocation("ftp://test.com/my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "ftp://test.com")
+        self.assertEqual(p.get_domain().url, "ftp://test.com")
 
     def test_get_domain__smb(self):
         p = UrlLocation("smb://test.com/my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "smb://test.com")
+        self.assertEqual(p.get_domain().url, "smb://test.com")
 
     def test_get_domain__smb_lin(self):
         p = UrlLocation("//test.com/my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "//test.com")
+        self.assertEqual(p.get_domain().url, "//test.com")
 
     def test_get_domain__smb_win(self):
         p = UrlLocation("\\\\test.com\\my-site-test")
         # call tested function
-        self.assertEqual(p.get_domain(), "\\\\test.com")
+        self.assertEqual(p.get_domain().url, "\\\\test.com")
 
     def test_get_domain__null(self):
         p = UrlLocation(None)
         # call tested function
-        self.assertEqual(p.get_domain(), None)
+        self.assertEqual(p.get_domain().url, None)
 
     def test_get_domain__null(self):
         test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
 
         p = UrlLocation(test_link)
         # call tested function
-        self.assertEqual(p.get_domain(), "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion")
+        self.assertEqual(p.get_domain().url, "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion")
 
     def test_get_domain__email(self):
         p = UrlLocation("https://user@gmail.com")
         # call tested function
-        self.assertEqual(p.get_domain(), "https://gmail.com")
+        self.assertEqual(p.get_domain().url, "https://gmail.com")
 
     def test_get_domain_web_archive_link(self):
         link = "https://web.archive.org/web/20000229222350/http://www.quantumpicture.com/Flo_Control/flo_control.htm"
         p = UrlLocation(link)
         # call tested function
-        self.assertEqual(p.get_domain(), "https://web.archive.org")
+        self.assertEqual(p.get_domain().url, "https://web.archive.org")
 
     def test_get_domain_cell_link(self):
         link = "https://www.cell.com/cell/fulltext/S0092-8674(23)01344-2?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867423013442%3Fshowall%3Dtrue"
         p = UrlLocation(link)
         # call tested function
-        self.assertEqual(p.get_domain(), "https://www.cell.com")
+        self.assertEqual(p.get_domain().url, "https://www.cell.com")
 
-    def test_is_domain_web_archive_link(self):
-        link = "https://web.archive.org/web/20000229222350/http://www.quantumpicture.com/Flo_Control/flo_control.htm"
-        p = UrlLocation(link)
-        # call tested function
-        self.assertFalse(p.is_domain())
-
-    def test_is_domain_cell_link(self):
-        link = "https://www.cell.com/cell/fulltext/S0092-8674(23)01344-2?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867423013442%3Fshowall%3Dtrue"
-        p = UrlLocation(link)
-        # call tested function
-        self.assertFalse(p.is_domain())
-
-    def test_get_domain_no_http(self):
+    def test_get_domain__no_http(self):
         p = UrlLocation("test.com")
         # call tested function
-        self.assertEqual(p.get_domain(), "https://test.com")
+        self.assertEqual(p.get_domain().url, "https://test.com")
 
-    def test_get_domain_https_uppercase(self):
+    def test_get_domain__https_uppercase(self):
         p = UrlLocation("HTTPS://test.com")
         # call tested function
-        self.assertEqual(p.get_domain(), "https://test.com")
+        self.assertEqual(p.get_domain().url, "https://test.com")
 
-    def test_get_domain_port(self):
+    def test_get_domain__port(self):
         p = UrlLocation("https://my-server:8185/view/somethingsomething")
         # call tested function
-        self.assertEqual(p.get_domain(), "https://my-server")
+        self.assertEqual(p.get_domain().url, "https://my-server")
 
-    def test_get_domain_odysee(self):
+    def test_get_domain__odysee(self):
         p = UrlLocation(
             "https://odysee.com/@MetalRockRules!:1/Metallica---The-Memory-Remains--Music-Video-HD-Remastered-:6"
         )
         # call tested function
-        self.assertEqual(p.get_domain(), "https://odysee.com")
+        self.assertEqual(p.get_domain().url, "https://odysee.com")
 
     def test_get_domain__no_www(self):
         p = UrlLocation("http://www.m.youtube.com/watch?v=1235")
         # call tested function
-        self.assertEqual(p.get_domain(no_www=True), "http://m.youtube.com")
+        self.assertEqual(p.get_domain(no_www=True).url, "http://m.youtube.com")
 
     def test_get_domain_only(self):
         p = UrlLocation("http://test.com/my-site-test")
@@ -221,28 +209,40 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertEqual(p.get_domain_only(no_www=True), "m.youtube.com")
 
-    def test_get_page_ext_html(self):
+    def test_is_domain__web_archive_link(self):
+        link = "https://web.archive.org/web/20000229222350/http://www.quantumpicture.com/Flo_Control/flo_control.htm"
+        p = UrlLocation(link)
+        # call tested function
+        self.assertFalse(p.is_domain())
+
+    def test_is_domain__cell_link(self):
+        link = "https://www.cell.com/cell/fulltext/S0092-8674(23)01344-2?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867423013442%3Fshowall%3Dtrue"
+        p = UrlLocation(link)
+        # call tested function
+        self.assertFalse(p.is_domain())
+
+    def test_get_page_ext__html(self):
         p = UrlLocation("http://mytestpage.com/page.html")
         # call tested function
         ext = p.get_page_ext()
 
         self.assertTrue(ext == "html")
 
-    def test_get_page_ext_htm(self):
+    def test_get_page_ext__htm(self):
         p = UrlLocation("http://mytestpage.com/page.htm")
         # call tested function
         ext = p.get_page_ext()
 
         self.assertTrue(ext == "htm")
 
-    def test_get_page_ext_js(self):
+    def test_get_page_ext__js(self):
         p = UrlLocation("http://mytestpage.com/page.js")
         # call tested function
         ext = p.get_page_ext()
 
         self.assertTrue(ext == "js")
 
-    def test_get_page_ext_no_ext(self):
+    def test_get_page_ext__no_ext(self):
         p = UrlLocation("http://mytestpage.com")
         # call tested function
         ext = p.get_page_ext()
@@ -263,21 +263,21 @@ class UrlLocationTest(FakeInternetTestCase):
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full_normal_join_right_slash(self):
+    def test_get_url_full__normal_join_right_slash(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test", "images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full_normal_join_no_slashes(self):
+    def test_get_url_full__normal_join_no_slashes(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test", "images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full_normal_join_both_slashes(self):
+    def test_get_url_full__normal_join_both_slashes(self):
         """
         slash in the link means that it is against the domain, not the current position.
         """
@@ -287,28 +287,28 @@ class UrlLocationTest(FakeInternetTestCase):
         )
         self.assertEqual(url, "http://mytestpage.com/images/facebook.com")
 
-    def test_get_url_full_path(self):
+    def test_get_url_full__path(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test/", "/images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/images/facebook.com")
 
-    def test_get_url_full_double_path(self):
+    def test_get_url_full__double_path(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test/", "//images/facebook.com"
         )
         self.assertEqual(url, "https://images/facebook.com")
 
-    def test_get_url_full_http_path(self):
+    def test_get_url_full__http_path(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test/", "http://images/facebook.com"
         )
         self.assertEqual(url, "http://images/facebook.com")
 
-    def test_get_url_full_https_path(self):
+    def test_get_url_full__https_path(self):
         # call tested function
         url = UrlLocation.get_url_full(
             "http://mytestpage.com/test/", "https://images/facebook.com"
@@ -316,6 +316,14 @@ class UrlLocationTest(FakeInternetTestCase):
         self.assertEqual(url, "https://images/facebook.com")
 
     def test_up(self):
+        p = UrlLocation("http://www.youtube.com/test1/test2?arg=1")
+
+        # call tested function
+        p = p.up()
+
+        self.assertTrue(p)
+        self.assertEqual(p.url, "http://www.youtube.com/test1")
+
         p = UrlLocation("http://www.youtube.com/test1/test2")
 
         # call tested function
@@ -372,7 +380,7 @@ class UrlLocationTest(FakeInternetTestCase):
         result = p.join(parts)
 
         self.assertEqual(
-            result, "http://www.youtube.com/test1/test2?whatever=1&something=2"
+            result.url, "http://www.youtube.com/test1/test2?whatever=1&something=2"
         )
 
     def test_parse_url(self):
@@ -565,9 +573,9 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_get_cleaned_link__stupid_google_link2(self):
         MockRequestCounter.mock_page_requests = 0
 
-        cleaned_link = UrlLocation.get_cleaned_link(
-            "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://worldofwarcraft.blizzard.com/&ved=2ahUKEwjtx56Pn5WFAxU2DhAIHYR1CckQFnoECCkQAQ&usg=AOvVaw1pDkx5K7B5loKccvg_079-"
-        )
+        test_link = "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://worldofwarcraft.blizzard.com/&ved=2ahUKEwjtx56Pn5WFAxU2DhAIHYR1CckQFnoECCkQAQ&usg=AOvVaw1pDkx5K7B5loKccvg_079-"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
         self.assertEqual(cleaned_link, "https://worldofwarcraft.blizzard.com")
 
@@ -639,6 +647,28 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_clean__stupid_google_link(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.google.com/url?q=https://forum.ddopl.com/&sa=Udupa"
+
+        location = UrlLocation(test_link)
+
+        self.assertEqual(location.get_clean().url, "https://forum.ddopl.com")
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_url_arg(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.linkedin.com/safety/go?url=https%3A%2F%2Fgzeek.pl"
+
+        cleaned_link = UrlLocation(test_link).get_url_arg()
+
+        self.assertEqual(cleaned_link, "https://gzeek.pl")
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_is_onion(self):
         # True cases
 
@@ -654,26 +684,91 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertFalse(url.is_onion())
 
-    def test_get_url_arg(self):
-        MockRequestCounter.mock_page_requests = 0
+    def test_is_binary(self):
+        test_link = "http://example.com/location.bin"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_binary())
 
-        test_link = "https://www.linkedin.com/safety/go?url=https%3A%2F%2Fgzeek.pl"
+        test_link = "http://example.com/location.iso"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_binary())
 
-        cleaned_link = UrlLocation(test_link).get_url_arg()
+        test_link = "http://example.com/location.iso?argument=1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_binary())
 
-        self.assertEqual(cleaned_link, "https://gzeek.pl")
+    def test_is_audio(self):
+        test_link = "http://example.com/location.mp3"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_audio())
 
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+        test_link = "http://example.com/location.ogg"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_audio())
 
-    def test_up_domain(self):
-        p = UrlLocation("http://www.m.youtube.com/watch?v=1235")
-        # call tested function
-        self.assertEqual(p.up_domain().url, "http://m.youtube.com")
+    def test_is_video(self):
+        test_link = "http://example.com/location.mp4"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_video())
 
-        p = UrlLocation("http://m.youtube.com/watch?v=1235")
-        # call tested function
-        self.assertEqual(p.up_domain().url, "http://youtube.com")
+        test_link = "http://example.com/location.avi"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_video())
 
-        p = UrlLocation("http://youtube.com/watch?v=1235")
-        # call tested function
-        self.assertEqual(p.up_domain(), None)
+    def test_is_image(self):
+        test_link = "http://example.com/location.ico"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_image())
+
+        test_link = "http://example.com/location.jpg"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_image())
+
+        test_link = "http://example.com/location.gif"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_image())
+
+        test_link = "http://example.com/location.svg"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_image())
+
+    def test_is_link(self):
+        test_link = "http://example.com"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://example.com/location"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://example.com/location/"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://example.com/location?argument=1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://otherpage1.net"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://mytestpage.com/test/test2.html"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://mytestpage.com/test/test2.htm"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://mytestpage.com/test/test2.php"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_link())
+
+        test_link = "http://mytestpage.com/test/test2.js"
+        url = UrlLocation(test_link)
+        self.assertFalse(url.is_link())
+
+        test_link = "http://mytestpage.com/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertFalse(url.is_link())

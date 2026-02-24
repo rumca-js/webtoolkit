@@ -1118,10 +1118,10 @@ class HtmlPage(ContentInterface):
         return p.get_domains()
 
     def get_domain_page(self):
-        if self.url == self.get_domain():
+        if self.url == self.get_domain().url:
             return self
 
-        return Page(self.get_domain())
+        return Page(self.get_domain().url)
 
     def get_properties(self):
         props = super().get_properties()

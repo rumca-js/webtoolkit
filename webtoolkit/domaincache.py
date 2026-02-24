@@ -29,7 +29,7 @@ class DomainCacheInfo(object):
 
         self.respect_robots_txt = respect_robots_txt
 
-        self.url = p.get_domain()
+        self.url = p.get_domain().url
         self.robots_contents = None
         self.request = request
         self.url_builder = url_builder

@@ -315,3 +315,12 @@ class ContentLinkParserTest(FakeInternetTestCase):
         self.assertFalse("https://test_get_links.com/location" in links)
         # test_get_links was not passed as an argument
         self.assertFalse("https://test_get_links.com/test/location" in links)
+
+    def test_filter_link_html(self):
+
+        links = set()
+        links.add("http://otherpage1.net")
+
+        output_links = ContentLinkParser.filter_link_html(links)
+
+        self.assertIn("http://otherpage1.net", output_links)
