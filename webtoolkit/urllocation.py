@@ -54,7 +54,14 @@ class UrlLocation(object):
 
     def is_web_link(self):
         """
-        Host files may redefine addresses, but these are NOT real web links
+        Checks if it is Internet link:
+         - has to have scheme
+         - at least one dot
+         - no funny chars in domain
+         - there needs to be char before dot
+
+        Does not check if it is a webpage, or a file.
+        All these are web links.
         """
         if (
             self.url.startswith("http://")
@@ -85,6 +92,35 @@ class UrlLocation(object):
 
         return False
 
+    def is_webpage_link(self):
+        """
+        Returns information if it is potentially a webpage.
+        Return false if you are quite certain that is not.
+        """
+        if self.is_analytics():
+            return False
+
+        if self.is_domain():
+            return True
+
+        ext = self.get_page_ext()
+        if not ext:
+            return True
+
+        if self.is_media():
+            return False
+        if self.is_binary():
+            return False
+
+        if self.is_onion():
+            # since it is hard to tell if not, assume it is a web link
+            return True
+
+        if ext in ["css", "js", "woff2", "tff"]:
+            return False
+
+        return True
+
     def is_protocolled_link(self):
         """
         Returns information if link has a protocol indication
@@ -100,7 +136,6 @@ class UrlLocation(object):
         ):
             return True
         return False
-
 
     def is_onion(self):
         domain = self.get_domain()
@@ -159,6 +194,8 @@ class UrlLocation(object):
         ext = self.get_page_ext()
         if not ext:
             return False
+        if self.is_analytics():
+            return False
 
         if ext in BINARY_EXTENSIONS:
             return True
@@ -179,6 +216,10 @@ class UrlLocation(object):
         mime_type, encoding = mimetypes.guess_type(self.url)
         if mime_type is None:
             return ""
+
+        if self.is_analytics():
+            return ""
+
         return mime_type.lower()
 
     def get_protocolless(self):
@@ -563,11 +604,9 @@ class UrlLocation(object):
             return "https://" + self.url
         return self.url
 
-    def get_url_full(domain, url):
+    def get_url_for_domain(domain, url):
         """
         joins domain with url (url can be inside of domain etc)
-
-        TODO change function name
 
         formats:
         href="images/facebook.png"
@@ -595,24 +634,6 @@ class UrlLocation(object):
                     domain = domain + "/"
                 ready_url = domain + url
         return ready_url
-
-    def is_link(self):
-        if self.is_domain():
-            return True
-
-        ext = self.get_page_ext()
-        if not ext:
-            return True
-
-        if self.is_media():
-            return False
-        if self.is_binary():
-            return False
-
-        if ext in ["css", "js", "woff2", "tff"]:
-            return False
-
-        return True
 
     def get_type_for_link(self):
         the_type = self.get_type_by_ext()
@@ -777,49 +798,76 @@ class UrlLocation(object):
         return False
 
     def is_analytics(self):
+        """
+        Internet service links that cannot be useful to anyone.
+        Internet infrastructure links.
+        """
         url = self.get_domain_only()
 
         if not url:
             return False
 
-        if url.find("g.doubleclick.net") >= 0:
-            return True
-        if url.find("ad.doubleclick.net") >= 0:
-            return True
-        if url.find("doubleverify.com") >= 0:
-            return True
         if url.find("adservice.google.com") >= 0:
             return True
-        if url.find("amazon-adsystem.com") >= 0:
+        if url.find(".googleapis.com") >= 0:
             return True
         if url.find("googlesyndication") >= 0:
             return True
-        if url.find("www.googletagmanager.com") >= 0:
+        if url.find(".googletagmanager.com") >= 0:
             return True
         if url.find("google-analytics") >= 0:
             return True
         if url.find("googletagservices") >= 0:
             return True
-        if url.find("cdn.speedcurve.com") >= 0:
+        if url.find("googleusercontent.com") >= 0:
+            return True
+        if url.find("gstatic.com") >= 0:
+            return True
+
+        if url.find("amazon-adsystem.com") >= 0:
             return True
         if url.find("amazonaws.com") >= 0:
             return True
-        if url.find("consent.cookiebot.com") >= 0:
-            return True
-        if url.find("cloudfront.net") >= 0:
-            return True
-        if url.find("prg.smartadserver.com") >= 0:
-            return True
-        if url.find("ads.us.e-planning.net") >= 0:
-            return True
+
         if url.find("static.ads-twitter.com") >= 0:
             return True
         if url.find("analytics.twitter.com") >= 0:
             return True
+
+        if url.find("doubleverify.com") >= 0:
+            return True
+        if url.find("g.doubleclick.net") >= 0:
+            return True
+        if url.find("ad.doubleclick.net") >= 0:
+            return True
+        if url.find("goatcounter.com") >= 0:
+            return True
+        if url.find(".cookiebot.com") >= 0:
+            return True
+        if url.find("cloudfront.net") >= 0:
+            return True
+        if url.find(".smartadserver.com") >= 0:
+            return True
+        if url.find("ads.us.e-planning.net") >= 0:
+            return True
+
         if url.find("static.cloudflareinsights.com") >= 0:
             return True
 
+        if url.find("static1.squarespace.com") >= 0:
+            return True
+        if url.find("redditstatic.com") >= 0:
+            return True
+
+        if url.find("cdn.speedcurve.com") >= 0:
+            return True
+        if url.find("shopifycdn.com") >= 0:
+            return True
+
     def is_link_service(self):
+        """
+        Url shorteners, which also do not directly lead to any page
+        """
         url = self.get_domain_only()
 
         if not url:
@@ -883,3 +931,8 @@ class UrlLocation(object):
         if wh >= 0:
             return UrlLocation(self.url[:wh])
 
+    def __str__(self):
+        if self.url:
+            return str(self.url)
+        else:
+            return ""

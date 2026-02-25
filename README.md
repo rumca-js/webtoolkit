@@ -81,12 +81,12 @@ page.get_entries()
 
 Sanitize link and remove trackers:
 ```
-link = UrlLocation.get_cleaned_link(link)
+location = UrlLocation(link).get_clean()
 ```
 
 Extract domain name:
 ```
-domain = UrlLocation(link).get_domain()
+location = UrlLocation(link).get_domain()
 ```
 
 Parse and reconstruct links
@@ -103,7 +103,14 @@ location = UrlLocation(link).up()
 ```
 
 ```
-UrlLocation(link).is_onion()
+is_onion = UrlLocation(link).is_onion()
+is_domain = UrlLocation(link).is_domain()
+is_image = UrlLocation(link).is_image()
+is_audio = UrlLocation(link).is_audio()
+is_video = UrlLocation(link).is_video()
+
+is_web_link = UrlLocation(link).is_web_link()          # https://example.com/file.js is a web link
+is_webpage_link = UrlLocation(link).is_webpage_link()  # https://example.com/file.js is not a webpage link
 ```
 
 # Content processing

@@ -197,7 +197,7 @@ class ContentLinkParser(ContentInterface):
         result = set()
         for link in links:
             p = UrlLocation(link)
-            if p.is_link():
+            if p.is_webpage_link():
                 result.add(link)
 
         return result

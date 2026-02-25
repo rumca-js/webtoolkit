@@ -495,7 +495,7 @@ class RssPage(ContentInterface):
         #        image = self.get_thumbnail_manual_from_youtube()
 
         if image and image.lower().find("https://") == -1:
-            image = UrlLocation.get_url_full(self.url, image)
+            image = UrlLocation.get_url_for_domain(self.url, image)
 
         return image
 
@@ -930,7 +930,7 @@ class HtmlPage(ContentInterface):
         # we use thumbnails in <img, but icons do not work correctly there
 
         if image and image.lower().find("https://") == -1:
-            image = UrlLocation.get_url_full(self.url, image)
+            image = UrlLocation.get_url_for_domain(self.url, image)
 
         return image
 
@@ -998,7 +998,7 @@ class HtmlPage(ContentInterface):
                 full_favicon = link_find["href"]
                 if full_favicon.strip() == "":
                     continue
-                full_favicon = UrlLocation.get_url_full(self.url, full_favicon)
+                full_favicon = UrlLocation.get_url_for_domain(self.url, full_favicon)
                 if "sizes" in link_find:
                     favicons[full_favicon] = link_find["sizes"]
                 else:
@@ -1011,7 +1011,7 @@ class HtmlPage(ContentInterface):
                 full_favicon = link_find["href"]
                 if full_favicon.strip() == "":
                     continue
-                full_favicon = UrlLocation.get_url_full(self.url, full_favicon)
+                full_favicon = UrlLocation.get_url_for_domain(self.url, full_favicon)
                 if "sizes" in link_find:
                     favicons[full_favicon] = link_find["sizes"]
                 else:
@@ -1075,7 +1075,7 @@ class HtmlPage(ContentInterface):
         #    )
 
         return (
-            [UrlLocation.get_url_full(self.url, rss_url) for rss_url in rss_links]
+            [UrlLocation.get_url_for_domain(self.url, rss_url) for rss_url in rss_links]
             if rss_links
             else []
         )

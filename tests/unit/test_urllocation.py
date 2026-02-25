@@ -256,61 +256,61 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertTrue(ext == "html")
 
-    def test_get_url_full_normal_join_left_slash(self):
+    def test_get_url_for_domain_normal_join_left_slash(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full__normal_join_right_slash(self):
+    def test_get_url_for_domain__normal_join_right_slash(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test", "images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full__normal_join_no_slashes(self):
+    def test_get_url_for_domain__normal_join_no_slashes(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test", "images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/test/images/facebook.com")
 
-    def test_get_url_full__normal_join_both_slashes(self):
+    def test_get_url_for_domain__normal_join_both_slashes(self):
         """
         slash in the link means that it is against the domain, not the current position.
         """
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "/images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/images/facebook.com")
 
-    def test_get_url_full__path(self):
+    def test_get_url_for_domain__path(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "/images/facebook.com"
         )
         self.assertEqual(url, "http://mytestpage.com/images/facebook.com")
 
-    def test_get_url_full__double_path(self):
+    def test_get_url_for_domain__double_path(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "//images/facebook.com"
         )
         self.assertEqual(url, "https://images/facebook.com")
 
-    def test_get_url_full__http_path(self):
+    def test_get_url_for_domain__http_path(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "http://images/facebook.com"
         )
         self.assertEqual(url, "http://images/facebook.com")
 
-    def test_get_url_full__https_path(self):
+    def test_get_url_for_domain__https_path(self):
         # call tested function
-        url = UrlLocation.get_url_full(
+        url = UrlLocation.get_url_for_domain(
             "http://mytestpage.com/test/", "https://images/facebook.com"
         )
         self.assertEqual(url, "https://images/facebook.com")
@@ -732,43 +732,52 @@ class UrlLocationTest(FakeInternetTestCase):
         url = UrlLocation(test_link)
         self.assertTrue(url.is_image())
 
-    def test_is_link(self):
+    def test_is_webpage_link(self):
         test_link = "http://example.com"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://example.com/location"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://example.com/location/"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://example.com/location?argument=1"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://otherpage1.net"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://mytestpage.com/test/test2.html"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://mytestpage.com/test/test2.htm"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://mytestpage.com/test/test2.php"
         url = UrlLocation(test_link)
-        self.assertTrue(url.is_link())
+        self.assertTrue(url.is_webpage_link())
 
         test_link = "http://mytestpage.com/test/test2.js"
         url = UrlLocation(test_link)
-        self.assertFalse(url.is_link())
+        self.assertFalse(url.is_webpage_link())
 
         test_link = "http://mytestpage.com/test/test2.css"
         url = UrlLocation(test_link)
-        self.assertFalse(url.is_link())
+        self.assertFalse(url.is_webpage_link())
+
+    def test_str(self):
+        test_link = "http://mytestpage.com/test/test2.html"
+        location = UrlLocation(test_link)
+        self.assertEqual(str(location), test_link)
+
+        test_link = None
+        location = UrlLocation(test_link)
+        self.assertEqual(str(location), "")
