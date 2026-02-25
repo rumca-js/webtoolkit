@@ -165,15 +165,19 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
                     )
 
             for handle in handles:
-                url = handle.result()
+                try:
+                    url = handle.result()
 
-                url.get_response()
+                    url.get_response()
 
-                self.channel_sources_urls[url.url] = url
+                    self.channel_sources_urls[url.url] = url
+                except Exception as E:
+                    WebLogger.exc(E)
 
         # we capture responses using order of urls
         for page_url in self.channel_sources_urls.values():
-            self.responses.append(page_url.get_response())
+            if page_url:
+                self.responses.append(page_url.get_response())
 
         return self.responses
 
