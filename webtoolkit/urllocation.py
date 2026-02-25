@@ -75,10 +75,16 @@ class UrlLocation(object):
             if self.url.find(".") == -1:
                 return False
 
-            # no funny chars
             domain_only = self.get_domain_only()
             if not domain_only:
                 return False
+
+            if self.url.count(".") == 1:
+                sp = domain_only.split(".")
+                if sp[1] in ["htm", "html", "php"]:
+                    return False
+
+            # no funny chars
             if domain_only.find("&") >= 0:
                 return False
             if domain_only.find("?") >= 0:
@@ -97,6 +103,9 @@ class UrlLocation(object):
         Returns information if it is potentially a webpage.
         Return false if you are quite certain that is not.
         """
+        if not self.is_web_link():
+            return False
+
         if self.is_analytics():
             return False
 
