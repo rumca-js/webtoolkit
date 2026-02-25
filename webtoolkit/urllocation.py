@@ -79,9 +79,10 @@ class UrlLocation(object):
             if not domain_only:
                 return False
 
-            if self.url.count(".") == 1:
-                sp = domain_only.split(".")
-                if sp[1] in ["htm", "html", "php"]:
+            # it is a bug to have https://something.html
+            sp = domain_only.split(".")
+            if len(sp) > 0:
+                if sp[-1] in ["htm", "html", "php", "js", "css"]:
                     return False
 
             # no funny chars
