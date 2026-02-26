@@ -20,16 +20,26 @@ from .webtools import (
 
 BINARY_EXTENSIONS = {
     # Executables
-    "exe", "msi", "bat", "cmd", "sh",
-    
+    "exe",
+    "msi",
+    "bat",
+    "cmd",
+    "sh",
     # Compiled binaries
-    "bin", "dll", "so", "dylib", "o", "a",
-    
+    "bin",
+    "dll",
+    "so",
+    "dylib",
+    "o",
+    "a",
     # System / disk images
-    "iso", "img",
-    
+    "iso",
+    "img",
     # Packages / installers
-    "apk", "deb", "rpm", "pkg"
+    "apk",
+    "deb",
+    "rpm",
+    "pkg",
 }
 
 
@@ -244,11 +254,7 @@ class UrlLocation(object):
         """
         Media = image OR audio OR video
         """
-        return (
-            self.is_image() or
-            self.is_audio() or
-            self.is_video()
-        )
+        return self.is_image() or self.is_audio() or self.is_video()
 
     def guess_type(self):
         mime_type, encoding = mimetypes.guess_type(self.url)

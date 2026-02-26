@@ -144,35 +144,51 @@ class RemoteUrl(ContentInterface):
 
     def get_title(self):
         """Returns title"""
-        return self.get_properties().get("title")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("title")
 
     def get_description(self):
         """Returns description"""
-        return self.get_properties().get("description")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("description")
 
     def get_language(self):
         """Returns language"""
-        return self.get_properties().get("language")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("language")
 
     def get_thumbnail(self):
         """Returns thumbnail"""
-        return self.get_properties().get("thumbnail")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("thumbnail")
 
     def get_author(self):
         """Returns author"""
-        return self.get_properties().get("author")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("author")
 
     def get_album(self):
         """Returns album"""
-        return self.get_properties().get("album")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("album")
 
     def get_tags(self):
         """Returns tags. TODO return value?"""
-        return self.get_properties().get("tags")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("tags")
 
     def get_date_published(self):
         """Returns date published."""
-        return self.get_properties().get("date_published")
+        properties = self.get_properties()
+        if properties:
+            return properties.get("date_published")
 
     def get_status_code(self):
         """Returns status code"""
@@ -203,7 +219,9 @@ class RemoteUrl(ContentInterface):
         :return: A set of feed URLs.
         """
         if self.all_properties is not None:
-            feeds = self.get_properties().get("feeds")
+            properties = self.get_properties()
+            if properties:
+                feeds = properties.get("feeds")
         else:
             feeds_json = self.server.get_feedsj(url=self.url)
             if not feeds_json:
