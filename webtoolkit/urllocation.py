@@ -4,6 +4,7 @@ Internet location parsing and processing.
 
 from urllib.parse import unquote, urlparse, parse_qs
 import mimetypes
+import ipaddress
 
 from url_cleaner import UrlCleaner
 
@@ -149,8 +150,35 @@ class UrlLocation(object):
 
     def is_onion(self):
         domain = self.get_domain()
-        if domain:
+        if domain.url:
             return domain.url.endswith(".onion")
+
+    def is_ipv4(self):
+        try:
+            if self.url:
+                url = self.url
+                url = self.get_domain_only()
+                ipaddress.IPv4Network(url)
+                return True
+        except ValueError:
+            return False
+
+    def is_ipv6(self):
+        try:
+            if self.url:
+                url = self.url
+                url = self.get_domain_only()
+                ipaddress.IPv6Network(url)
+                return True
+        except ValueError:
+            return False
+
+    def is_ip(self):
+        if self.is_ipv4():
+            return True
+        if self.is_ipv6():
+            return True
+        return False
 
     def is_domain(self):
         if not self.url:
@@ -286,10 +314,14 @@ class UrlLocation(object):
             return self.parse_netloc("\\\\")
 
         else:
+            parts = self.parse_location(self.url)
+
+            data = ["https", "://"]
             if self.url.endswith(".onion"):
-                return ["http", "://", self.url]
-            else:
-                return ["https", "://", self.url]
+                data = ["http", "://"]
+            data.extend(parts)
+
+            return data
 
     def parse_protocoled_url(self):
         protocol_pos = self.url.find("://")
@@ -297,16 +329,9 @@ class UrlLocation(object):
             rest = self.url[protocol_pos + 3 :]
             protocol = self.url[:protocol_pos].lower()
 
-            rest_data = self.parse_location(rest)
-
-            if len(rest_data) > 1:
-                args = self.parse_argument(rest_data[1])
-                if args[1] != "":
-                    return [protocol, "://", rest_data[0], args[0], args[1]]
-                else:
-                    return [protocol, "://", rest_data[0], rest_data[1]]
-            else:
-                return [protocol, "://", rest_data[0]]
+            data = [protocol, "://"]
+            data.extend(self.parse_location(rest))
+            return data
 
     def parse_netloc(self, separator="//"):
         """
@@ -320,18 +345,23 @@ class UrlLocation(object):
 
             rest = self.url[len(separator) :]
 
-            rest_data = self.parse_location(rest)
-
-            if len(rest_data) > 1:
-                args = self.parse_argument(rest_data[1])
-                if args[1] != "":
-                    return ["", separator, rest_data[0], args[0], args[1]]
-                else:
-                    return ["", separator, rest_data[0], rest_data[1]]
-            else:
-                return ["", separator, rest_data[0]]
+            data = ["", separator]
+            data.extend(self.parse_location(rest))
+            return data
 
     def parse_location(self, rest):
+        rest_data = self._parse_location(rest)
+
+        if len(rest_data) > 1:
+            args = self.parse_argument(rest_data[1])
+            if args[1] != "":
+                return [rest_data[0], args[0], args[1]]
+            else:
+                return [rest_data[0], rest_data[1]]
+        else:
+            return [rest_data[0]]
+
+    def _parse_location(self, rest):
         """
         returns tuple [link, arguments]
         """

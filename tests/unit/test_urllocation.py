@@ -209,6 +209,26 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertEqual(p.get_domain_only(no_www=True), "m.youtube.com")
 
+    def test_get_domain_only__only_ip(self):
+        p = UrlLocation("192.168.0.168")
+        # call tested function
+        self.assertEqual(p.get_domain_only(), "192.168.0.168")
+
+    def test_get_domain_only__ip_slashes(self):
+        p = UrlLocation("//192.168.0.168")
+        # call tested function
+        self.assertEqual(p.get_domain_only(), "192.168.0.168")
+
+    def test_get_domain_only__ip_location(self):
+        p = UrlLocation("192.168.0.168/location")
+        # call tested function
+        self.assertEqual(p.get_domain_only(), "192.168.0.168")
+
+    def test_get_domain_only__ip_location_slashes(self):
+        p = UrlLocation("//192.168.0.168/location")
+        # call tested function
+        self.assertEqual(p.get_domain_only(), "192.168.0.168")
+
     def test_is_domain__web_archive_link(self):
         link = "https://web.archive.org/web/20000229222350/http://www.quantumpicture.com/Flo_Control/flo_control.htm"
         p = UrlLocation(link)
@@ -433,22 +453,24 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_parse_url4(self):
         p = UrlLocation("something.com")
         parts = p.parse_url()
-        # print(parts)
+        print(parts)
 
-        self.assertEqual(len(parts), 3)
+        self.assertEqual(len(parts), 4)
         self.assertEqual(parts[0], "https")
         self.assertEqual(parts[1], "://")
         self.assertEqual(parts[2], "something.com")
+        self.assertEqual(parts[3], "")
 
-    def test_parse_url5(self):
+    def test_parse__onion(self):
         p = UrlLocation("something.onion")
         parts = p.parse_url()
         # print(parts)
 
-        self.assertEqual(len(parts), 3)
+        self.assertEqual(len(parts), 4)
         self.assertEqual(parts[0], "http")
         self.assertEqual(parts[1], "://")
         self.assertEqual(parts[2], "something.onion")
+        self.assertEqual(parts[3], "")
 
     def test_is_web_link(self):
         p = UrlLocation("https://www.youtube.com")
@@ -776,6 +798,47 @@ class UrlLocationTest(FakeInternetTestCase):
         test_link = "http://mytestpage.com/test/test2.css"
         url = UrlLocation(test_link)
         self.assertFalse(url.is_webpage_link())
+
+    def test_is_ip(self):
+        test_link = "192.168.0.1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "//192.168.0.1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "smb://192.168.0.1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "http://192.168.0.1"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "192.168.0.1/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "//192.168.0.1/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "http://192.168.0.1/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "http://example.com/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertFalse(url.is_ip())
+
+        test_link = "http://2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
+
+        test_link = "http://2001:0db8:85a3:0000:0000:8a2e:0370:7334/test/test2.css"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_ip())
 
     def test_str(self):
         test_link = "http://mytestpage.com/test/test2.html"
