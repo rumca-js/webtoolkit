@@ -2,10 +2,7 @@
 Crawler interface can be implemented to provide new mechanisms of crawling
 """
 
-import json
-import os
-import base64
-from pathlib import Path
+import threading
 import ua_generator
 
 from webtoolkit import (
@@ -199,3 +196,48 @@ class CrawlerInterface(object):
 
             response_file = real_settings.get("response_file")
             return response_file
+
+    def build_requests(self):
+        """
+        Perform an HTTP GET request with total timeout control using threading.
+
+        Notes:
+        - stream=True defers the content download until accessed.
+        - Overcomes the limitation of requests.get's timeout (which doesn't cover total duration).
+        """
+
+        def crawl_with_thread_wrapper(request, stream, result):
+            try:
+                result["response"] = self.crawl_with_thread_implementation(request, stream)
+            except Exception as e:
+                result["exception"] = e
+
+        def crawl_with_thread(request, stream):
+            result = {"response": None, "exception": None}
+
+            thread = threading.Thread(
+                target=crawl_with_thread_wrapper,
+                args=(request, stream, result),
+            )
+            thread.start()
+            thread.join(request.timeout_s)
+
+            if thread.is_alive():
+                raise WebToolsTimeoutException("Request timed out")
+            if result["exception"]:
+                raise result["exception"]
+            return result["response"]
+
+        self.update_request()
+
+        response = crawl_with_thread(
+            request=self.request,
+            stream=True,
+        )
+        return response
+
+    def crawl_with_thread_implementation(self, request, stream):
+        """
+        To be implemented
+        """
+        pass

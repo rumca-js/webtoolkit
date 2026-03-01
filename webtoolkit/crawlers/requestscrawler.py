@@ -173,7 +173,7 @@ class RequestsCrawler(CrawlerInterface):
             elif text.count("charset") == 1 and text.find('charset="utf-8"') >= 0:
                 return "utf-8"
 
-    def make_requests_call(self, request, stream):
+    def crawl_with_thread_implementation(self, request, stream):
         """
         This method can be overridden in subclasses to change the request behavior.
         """
@@ -190,45 +190,6 @@ class RequestsCrawler(CrawlerInterface):
             cookies=request.cookies,
             stream=stream,
         )
-
-    def build_requests(self):
-        """
-        Perform an HTTP GET request with total timeout control using threading.
-
-        Notes:
-        - stream=True defers the content download until accessed.
-        - Overcomes the limitation of requests.get's timeout (which doesn't cover total duration).
-        """
-
-        def request_with_timeout(request, stream, result):
-            try:
-                result["response"] = self.make_requests_call(request, stream)
-            except Exception as e:
-                result["exception"] = e
-
-        def make_request_with_threading(request, stream):
-            result = {"response": None, "exception": None}
-
-            thread = threading.Thread(
-                target=request_with_timeout,
-                args=(request, stream, result),
-            )
-            thread.start()
-            thread.join(request.timeout_s)
-
-            if thread.is_alive():
-                raise WebToolsTimeoutException("Request timed out")
-            if result["exception"]:
-                raise result["exception"]
-            return result["response"]
-
-        self.update_request()
-
-        response = make_request_with_threading(
-            request=self.request,
-            stream=True,
-        )
-        return response
 
     def is_valid(self):
         try:
