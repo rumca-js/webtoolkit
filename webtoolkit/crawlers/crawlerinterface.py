@@ -206,18 +206,18 @@ class CrawlerInterface(object):
         - Overcomes the limitation of requests.get's timeout (which doesn't cover total duration).
         """
 
-        def crawl_with_thread_wrapper(request, stream, result):
+        def crawl_with_thread_wrapper(request, result):
             try:
-                result["response"] = self.crawl_with_thread_implementation(request, stream)
+                result["response"] = self.crawl_with_thread_implementation(request)
             except Exception as e:
                 result["exception"] = e
 
-        def crawl_with_thread(request, stream):
+        def crawl_with_thread(request):
             result = {"response": None, "exception": None}
 
             thread = threading.Thread(
                 target=crawl_with_thread_wrapper,
-                args=(request, stream, result),
+                args=(request, result),
             )
             thread.start()
             thread.join(request.timeout_s)
@@ -232,11 +232,10 @@ class CrawlerInterface(object):
 
         response = crawl_with_thread(
             request=self.request,
-            stream=True,
         )
         return response
 
-    def crawl_with_thread_implementation(self, request, stream):
+    def crawl_with_thread_implementation(self, request):
         """
         To be implemented
         """

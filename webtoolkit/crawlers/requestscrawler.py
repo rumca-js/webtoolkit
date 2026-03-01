@@ -134,6 +134,12 @@ class RequestsCrawler(CrawlerInterface):
             )
             self.response.add_error("General page exception: {}".format(str(E)))
 
+        try:
+            if request_result:
+                request_result.close()
+        except Exception as E:
+            pass
+
         return self.response
 
     def get_encoding(self, response, request_result):
@@ -173,7 +179,7 @@ class RequestsCrawler(CrawlerInterface):
             elif text.count("charset") == 1 and text.find('charset="utf-8"') >= 0:
                 return "utf-8"
 
-    def crawl_with_thread_implementation(self, request, stream):
+    def crawl_with_thread_implementation(self, request):
         """
         This method can be overridden in subclasses to change the request behavior.
         """
@@ -188,7 +194,7 @@ class RequestsCrawler(CrawlerInterface):
             verify=request.ssl_verify,
             proxies=proxies,
             cookies=request.cookies,
-            stream=stream,
+            stream=False,
         )
 
     def is_valid(self):
