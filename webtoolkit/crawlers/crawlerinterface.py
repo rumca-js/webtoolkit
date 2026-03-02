@@ -219,8 +219,13 @@ class CrawlerInterface(object):
                 target=crawl_with_thread_wrapper,
                 args=(request, result),
             )
+
             thread.start()
-            thread.join(request.timeout_s)
+
+            # give additional wait time
+            # requests (or other mechanisms) sohuld timeout first
+            # give it some 'time space' to timeout gracefully
+            thread.join(request.timeout_s + 5)
 
             if thread.is_alive():
                 raise WebToolsTimeoutException("Request timed out")
