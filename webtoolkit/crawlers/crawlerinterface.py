@@ -218,6 +218,7 @@ class CrawlerInterface(object):
             thread = threading.Thread(
                 target=crawl_with_thread_wrapper,
                 args=(request, result),
+                daemon=True,
             )
 
             thread.start()
