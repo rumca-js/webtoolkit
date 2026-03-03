@@ -293,6 +293,7 @@ class UrlLocation(object):
     def get_protocol_url(self, protocol="https"):
         """
         replaces any protocol with input protocol
+        TODO return UrlLocation
         """
         protocol_pos = self.url.find("://")
         if protocol_pos >= 0:
