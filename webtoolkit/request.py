@@ -279,3 +279,32 @@ def copy_request(request):
     request_copy.crawler_type = None
     request_copy.handler_type = None
     return request_copy
+
+
+def request_to_file(request, file_name):
+    """
+    Stores response in a file
+    """
+    if not request:
+        return
+
+    with open(file_name, "w") as fh:
+        json_data = request_to_json(request)
+        json_text = json.dumps(json_data)
+
+        fh.write(json_text)
+
+
+def file_to_request(file_name):
+    """
+    Reads response from a file
+    """
+    path = Path(file_name)
+    if not path.exists():
+        return
+
+    with open(file_name, "r") as fh:
+        json_text = fh.read()
+        json_data = json.loads(json_text)
+
+        return json_to_request(json_data)
