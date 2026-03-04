@@ -70,13 +70,25 @@ class CrawlerInterface(object):
 
     def run(self):
         """
+        Prepares for request, runs request, prepares response.
          - does its job
          - sets self.response
          - we should be able to call run several times
 
-        if crawler can access web, then should return response (may be invalid)
+        @return response (always, but may be invalid)
+        """
+        response = self.run_internal()
+        response.request = self.request
+        return response
 
-        @return response, None if feature is not available
+    def run_internal(self):
+        """
+        Runs request only
+         - does its job
+         - sets self.response
+         - we should be able to call run several times, for various requests
+
+        @return response (always, but may be invalid)
         """
         return self.response
 

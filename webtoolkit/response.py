@@ -4,7 +4,6 @@ Response API
 
 import html
 import json
-import base64
 from pathlib import Path
 from collections import OrderedDict
 
@@ -79,10 +78,19 @@ class ResponseHeaders(object):
         if date:
             return date_str_to_date(str(date))
 
+    def get_last_modified_str(self):
+        date = None
+
+        if "Last-Modified" in self.headers:
+            date = self.headers["Last-Modified"]
+        if "last-modified" in self.headers:
+            date = self.headers["last-modified"]
+        return date
+
     def get_clean_headers(self):
         self.headers["Content-Type"] = self.get_content_type()
         self.headers["Content-Length"] = self.get_content_length()
-        self.headers["Last-Modified"] = self.get_last_modified()
+        self.headers["Last-Modified"] = self.get_last_modified_str()
         self.headers["Charset"] = self.get_content_type_charset()
 
         return self.headers
@@ -538,7 +546,10 @@ def response_to_json(response, with_streams=False):
             response.get_recognized_content_type()
         )
         response_data["Content-Length"] = response.get_content_length()
-        response_data["Last-Modified"] = response.get_last_modified()
+
+        last_modified = response.get_last_modified()
+        if last_modified:
+            response_data["Last-Modified"] = last_modified.isoformat()
         response_data["Charset"] = response.get_encoding()
         hash = response.get_hash()
         if hash:
@@ -592,12 +603,9 @@ def json_to_response(json_data, with_streams=False):
         status_code = int(status_code)
     encoding = json_data.get("Charset")
     headers = json_data.get("headers")
-    body_hash = json_data.get("body_hash")
 
     if binary:
-        binary = base64.b64decode(binary)
-    if body_hash:
-        body_hash = base64.b64decode(body_hash)
+        binary = json_decode_field(binary)
 
     response = PageResponseObject(
         url=url,  # received url
@@ -608,6 +616,15 @@ def json_to_response(json_data, with_streams=False):
         headers=headers,
         request_url=request_url,
     )
+
+    errors = json_data.get("errors")
+    if errors:
+        response.errors = errors
+
+    body_hash = json_data.get("body_hash")
+
+    if body_hash:
+        body_hash = json_decode_field(body_hash)
 
     response.body_hash = body_hash
 

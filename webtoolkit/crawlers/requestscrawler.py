@@ -25,7 +25,7 @@ class RequestsCrawler(CrawlerInterface):
        This means we have to start a thread, and make timeout ourselves
     """
 
-    def run(self):
+    def run_internal(self):
         if not self.is_valid():
             return
 

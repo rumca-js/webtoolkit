@@ -388,6 +388,27 @@ class PageResponseObjectTest(FakeInternetTestCase):
 
         self.assertEqual(type(response.get_page()), HtmlPage)
 
+    def test_get_last_modified(self):
+        headers = {"Content-Type": "text/html", "Last-Modified" : "2025-01-07T16:15:08Z"}
+        response = PageResponseObject(
+            "https://test.com", "", status_code=200, headers=headers
+        )
+
+        # call tested function
+        self.assertTrue(response.get_last_modified())
+
+    def test_get_headers(self):
+        headers = {"Content-Type": "text/html", "Last-Modified" : "2025-01-07T16:15:08Z"}
+        response = PageResponseObject(
+            "https://test.com", "", status_code=200, headers=headers
+        )
+
+        # call tested function
+        headers = response.get_headers()
+
+        self.assertIn("Last-Modified", headers)
+        self.assertTrue(headers["Last-Modified"])
+
 
 class PageResponseToJsonTest(FakeInternetTestCase):
     def setUp(self):
@@ -571,6 +592,24 @@ class PageResponseToJsonTest(FakeInternetTestCase):
         string = json.dumps(json_map)
         self.assertTrue(string)
 
+    def test_response_to_json__last_modified(self):
+        test_link = "https://test.com"
+        headers = {"Content-Type": "text/html", "Last-Modified" : "2025-01-07T16:15:08Z"}
+
+        response = PageResponseObject(
+            url=test_link, status_code=200, text="test", headers=headers,
+        )
+        request = PageRequestObject(url=test_link)
+        response.set_request(request)
+
+        # call tested function
+        json_map = response_to_json(response, with_streams=True)
+
+        # check if is serializable
+
+        string = json.dumps(json_map)
+        self.assertTrue(string)
+
 
 class JsonToPageResponseTest(FakeInternetTestCase):
     def setUp(self):
@@ -660,12 +699,51 @@ class JsonToPageResponseTest(FakeInternetTestCase):
             "request" : {
                 "url" : "https://page-request.com",
                 "crawler_name" : "PageRequestCrawler",
-            }
+            },
         }
 
         response = json_to_response(json_data)
         self.assertEqual(response.text, "<html></html>")
 
         self.assertTrue(response.request)
-        self.assertTrue(response.request.url, "https://page-request.com")
-        self.assertTrue(response.request.crawler_name, "PageRequestCrawler")
+        self.assertEqual(response.request.url, "https://page-request.com")
+        self.assertEqual(response.request.crawler_name, "PageRequestCrawler")
+
+    def test__response_with_headers_last_modified(self):
+        json_data = {
+            "url" : "https://test.com",
+            "text" : "<html></html>",
+            "request" : {
+                "url" : "https://page-request.com",
+                "crawler_name" : "PageRequestCrawler",
+            },
+            "headers" : {
+                "Content-Type" : "test/content/type",
+                "Last-Modified" : "2025-01-07T16:15:08Z",
+            },
+        }
+
+        response = json_to_response(json_data)
+        self.assertEqual(response.text, "<html></html>")
+
+        self.assertTrue(response.request)
+        self.assertIn("Last-Modified", response.get_headers())
+
+    def test__response_errors(self):
+        json_data = {
+            "url" : "https://test.com",
+            "text" : "<html></html>",
+            "request" : {
+                "url" : "https://page-request.com",
+                "crawler_name" : "PageRequestCrawler",
+            },
+            "errors" : ["something does not work"],
+        }
+
+        response = json_to_response(json_data)
+        self.assertEqual(response.text, "<html></html>")
+
+        self.assertTrue(response.request)
+        self.assertTrue(response.errors)
+        self.assertTrue(len(response.errors) > 0)
+
