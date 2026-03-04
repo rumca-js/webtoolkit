@@ -5,7 +5,7 @@ Request API
 import copy
 import urllib.parse
 import json
-import Path
+from pathlib import Path
 
 
 REQUEST_TYPE_PING = "ping"
