@@ -141,6 +141,13 @@ class WebLogger(object):
         if WebLogger.web_logger:
             WebLogger.web_logger.exc(exception_object, info_text)
 
+    @staticmethod
+    def print_stack():
+        stack_lines = traceback.format_stack()
+        stack_string = "".join(stack_lines)
+        print("Stack:")
+        print("".join(stack_lines))
+
 
 def lazy_load_content(func):
     """
