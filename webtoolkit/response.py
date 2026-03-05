@@ -667,3 +667,17 @@ def file_to_response(file_name):
         json_data = json.loads(json_text)
 
         return json_to_response(json_data)
+
+
+def copy_response(response):
+    """
+    Copies data, not objects
+    """
+    if not response:
+        return
+
+    response_copy = copy.copy(response)
+    if response_copy.request:
+        response_copy.request.crawler_type = None
+        response_copy.request.handler_type = None
+    return response_copy

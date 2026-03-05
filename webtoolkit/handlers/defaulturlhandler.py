@@ -2,7 +2,6 @@
 Default url handler.
 """
 
-import copy
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 
@@ -35,7 +34,7 @@ class DefaultUrlHandler(HttpPageHandler):
             return
 
         if self.url == url and self.request is not None:
-            request = copy.copy(self.request)
+            request = copy_request(self.request)
         else:
             if self.url_builder:
                 # some handlers might provide custom crawlers for urls
