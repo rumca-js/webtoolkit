@@ -48,6 +48,8 @@ class DefaultUrlHandler(HttpPageHandler):
         request.handler_name = "HttpPageHandler"
         request.handler_type = None  # object will be assigned by builder
 
+        request = self.handle_new_request(request)
+
         if crawler_name:
             request.crawler_name = crawler_name
             request.crawler_type = None

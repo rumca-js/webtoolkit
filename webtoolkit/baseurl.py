@@ -89,6 +89,13 @@ class BaseUrl(ContentInterface):
         if not self.url_builder:
             self.url_builder = BaseUrl
 
+    def handle_new_request(self, request):
+        """
+        Sometimes things have to be done to the new request.
+        Can be overwritten.
+        """
+        return request
+
     def get_request_for_url(self, url):
         request = PageRequestObject(url)
         request.crawler_name = "RequestsCrawler"
