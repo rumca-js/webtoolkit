@@ -116,9 +116,10 @@ class CrawlerInterface(object):
         """
         Returns finished response
         """
-        self.response.request = self.request
-        self.response.errors = self.errors
-        return self.response
+        if self.response:
+            self.response.request = self.request
+            self.response.errors = self.errors
+            return self.response
 
     def run_internal(self):
         """
