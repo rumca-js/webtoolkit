@@ -7,6 +7,11 @@ import ua_generator
 
 from webtoolkit import (
     PageRequestObject,
+    PageResponseObject,
+    HTTP_STATUS_CODE_SERVER_ERROR,
+    HTTP_STATUS_CODE_TIMEOUT,
+    HTTP_STATUS_CODE_CONNECTION_ERROR,
+    HTTP_STATUS_CODE_EXCEPTION
 )
 
 
@@ -55,6 +60,7 @@ class CrawlerInterface(object):
 
         self.request = request
         self.response = None
+        self.errors = []
 
     def update_request(self):
         """
@@ -77,9 +83,42 @@ class CrawlerInterface(object):
 
         @return response (always, but may be invalid)
         """
-        response = self.run_internal()
-        response.request = self.request
-        return response
+
+        # by default it is our error that no valid data were returned
+        self.response = PageResponseObject(
+            self.request.url,
+            text=None,
+            status_code=HTTP_STATUS_CODE_SERVER_ERROR,
+            request_url=self.request.url,
+        )
+
+        try:
+            self.response = self.run_internal()
+        except Exception as E:
+            self.add_error(str(E))
+
+        return self.get_response()
+
+    def set_timeout_response(self):
+        self.response.status_code = HTTP_STATUS_CODE_TIMEOUT
+        self.add_error(f"Url:{self.request.url} Timout")
+
+    def set_connection_error_response(self):
+        self.response.status_code = HTTP_STATUS_CODE_CONNECTION_ERROR
+        self.add_error(f"Url:{self.request.url} Connection error")
+
+    def set_exception_response(self, E):
+        str_e = str(E)
+        self.response.status_code = HTTP_STATUS_CODE_EXCEPTION
+        self.add_error(f"Url:{self.request.url} Exception: {str_e}")
+
+    def get_response(self):
+        """
+        Returns finished response
+        """
+        self.response.request = self.request
+        self.response.errors = self.errors
+        return self.response
 
     def run_internal(self):
         """
@@ -98,12 +137,15 @@ class CrawlerInterface(object):
     def get_default_headers(self):
         return get_default_headers()
 
+    def add_error(self, error):
+        self.errors.append(error)
+
     def is_response_valid(self):
         if not self.response:
             return False
 
         if not self.response.is_valid():
-            self.response.add_error(
+            self.add_error(
                 f"Response not valid. Status:{self.response.status_code}"
             )
             return False
@@ -113,7 +155,7 @@ class CrawlerInterface(object):
 
         if content_length is not None and bytes_limit is not None:
             if content_length > bytes_limit:
-                self.response.add_error("Page is too big: ".format(content_length))
+                self.add_error("Page is too big: ".format(content_length))
                 return False
 
         content_type = self.response.get_content_type_keys()
@@ -128,15 +170,12 @@ class CrawlerInterface(object):
                     match_count += 1
 
             if match_count == 0:
-                self.response.add_error(
+                self.add_error(
                     "Response type is not supported:{}".format(content_type)
                 )
                 return False
 
         return True
-
-    def get_response(self):
-        return self.response
 
     def is_valid(self):
         return False

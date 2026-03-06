@@ -38,18 +38,11 @@ class RequestsCrawler(CrawlerInterface):
         SSL verification makes everything to work slower.
         """
 
-        self.response = PageResponseObject(
-            self.request.url,
-            text=None,
-            status_code=HTTP_STATUS_CODE_SERVER_ERROR,
-            request_url=self.request.url,
-        )
-
         try:
             request_result = self.build_requests()
 
             if request_result is None:
-                self.response.add_error("Could not build response")
+                self.add_error("Could not build response")
                 return self.response
 
             self.response = PageResponseObject(
@@ -94,45 +87,16 @@ class RequestsCrawler(CrawlerInterface):
                 request_result.close()
 
         except requests.Timeout:
-            WebLogger.debug("Url:{} timeout".format(self.request.url))
-            self.response = PageResponseObject(
-                self.request.url,
-                text=None,
-                status_code=HTTP_STATUS_CODE_TIMEOUT,
-                request_url=self.request.url,
-            )
-            self.response.add_error("Url:{} Page timeout".format(self.request.url))
+            self.set_timeout_response()
 
         except WebToolsTimeoutException:
-            WebLogger.debug("Url:{} timeout".format(self.request.url))
-            self.response = PageResponseObject(
-                self.request.url,
-                text=None,
-                status_code=HTTP_STATUS_CODE_TIMEOUT,
-                request_url=self.request.url,
-            )
-            self.response.add_error("Url:{} Page timeout".format(self.request.url))
+            self.set_timeout_response()
 
         except requests.exceptions.ConnectionError:
-            WebLogger.debug("Url:{} connection error".format(self.request.url))
-            self.response = PageResponseObject(
-                self.request.url,
-                text=None,
-                status_code=HTTP_STATUS_CODE_CONNECTION_ERROR,
-                request_url=self.request.url,
-            )
-            self.response.add_error("Url:{} Connection error".format(self.request.url))
+            self.set_connection_error_response()
 
         except Exception as E:
-            WebLogger.exc(E, "Url:{} General exception".format(self.request.url))
-
-            self.response = PageResponseObject(
-                self.request.url,
-                text=None,
-                status_code=HTTP_STATUS_CODE_EXCEPTION,
-                request_url=self.request.url,
-            )
-            self.response.add_error("General page exception: {}".format(str(E)))
+            self.set_exception_response(E)
 
         try:
             if request_result:
