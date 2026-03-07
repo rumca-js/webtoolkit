@@ -23,7 +23,7 @@ class DefaultUrlHandler(HttpPageHandler):
         super().__init__(url=url, request=request, url_builder=url_builder)
         self.code = self.input2code(self.url)
 
-    def get_page_url(self, url, crawler_name=None):
+    def build_http_url(self, url, crawler_name=None):
         """
         Obtains a custom, another URL using a crawler
         Necessary for more advanced handlers that in order to provide necessary data
@@ -62,7 +62,6 @@ class DefaultUrlHandler(HttpPageHandler):
 
     def build_default_url(self, url, crawler_name=None):
         """
-        TODO reneme get_page_url to build_http_url
         """
         if not url:
             return
@@ -221,7 +220,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         if page_url in self.channel_sources_urls.values():
             return self.channel_sources_urls[page_url]
 
-        url = self.get_page_url(page_url)
+        url = self.build_http_url(page_url)
         if url:
             url.get_response()
 

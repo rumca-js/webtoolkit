@@ -93,7 +93,7 @@ class UrlLocation(object):
             # it is a bug to have https://something.html
             sp = domain_only.split(".")
             if len(sp) > 0:
-                if sp[-1] in ["htm", "html", "php", "js", "css"]:
+                if sp[-1] in ["htm", "html", "php", "js", "css", "zip"]:
                     return False
 
             # no funny chars

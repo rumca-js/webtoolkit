@@ -67,7 +67,7 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         url_link = self.get_json_url()
         if url_link:
-            url = self.get_page_url(url_link)
+            url = self.build_http_url(url_link)
             contents = url.get_contents()
             self.streams[url_link] = url.get_response()
             url.close()
@@ -244,7 +244,7 @@ class GitHubUrlHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            url = self.get_page_url(url_link)
+            url = self.build_http_url(url_link)
             contents = url.get_contents()
             self.streams[url_link] = url.get_response()
             url.close()
@@ -402,7 +402,7 @@ class HackerNewsHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            url = self.get_page_url(url_link)
+            url = self.build_http_url(url_link)
             contents = url.get_contents()
             self.streams[url_link] = url.get_response()
             url.close()

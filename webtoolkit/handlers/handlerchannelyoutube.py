@@ -1,4 +1,5 @@
 import traceback
+from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor
 
 from ..urllocation import UrlLocation
@@ -125,7 +126,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             return self.input2code_feeds(url)
 
     def input2code_handle(self, url):
-        page_handler = self.get_page_url(url)
+        page_handler = self.build_http_url(url)
         if not page_handler:
             return
 
@@ -166,8 +167,15 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
                 return url[start - 1 : wh2]
 
     def input2code_channel(self, url):
-        wh = url.rfind("/")
-        return url[wh + 1 :]
+        path = urlparse(url).path.strip("/")
+        parts = path.split("/")
+
+        if "channel" in parts:
+            idx = parts.index("channel")
+            if idx + 1 < len(parts):
+                return parts[idx + 1]
+
+        return None
 
     def input2code_feeds(self, url):
         wh = url.find("=")
@@ -200,7 +208,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             self.update_code()
             if self.code:
                 feed = self.code2feed(self.code)
-                url = self.get_page_url(feed)
+                url = self.build_http_url(feed)
                 self.channel_sources_urls[url.url] = url
                 responses.append(url.get_response())
 

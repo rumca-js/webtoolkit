@@ -128,7 +128,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         pass
 
     def get_social_data(self):
-        url = self.get_page_url(self.get_return_dislike_url_link())
+        url = self.build_http_url(self.get_return_dislike_url_link())
 
         response = url.get_response()
         if response.is_valid():
