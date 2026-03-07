@@ -101,6 +101,8 @@ class UrlLocation(object):
                 return False
             if domain_only.find("?") >= 0:
                 return False
+            if domain_only.find("_") >= 0:
+                return False
 
             parts = domain_only.split(".")
             if parts[0].strip() == "":
