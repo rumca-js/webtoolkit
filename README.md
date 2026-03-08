@@ -110,7 +110,7 @@ is_audio = UrlLocation(link).is_audio()
 is_video = UrlLocation(link).is_video()
 
 is_web_link = UrlLocation(link).is_web_link()          # https://example.com/file.js is a web link
-is_webpage_link = UrlLocation(link).is_webpage_link()  # https://example.com/file.js is not a webpage link
+is_webpage_link = UrlLocation(link).is_webpage_link()  # https://example.com/file.js is not a webpage link (it is a file, not a page)
 ```
 
 # Content processing
