@@ -177,13 +177,22 @@ PageResponseObject().get_page()   # can return HtmlPage, RssPage, etc.
 
 Response communication is done via JSON
 ```
-json_data = response_to_json(response)
-response = json_to_response(json_data)
+json_data = response_to_json(response)    # convert response to JSON
+response = json_to_response(json_data)    # convert JSON to response
+response_to_file(response, file_name)     # write response to file
+response = file_to_response(file_name)    # read response from file
 ```
 
 To obtain page contents object:
 ```
 page = PageResponseObject().get_page()   # returns type of page, be it HtmlPage, RssPage, etc.
+```
+Request handling is done simiarly
+```
+json_data = request_to_json(request)      # convert request to JSON
+response = json_to_request(json_data)     # convert JSON to response
+request_to_file(request, file_name)       # write request to file
+response = file_to_request(file_name)     # read request from file
 ```
 
 # Remote interfaces
