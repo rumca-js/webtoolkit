@@ -346,7 +346,7 @@ class RemoteServer(object):
         timeout_s = 60
         remote_server = self.remote_server
 
-        url = f"{remote_server}/findj"
+        link_call = f"{remote_server}/findj"
 
         params = {}
         if url:
@@ -358,7 +358,7 @@ class RemoteServer(object):
         if handler_name:
             params["handler_name"] = handler_name
 
-        with requests.get(url, params=params) as response:
+        with requests.get(link_call, params=params) as response:
             if response.status_code == 200:
                 try:
                     data = response.json()
