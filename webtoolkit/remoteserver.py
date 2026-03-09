@@ -14,6 +14,7 @@ from .request import (
 from .response import (
     PageResponseObject,
     json_to_response,
+    response_to_json,
 )
 
 
@@ -304,3 +305,63 @@ class RemoteServer(object):
             print("Url:{} Remote error. Type error response".format(link_call, text))
             print(str(E))
             return
+
+    def set(self, response, crawl_id=None, url=None, crawler_name=None, handler_name=None):
+        """
+        args - params
+        """
+        timeout_s = 60
+        remote_server = self.remote_server
+
+        response_json = response_to_json(response)
+
+        params = {}
+        if url:
+            params["url"] = url
+        if crawl_id:
+            params["crawl_id"] = crawl_id
+        if crawler_name:
+            params["crawler_name"] = crawler_name
+        if handler_name:
+            params["handler_name"] = handler_name
+
+        link_call = f"{remote_server}/set"
+        try:
+            r = requests.post(url=link_call,
+                          timeout=timeout_s,
+                          verify=False,
+                          json=response_json,
+                          params=params)
+            r.close()
+
+            if r.status_code == 200:
+                return True
+
+            #r.raise_for_status()
+
+        except requests.RequestException as E:
+            print(str(response_json))
+
+    def findj(self, crawl_id=None, url=None, crawler_name=None, handler_name=None):
+        timeout_s = 60
+        remote_server = self.remote_server
+
+        url = f"{remote_server}/findj"
+
+        params = {}
+        if url:
+            params["url"] = url
+        if crawl_id:
+            params["crawl_id"] = crawl_id
+        if crawler_name:
+            params["crawler_name"] = crawler_name
+        if handler_name:
+            params["handler_name"] = handler_name
+
+        with requests.get(url, params=params) as response:
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    return data
+                except Exception as E:
+                    print("Response content is not valid JSON. {}".format(E))
