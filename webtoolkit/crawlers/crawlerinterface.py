@@ -3,6 +3,7 @@ Crawler interface can be implemented to provide new mechanisms of crawling
 """
 
 import threading
+import traceback
 import ua_generator
 
 from webtoolkit import (
@@ -95,7 +96,7 @@ class CrawlerInterface(object):
         try:
             self.response = self.run_internal()
         except Exception as E:
-            self.add_error(str(E))
+            self.add_exc(E)
 
         return self.get_response()
 
@@ -108,9 +109,8 @@ class CrawlerInterface(object):
         self.add_error(f"Url:{self.request.url} Connection error")
 
     def set_exception_response(self, E):
-        str_e = str(E)
         self.response.status_code = HTTP_STATUS_CODE_EXCEPTION
-        self.add_error(f"Url:{self.request.url} Exception: {str_e}")
+        self.add_exc(E)
 
     def get_response(self):
         """
@@ -140,6 +140,21 @@ class CrawlerInterface(object):
 
     def add_error(self, error):
         self.errors.append(error)
+
+    def add_exc(self, exc):
+        if exc is None:
+            self.add_error("Attempt to add none as exception")
+            return
+
+        error_text = traceback.format_exc()
+
+        stack_lines = traceback.format_stack()
+        stack_string = "".join(stack_lines)
+
+        text = f"Url:{self.request.url} Exception:"
+        text += str(exc) + "\r\n" + error_text + "\r\n" + stack_string
+
+        self.errors.append(text)
 
     def is_response_valid(self):
         if not self.response:
