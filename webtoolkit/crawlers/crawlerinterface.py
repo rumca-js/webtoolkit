@@ -51,7 +51,7 @@ class CrawlerInterface(object):
     There are various tools.
     """
 
-    def __init__(self, url=None, request=None):
+    def __init__(self, url=None, request=None, verbose=False):
         """
         @param response_file If set, response is stored in a file
         @param settings passed settings
@@ -62,6 +62,7 @@ class CrawlerInterface(object):
         self.request = request
         self.response = None
         self.errors = []
+        self.verbose = verbose
 
     def update_request(self):
         """

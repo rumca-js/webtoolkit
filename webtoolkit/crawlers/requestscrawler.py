@@ -31,7 +31,8 @@ class RequestsCrawler(CrawlerInterface):
 
         import requests
 
-        WebLogger.debug("Requests Driver:{}".format(self.request.url))
+        if self.verbose:
+            WebLogger.debug("RequestsCrawler:{}".format(self.request.url))
 
         """
         stream argument allows us to read header before we fetch the page.
