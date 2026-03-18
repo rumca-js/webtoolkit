@@ -117,11 +117,13 @@ class CrawlerInterface(object):
         """
         Returns finished response
         """
-        if self.response:
+        if self.response is not None:
             self.response.request = self.request
+
             for error in self.errors:
-                if error not in self.response:
+                if error not in self.response.errors:
                     self.response.errors.append(error)
+
             return self.response
 
     def run_internal(self):
