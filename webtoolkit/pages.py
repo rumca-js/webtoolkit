@@ -270,8 +270,6 @@ class RssPageEntry(ContentInterface):
             else:
                 try:
                     dt = parser.parse(self.feed_entry.published)
-                    # TODO this might not be precise, but we do not have to be precise?
-
                     utc = DateUtils.to_utc_date(dt)
                     return utc
 
@@ -488,11 +486,6 @@ class RssPage(ContentInterface):
                         self.url, self.url, str(self.feed.feed.image)
                     )
                 )
-
-        # TODO that does not work
-        # if not image:
-        #    if self.url.find("https://www.youtube.com/feeds/videos.xml") >= 0:
-        #        image = self.get_thumbnail_manual_from_youtube()
 
         if image and image.lower().find("https://") == -1:
             image = UrlLocation.get_url_for_domain(self.url, image)
@@ -836,10 +829,6 @@ class HtmlPage(ContentInterface):
 
         if title:
             title = title.strip()
-
-            # TODO hardcoded. Some pages provide such a dumb title with redirect
-            if title.find("Just a moment") >= 0:
-                title = ""
 
         return title
         # title = html.unescape(title)
@@ -1290,6 +1279,7 @@ class HtmlPage(ContentInterface):
 class XmlPage(ContentInterface):
     """
     XML page
+    TODO is it implemented?
     """
 
     def __init__(self, url, contents):
@@ -1414,7 +1404,7 @@ class PageFactory(object):
         if p.is_valid():
             return p
 
-        # TODO
+        # TODO not really sure it is implemented
         # p = XmlPage(url, contents)
         # if p.is_valid():
         #    return p

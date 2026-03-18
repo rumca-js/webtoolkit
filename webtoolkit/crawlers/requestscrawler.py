@@ -62,8 +62,6 @@ class RequestsCrawler(CrawlerInterface):
                 request_result.close()
                 return self.response
 
-            # TODO do we want to check also content-type?
-
             content_type = self.response.get_content_type()
 
             if content_type and not self.response.is_content_type_text():
@@ -136,7 +134,6 @@ class RequestsCrawler(CrawlerInterface):
                     if p.get_charset():
                         return p.get_charset()
 
-            # TODO this might trigger download of a big file
             text = text.lower()
 
             if text.count("encoding") == 1 and text.find('encoding="utf-8"') >= 0:
@@ -227,5 +224,3 @@ class RequestsCrawler(CrawlerInterface):
 
     def update_request(self):
         self.request.timeout_s = self.get_timeout_s()
-        # TODO - headers are not set
-        # self.request.request_headers = self.get_request_headers()

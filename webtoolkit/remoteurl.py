@@ -179,7 +179,9 @@ class RemoteUrl(ContentInterface):
             return properties.get("album")
 
     def get_tags(self):
-        """Returns tags. TODO return value?"""
+        """
+        Returns tags (list), or None
+        """
         properties = self.get_properties()
         if properties:
             return properties.get("tags")

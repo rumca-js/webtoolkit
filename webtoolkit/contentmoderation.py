@@ -70,7 +70,8 @@ class UrlPropertyValidator(UrlContentsModerator):
 
     def is_blocked_keywords(self):
         """
-        TODO This should be configurable - move to configuration
+        This is part of predefined settings.
+        Should be updated.
         """
         title = self.get_title()
         title = title.lower()
@@ -150,7 +151,8 @@ class UrlPropertyValidator(UrlContentsModerator):
 
     def is_casino_blocked(self):
         """
-        TODO This should be configurable - move to configuration
+        This is part of predefined settings.
+        Should be updated.
         """
         title = self.get_title()
         title = title.lower()

@@ -262,7 +262,10 @@ class BaseUrl(ContentInterface):
         pass
 
     def ping(self, timeout_s=20, user_agent=None):
-        # TODO if that fails we would have to find suitable agent, and then ping
+        """
+        Pings, checks if url exists, returns valid status code, etc.
+        Can be overriden.
+        """
         return RequestsCrawler(self.request.url).ping()
 
     def get_handler_implementation(self):
@@ -531,7 +534,6 @@ class BaseUrl(ContentInterface):
         streams = self.get_streams()
         all_properties.append({"name": "Streams", "data": streams})
 
-        # TODO request is part of response now. Should we include it?
         request_data = request_to_json(self.request)
         request_data["crawler_type"] = type(request_data["crawler_type"]).__name__
         all_properties.append({"name": "Request", "data": request_data})
@@ -555,8 +557,9 @@ class BaseUrl(ContentInterface):
         return all_properties
 
     def get_properties_data(self):
-        """Returns simple meta properties.
-        TODO there should two functions: get_all_properties and get_properties"""
+        """
+        Returns simple meta properties.
+        """
         properties = super().get_properties()
         page_handler = self.get_handler()
 

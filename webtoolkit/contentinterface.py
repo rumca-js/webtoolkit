@@ -233,8 +233,7 @@ class ContentInterface(object):
         try:
             current_year = int(datetime.now().year)
         except ValueError:
-            # TODO fix this
-            current_year = 2024
+            return
 
         # Define regular expressions
         current_year_pattern = re.compile(rf"\b{current_year}\b")
@@ -250,8 +249,7 @@ class ContentInterface(object):
             try:
                 year = int(current_year)
             except ValueError:
-                # TODO fix this
-                year = 2024
+                return
 
             # Limit the scope to a specific portion before and after year
             scope = content[

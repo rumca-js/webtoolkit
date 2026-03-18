@@ -36,7 +36,17 @@ class ContentLinkParser(ContentInterface):
         links.update(self.get_links_https_encoded("http"))
         links.update(self.get_links_href())
 
-        # TODO - maybe this thing below could be made more clean, or refactored
+        links = ContentLinkParser.filter_suspicious_links(links)
+        links = ContentLinkParser.filter_invalid_links(links)
+
+        result = set()
+        for link in links:
+            if UrlLocation(link).is_web_link():
+                result.add(link)
+
+        return links
+
+    def filter_suspicious_links(links):
         result = set()
         for item in links:
             wh = item.find('"')
@@ -59,10 +69,9 @@ class ContentLinkParser(ContentInterface):
                 item = item[:wh]
 
             result.add(item.strip())
+        return result
 
-        links = result
-
-        # This is most probably redundant
+    def filter_invalid_links(links):
         if None in links:
             links.remove(None)
         if "" in links:
@@ -75,11 +84,6 @@ class ContentLinkParser(ContentInterface):
             links.remove("http://")
         if "https://" in links:
             links.remove("https://")
-
-        result = set()
-        for link in links:
-            if UrlLocation(link).is_web_link():
-                result.add(link)
 
         return links
 
@@ -269,20 +273,7 @@ class ContentLinkParser(ContentInterface):
     def get_domains(self):
         links = self.get_links()
         links = ContentLinkParser.filter_domains(links)
-
-        # TODO This is most probably redundant
-        if None in links:
-            links.remove(None)
-        if "" in links:
-            links.remove("")
-        if "http" in links:
-            links.remove("http")
-        if "https" in links:
-            links.remove("https")
-        if "http://" in links:
-            links.remove("http://")
-        if "https://" in links:
-            links.remove("https://")
+        links = ContentLinkParser.filter_invalid_links(links)
 
         return links
 

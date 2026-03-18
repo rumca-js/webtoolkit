@@ -127,18 +127,8 @@ class RemoteServer(object):
 
     def perform_remote_call_with_retry(self, link_call, request):
         """
-        TODO This could be dangerous.
-
-        start_time = time.time()
-        while True:
-            json_obj = self.perform_remote_call(self, link_call, request)
-            if json_obj:
-                response = self.read_properties_section("Response", all_properties)
-                if response and response["status_code"] == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
-                    continue
-
-            if time.time() - start_time > 200:
-                return json_obj
+        This function may make the call several times (in case server is busy).
+        This could be dangerous, so not doing it right now
         """
 
         return self.perform_remote_call(link_call, request)
@@ -220,28 +210,6 @@ class RemoteServer(object):
         for properties in all_properties:
             if section_name == properties["name"]:
                 return properties["data"]
-
-    def unpack_data(self, input_data):
-        """
-        TODO remove?
-        """
-        json_data = {}
-
-        data = json.loads(input_data)
-
-        response = RemoteServer.read_properties_section("Response", data)
-        contents_data = RemoteServer.read_properties_section("Contents", data)
-
-        if response:
-            json_data["status_code"] = response["status_code"]
-        if contents_data:
-            json_data["contents"] = contents_data["Contents"]
-        if response:
-            json_data["Content-Length"] = response["Content-Length"]
-        if response:
-            json_data["Content-Type"] = response["Content-Type"]
-
-        return json_data
 
     def get_responses(all_properties):
         if not all_properties:

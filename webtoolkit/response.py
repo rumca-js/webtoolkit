@@ -196,8 +196,6 @@ class PageResponseObject(object):
     ):
         """
         @param contents Text
-
-        TODO this should be cleaned up. We should pass binary, and encoding
         """
         self.errors = []
         self.url = url
@@ -389,7 +387,6 @@ class PageResponseObject(object):
         ) or self.status_code == 403
 
     def is_valid(self):
-        # TODO this needs to check if it is 200 and 400
         if self.is_this_status_ok():
             return True
 
