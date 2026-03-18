@@ -169,3 +169,18 @@ def is_status_code_uncertain(status_code) -> bool:
         return True
 
     return False
+
+
+def is_status_code_retry_suggested(status_code) -> bool:
+    """
+    Returns indication if we are not sure at what state the page is.
+
+    Further communication is possible, maybe with different crawler, or in another time.
+    """
+    if status_code == HTTP_STATUS_TOO_MANY_REQUESTS:
+        return True
+
+    if status_code == HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS:
+        return True
+
+    return False
