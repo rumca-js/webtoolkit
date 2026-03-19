@@ -38,6 +38,7 @@ URL_TYPE_CSS = "css"
 URL_TYPE_JAVASCRIPT = "javascript"
 URL_TYPE_HTML = "html"
 URL_TYPE_FONT = "font"
+URL_TYPE_FILE = "file"
 URL_TYPE_UNKNOWN = "unknown"
 
 

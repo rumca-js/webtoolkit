@@ -1,6 +1,8 @@
 from datetime import datetime
 import gc
 
+from webtoolkit.webtools import *
+
 from webtoolkit import UrlLocation
 from webtoolkit.utils.memorychecker import MemoryChecker
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
@@ -521,6 +523,10 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertFalse(p.is_web_link())
 
+        p = UrlLocation("https://something")
+        # call tested function
+        self.assertFalse(p.is_web_link())
+
     def test_get_protocolless(self):
         p = UrlLocation("https://www.youtube.com:443")
         # call tested function
@@ -848,3 +854,190 @@ class UrlLocationTest(FakeInternetTestCase):
         test_link = None
         location = UrlLocation(test_link)
         self.assertEqual(str(location), "")
+
+    def test_guess_type__domain(self):
+        """
+        TODO - problem?
+        """
+        test_link = "http://mytestpage.com"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__link(self):
+        test_link = "http://mytestpage.com/location"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__html(self):
+        test_link = "http://mytestpage.com/test/test2.html"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "text/html")
+
+    def test_guess_type__ordinary_xml(self):
+        test_link = "http://mytestpage.com/file.xml"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "application/xml")
+
+    def test_guess_type__rss_xml(self):
+        test_link = "http://mytestpage.com/rss.xml"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "application/xml")
+
+    def test_guess_type__feeds(self):
+        test_link = "http://mytestpage.com/feeds"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__js(self):
+        test_link = "http://mytestpage.com/script.js"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "text/javascript")
+
+    def test_guess_type__css(self):
+        test_link = "http://mytestpage.com/script.css"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "text/css")
+
+    def test_guess_type__php(self):
+        test_link = "http://mytestpage.com/script.php"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__aspx(self):
+        test_link = "http://mytestpage.com/script.aspx"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__tff(self):
+        """
+        """
+        test_link = "http://mytestpage.com/script.tff"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__mp3(self):
+        test_link = "http://mytestpage.com/file.mp3"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "audio/mpeg")
+
+    def test_guess_type__mp4(self):
+        test_link = "http://mytestpage.com/file.mp4"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "video/mp4")
+
+    def test_guess_type__avi(self):
+        test_link = "http://mytestpage.com/file.avi"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "video/x-msvideo")
+
+    def test_guess_type__mobi(self):
+        """
+        """
+        test_link = "http://mytestpage.com/file.mobi"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "")
+
+    def test_guess_type__zip(self):
+        test_link = "http://mytestpage.com/file.zip"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "application/zip")
+
+    def test_guess_type__iso(self):
+        test_link = "http://mytestpage.com/file.iso"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "application/x-iso9660-image")
+
+    def test_guess_type__md(self):
+        test_link = "http://mytestpage.com/file.md"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.guess_type(), "text/markdown")
+
+    def test_get_type__domain(self):
+        test_link = "http://mytestpage.com"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__link(self):
+        test_link = "http://mytestpage.com/location"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__html(self):
+        test_link = "http://mytestpage.com/test/test2.html"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__ordinary_xml(self):
+        test_link = "http://mytestpage.com/file.xml"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_UNKNOWN)
+
+    def test_get_type__rss_xml(self):
+        test_link = "http://mytestpage.com/rss.xml"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_UNKNOWN)
+
+    def test_get_type__feeds(self):
+        test_link = "http://mytestpage.com/feeds"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__js(self):
+        test_link = "http://mytestpage.com/script.js"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_JAVASCRIPT)
+
+    def test_get_type__css(self):
+        test_link = "http://mytestpage.com/script.css"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_CSS)
+
+    def test_get_type__php(self):
+        test_link = "http://mytestpage.com/script.php"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__aspx(self):
+        test_link = "http://mytestpage.com/script.aspx"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_HTML)
+
+    def test_get_type__tff(self):
+        test_link = "http://mytestpage.com/script.tff"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FONT)
+
+    def test_get_type__mp3(self):
+        test_link = "http://mytestpage.com/file.mp3"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__mp4(self):
+        test_link = "http://mytestpage.com/file.mp4"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__avi(self):
+        test_link = "http://mytestpage.com/file.avi"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__mobi(self):
+        test_link = "http://mytestpage.com/file.mobi"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__zip(self):
+        test_link = "http://mytestpage.com/file.zip"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__iso(self):
+        test_link = "http://mytestpage.com/file.iso"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_FILE)
+
+    def test_get_type__md(self):
+        test_link = "http://mytestpage.com/file.md"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_type(), URL_TYPE_UNKNOWN)

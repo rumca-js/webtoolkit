@@ -14,6 +14,7 @@ from .webtools import (
     URL_TYPE_JAVASCRIPT,
     URL_TYPE_HTML,
     URL_TYPE_FONT,
+    URL_TYPE_FILE,
     URL_TYPE_UNKNOWN,
 )
 
@@ -90,6 +91,9 @@ class UrlLocation(object):
             if not domain_only:
                 return False
 
+            if domain_only.find(".") == -1:
+                return False
+
             # it is a bug to have https://something.html
             sp = domain_only.split(".")
             if len(sp) > 0:
@@ -129,23 +133,10 @@ class UrlLocation(object):
         if self.is_domain():
             return True
 
-        ext = self.get_page_ext()
-        if not ext:
+        if self.get_type() == URL_TYPE_HTML:
             return True
 
-        if self.is_media():
-            return False
-        if self.is_binary():
-            return False
-
-        if self.is_onion():
-            # since it is hard to tell if not, assume it is a web link
-            return True
-
-        if ext in ["css", "js", "woff2", "tff"]:
-            return False
-
-        return True
+        return False
 
     def is_protocolled_link(self):
         """
@@ -262,6 +253,13 @@ class UrlLocation(object):
         return self.is_image() or self.is_audio() or self.is_video()
 
     def guess_type(self):
+        """
+        @note Always return string
+        @returns mime type.
+        """
+        if self.is_domain():
+            return ""
+
         mime_type, encoding = mimetypes.guess_type(self.url)
         if mime_type is None:
             return ""
@@ -687,17 +685,6 @@ class UrlLocation(object):
                 ready_url = domain + url
         return ready_url
 
-    def get_type_for_link(self):
-        the_type = self.get_type_by_ext()
-        if the_type:
-            return the_type
-
-        ext = self.get_page_ext()
-        if not ext:
-            return URL_TYPE_HTML
-
-        return URL_TYPE_UNKNOWN
-
     def is_html(self):
         return self.get_type() == URL_TYPE_HTML
 
@@ -705,19 +692,43 @@ class UrlLocation(object):
         return self.get_type() == URL_TYPE_RSS
 
     def get_type(self):
-        the_type = self.get_type_by_ext()
-        if the_type:
-            return the_type
+        """
+        if it is domain -> HTML
+        if there is no extension -> HTML
+        use extension to decide -> return
+        """
+        if self.is_domain():
+            return URL_TYPE_HTML
+
+        if self.is_onion():
+            return URL_TYPE_HTML
 
         ext = self.get_page_ext()
         if not ext:
             return URL_TYPE_HTML
 
-        return ext
+        type_by_ext = self.get_type_by_ext()
+        if type_by_ext:
+            return type_by_ext
+
+        guessed_type = self.guess_type()
+        if guessed_type.find("html") >= 0:
+            return URL_TYPE_HTML
+
+        if self.is_image():
+            return URL_TYPE_FILE
+        if self.is_audio():
+            return URL_TYPE_FILE
+        if self.is_video():
+            return URL_TYPE_FILE
+        if self.is_binary():
+            return URL_TYPE_FILE
+
+        return URL_TYPE_UNKNOWN
 
     def get_type_by_ext(self):
         """
-        TODO - crude, hardcoded
+        Return type by extension, or None
         """
         if self.is_analytics():
             return
@@ -731,14 +742,14 @@ class UrlLocation(object):
             "aspx": URL_TYPE_HTML,
             "woff2": URL_TYPE_FONT,
             "tff": URL_TYPE_FONT,
+            "mobi": URL_TYPE_FILE,
+            "zip": URL_TYPE_FILE,
         }
 
         ext = self.get_page_ext()
         if ext:
             if ext in ext_mapping:
                 return ext_mapping[ext]
-
-        # if not found, we return none
 
     def get_robots_txt_url(self):
         if self.is_onion():
