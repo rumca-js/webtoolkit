@@ -380,21 +380,6 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_all_properties__serializable(self):
-        MockRequestCounter.mock_page_requests = 0
-
-        test_link = "https://page-with-two-links.com"
-
-        url = MockUrl(request=self.get_request(test_link))
-
-        url.get_response()
-
-        # call tested function
-        all_properties = url.get_all_properties()
-        properties_string = json.dumps(all_properties)
-
-        self.assertTrue(properties_string)
-
     def test_get_all_properties__rss__advanced(self):
         self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
@@ -612,6 +597,38 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(response_section["Content-Type"], "video/mp4")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
+    def test_get_all_properties__html__serializable(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://page-with-two-links.com"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        url.get_response()
+
+        # call tested function
+        all_properties = url.get_all_properties()
+        properties_string = json.dumps(all_properties)
+
+        self.assertTrue(properties_string)
+
+    def test_get_all_properties__youtube_channel__serializable(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        url.get_response()
+
+        # call tested function
+        all_properties = url.get_all_properties()
+        properties_string = json.dumps(all_properties)
+
+        self.assertTrue(properties_string)
 
     def test_get_contents__pass(self):
         test_link = "https://multiple-favicons.com/page.html"
