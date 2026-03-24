@@ -5,6 +5,7 @@ This test uses MockUrl to test BaseUrl, because some of BaseUrl functions need t
 """
 
 import gc
+import json
 from webtoolkit import (
     HttpPageHandler,
     HtmlPage,
@@ -355,7 +356,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__html__advanced(self):
+    def test_get_all_properties__html__advanced(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://page-with-two-links.com"
@@ -379,7 +380,22 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__rss__advanced(self):
+    def test_get_all_properties__serializable(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://page-with-two-links.com"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        url.get_response()
+
+        # call tested function
+        all_properties = url.get_all_properties()
+        properties_string = json.dumps(all_properties)
+
+        self.assertTrue(properties_string)
+
+    def test_get_all_properties__rss__advanced(self):
         self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
@@ -409,7 +425,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__youtube_channel__advanced(self):
+    def test_get_all_properties__youtube_channel__advanced(self):
         self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
@@ -441,7 +457,7 @@ class BaseUrlTest(FakeInternetTestCase):
         # +1 HTML +1 RSS
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
-    def test_get_properties__odysee_channel__advanced(self):
+    def test_get_all_properties__odysee_channel__advanced(self):
         self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
@@ -472,7 +488,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
-    def test_get_properties__youtube_video__advanced(self):
+    def test_get_all_properties__youtube_video__advanced(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/watch?v=1234"
@@ -499,7 +515,7 @@ class BaseUrlTest(FakeInternetTestCase):
         # +1 for yt dlp +1 for return dislike
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__image_advanced(self):
+    def test_get_all_properties__image_advanced(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://binary.jpg.com"
@@ -532,7 +548,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__audio_advanced(self):
+    def test_get_all_properties__audio_advanced(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://audio.jpg.com"
@@ -565,7 +581,7 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_properties__video_advanced(self):
+    def test_get_all_properties__video_advanced(self):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://video.jpg.com"

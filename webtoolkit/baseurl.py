@@ -511,6 +511,9 @@ class BaseUrl(ContentInterface):
 
         all_properties = []
 
+        if "date_published" in properties_data:
+            # TODO if not string isoformat
+            properties_data["date_published"] = str(properties_data["date_published"])
         all_properties.append({"name": "Properties", "data": properties_data})
 
         properties_hash = self.property_encode(calculate_hash(str(properties_data)))
