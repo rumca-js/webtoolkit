@@ -511,6 +511,9 @@ class BaseUrl(ContentInterface):
 
         all_properties = []
 
+        if "date_published" in properties_data and properties_data["date_published"]:
+            # TODO if not string isoformat
+            properties_data["date_published"] = str(properties_data["date_published"])
         all_properties.append({"name": "Properties", "data": properties_data})
 
         properties_hash = self.property_encode(calculate_hash(str(properties_data)))
@@ -646,6 +649,9 @@ class BaseUrl(ContentInterface):
             for entry in entries:
                 if "feed_entry" in entry:
                     del entry["feed_entry"]
+                # TODO if not string isoformat
+                if "date_published" in entry and entry["date_published"]:
+                    entry["date_published"] = str(entry["date_published"])
                 result.append(entry)
 
         return result
