@@ -183,11 +183,11 @@ def request_to_json(request):
     if request.crawler_name:
         json["crawler_name"] = request.crawler_name
     if request.crawler_type:
-        json["crawler_type"] = str(request.crawler_type)
+        json["crawler_type"] = None  # we cannot pass object
     if request.handler_name:
         json["handler_name"] = request.handler_name
     if request.handler_type:
-        json["handler_type"] = str(request.handler_type)
+        json["handler_type"] = None  # we cannot pass object
 
     return json
 
