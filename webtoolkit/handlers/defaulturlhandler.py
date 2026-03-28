@@ -143,9 +143,30 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
             return self.get_response().get_text()
 
     def get_response(self):
+        """
+        There can be many responses.
+        If at least one is invalid - return it
+
+        If responses are valid return best match
+        """
+        valid_responses = []
+        invalid_responses = []
+
         responses = self.get_responses()
-        if responses and len(responses) > 0:
-            return responses[0]
+        for response in responses:
+            if response.is_valid():
+                valid_responses.append(response)
+            else:
+                invalid_responses.append(response)
+
+        if len(invalid_responses) > 0:
+            return invalid_responses[0]
+
+        for response in responses:
+            if response.url == self.url:
+                return response
+
+        return responses[0]
 
     def get_responses(self):
         if self.responses and len(self.responses) > 0:

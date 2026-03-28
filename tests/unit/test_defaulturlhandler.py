@@ -114,3 +114,60 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         self.assertNotIn("CONSENT", url.request.cookies)
 
         self.assertEqual(handler.url, test_url)
+
+    def test_get_response__html(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_url = "https://google.com"
+
+        request = PageRequestObject(test_url)
+        request.crawler_name = "test1"
+        request.crawler_type = None
+        request.handler_name = "test2"
+        request.handler_type = None
+        request.cookies = {"CONSENT" : "test-YES"}
+
+        handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
+
+        # call tested function
+        response = handler.get_response()
+
+        self.assertTrue(response)
+
+    def test_get_response__youtube__video(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_url = "https://www.youtube.com/watch?v=1234"
+
+        request = PageRequestObject(test_url)
+        request.crawler_name = "test1"
+        request.crawler_type = None
+        request.handler_name = "test2"
+        request.handler_type = None
+        request.cookies = {"CONSENT" : "test-YES"}
+
+        handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
+
+        # call tested function
+        response = handler.get_response()
+
+        self.assertTrue(response)
+
+    def test_get_response__youtube__channel(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        request = PageRequestObject(test_url)
+        request.crawler_name = "test1"
+        request.crawler_type = None
+        request.handler_name = "test2"
+        request.handler_type = None
+        request.cookies = {"CONSENT" : "test-YES"}
+
+        handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
+
+        # call tested function
+        response = handler.get_response()
+
+        self.assertTrue(response)
