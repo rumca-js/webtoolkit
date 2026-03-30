@@ -42,7 +42,11 @@ class RemoteUrl(ContentInterface):
         :param all_properties: A dictionary of pre-fetched properties for the URL.
         :param social_properties: A dictionary of pre-fetched social media properties.
         """
+        if request is not None and url is None:
+            url = request.url
+
         super().__init__(url=url, contents=None)
+
         self.request = request
         self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server=self.remote_server_location)
@@ -52,6 +56,9 @@ class RemoteUrl(ContentInterface):
         self.responses = None
         if self.all_properties:
             self.get_responses()
+
+    def get_url(self):
+        return self.url
 
     def get_remote_server_location():
         return RemoteServer.get_remote_server_location()

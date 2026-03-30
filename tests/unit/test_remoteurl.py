@@ -2,7 +2,7 @@ from datetime import datetime
 
 from webtoolkit.utils.memorychecker import MemoryChecker
 
-from webtoolkit import UrlLocation, RemoteUrl
+from webtoolkit import UrlLocation, RemoteUrl, PageRequestObject
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
 
@@ -108,6 +108,19 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertTrue(entries)
         self.assertEqual(len(entries), 3)
         self.assertNotEqual(entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT")
+
+    def test_get_url__url(self):
+        test_link = "http://google.com"
+        u = RemoteUrl(url=test_link)
+
+        self.assertEqual(u.get_url(), test_link)
+
+    def test_get_url__request(self):
+        test_link = "http://google.com"
+        request = PageRequestObject(test_link)
+        u = RemoteUrl(request=request)
+
+        self.assertEqual(u.get_url(), test_link)
 
     def test_get_response(self):
         u = RemoteUrl("https://linkedin.com")
