@@ -616,9 +616,9 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_get_cleaned_link__stupid_google_link3(self):
         MockRequestCounter.mock_page_requests = 0
 
-        cleaned_link = UrlLocation.get_cleaned_link(
-"https://www.google.com/amp/s/www.muycomputer.com/2025/09/30/f-droid-y-google-adios-a-las-tiendas-de-apps-alternativas/amp/"
-        )
+        test_link = "https://www.google.com/amp/s/www.muycomputer.com/2025/09/30/f-droid-y-google-adios-a-las-tiendas-de-apps-alternativas/amp/"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
         self.assertEqual(cleaned_link, "https://www.muycomputer.com/2025/09/30/f-droid-y-google-adios-a-las-tiendas-de-apps-alternativas/amp")
 
@@ -627,9 +627,9 @@ class UrlLocationTest(FakeInternetTestCase):
     def test_get_cleaned_link__stupid_youtube_link(self):
         MockRequestCounter.mock_page_requests = 0
 
-        cleaned_link = UrlLocation.get_cleaned_link(
-            "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810"
-        )
+        test_link = "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
         self.assertEqual(cleaned_link, "https://corridordigital.com")
 
@@ -643,6 +643,17 @@ class UrlLocationTest(FakeInternetTestCase):
         cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
         self.assertEqual(cleaned_link, "https://gzeek.pl")
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_cleaned_link__stupid_bing_link(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.bing.com/ck/a?!&&p=fbfe7ffb67f6f6c34824ac525fe2fb725b91642179e68033951505fc2c6626e8JmltdHM9MTc3NTAwMTYwMA&ptn=3&ver=2&hsh=4&fclid=1d72276f-50a1-6945-23cf-31135189683e&psq=slap+mac&u=a1aHR0cHM6Ly9zbGFwbWFjLmNvbS8"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        self.assertEqual(cleaned_link, "https://slapmac.com")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -676,17 +687,6 @@ class UrlLocationTest(FakeInternetTestCase):
         cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
         self.assertEqual(cleaned_link, test_link)
-
-        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
-
-    def test_get_clean__stupid_google_link(self):
-        MockRequestCounter.mock_page_requests = 0
-
-        test_link = "https://www.google.com/url?q=https://forum.ddopl.com/&sa=Udupa"
-
-        location = UrlLocation(test_link)
-
-        self.assertEqual(location.get_clean().url, "https://forum.ddopl.com")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 

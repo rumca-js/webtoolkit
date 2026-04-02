@@ -3,6 +3,7 @@ Internet location parsing and processing.
 """
 
 from urllib.parse import unquote, urlparse, parse_qs
+import base64
 import mimetypes
 import ipaddress
 
@@ -538,6 +539,7 @@ class UrlLocation(object):
         url = UrlLocation.get_google_redirect_fix2(url)
         url = UrlLocation.get_youtube_redirect_fix(url)
         url = UrlLocation.get_linkedin_redirect_fix(url)
+        url = UrlLocation.get_bing_redirect_fix(url)
         url = UrlLocation.get_trackless_url(url)
 
         return url.url
@@ -612,6 +614,30 @@ class UrlLocation(object):
                 return param_value
 
         return url
+
+    def get_bing_redirect_fix(bing_url):
+        try:
+            parsed = urlparse(bing_url)
+            params = parse_qs(parsed.query)
+
+            encoded = params.get("u", [None])[0]
+            if not encoded:
+                return bing_url
+
+            # Remove prefix like 'a1'
+            if encoded.startswith("a1"):
+                encoded = encoded[2:]
+
+            # handle missing padding
+            padding = '=' * (-len(encoded) % 4)
+            decoded_bytes = base64.b64decode(encoded + padding)
+
+            url = decoded_bytes.decode("utf-8", errors="ignore")
+            url = UrlLocation.get_cleaned_link(url)
+            return url
+
+        except Exception:
+            return bing_url
 
     def get_url_arg(self):
         url = self.url

@@ -8,6 +8,7 @@ This module provides replacement for the Internet.
 import logging
 import unittest
 import traceback
+import os
 
 from webtoolkit.utils.dateutils import DateUtils
 from webtoolkit import (
@@ -142,6 +143,10 @@ class FakeInternetTestCase(unittest.TestCase):
     def no_errors(self):
         infos = AppLogging.objects.filter(level=int(logging.ERROR))
         return infos.count() == 0
+
+    def is_memory_test(self):
+        test_memory = os.getenv("TEST_MEMORY")
+        return test_memory
 
     def create_example_data(self):
         self.create_example_sources()
