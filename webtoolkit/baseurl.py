@@ -32,7 +32,7 @@ from .urllocation import (
 )
 
 from .statuses import status_code_to_text
-from .response import response_to_json
+from .response import response_to_json, PageResponseObject
 from .request import request_to_json, PageRequestObject
 from .handlers import (
     HandlerInterface,
@@ -234,6 +234,11 @@ class BaseUrl(ContentInterface):
 
             return self.response
 
+        location = UrlLocation(self.request.url)
+        if location.is_onion():
+            self.response = PageResponseObject(url=self.request.url, status_code=0)
+            return self.response
+
     def get_streams(self):
         """
         Returns all responses
@@ -275,6 +280,12 @@ class BaseUrl(ContentInterface):
             return
 
         p = UrlLocation(url)
+        if p.is_onion():
+            """
+            Currently there is no handler to support onions
+            """
+            return
+
         short_url = p.get_protocolless()
 
         if not short_url:

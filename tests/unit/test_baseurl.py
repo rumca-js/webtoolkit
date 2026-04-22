@@ -17,6 +17,7 @@ from webtoolkit import (
     YouTubeVideoHandler,
     BaseUrl,
     RemoteServer,
+    RemoteUrl,
 )
 from webtoolkit.utils.memorychecker import MemoryChecker
 
@@ -242,6 +243,14 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_handler__onion(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "http://duckduckduckduck.onion"
+        url = MockUrl(request=self.get_request(test_link))
+
+        self.assertTrue(url.get_handler() is None)
+
     def test_get_type__html_page(self):
         MockRequestCounter.mock_page_requests = 0
 
@@ -379,7 +388,11 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
 
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
 
     def test_get_all_properties__rss__advanced(self):
         self.ignore_memory = True
@@ -408,6 +421,9 @@ class BaseUrlTest(FakeInternetTestCase):
         entries_section = RemoteServer.read_properties_section("Entries", all_properties)
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -439,6 +455,9 @@ class BaseUrlTest(FakeInternetTestCase):
         entries_section = RemoteServer.read_properties_section("Entries", all_properties)
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
 
         # +1 HTML +1 RSS
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
@@ -472,6 +491,9 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertTrue(entries_section)
         self.assertTrue(len(entries_section) > 0)
 
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
     def test_get_all_properties__youtube_video__advanced(self):
@@ -497,6 +519,9 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(properties_section["link"], test_link)
         self.assertEqual(properties_section["link_request"], test_link)
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
 
         # +1 for yt dlp +1 for return dislike
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
@@ -532,6 +557,9 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(response_section["Content-Type"], "image/jpg")
 
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertFalse(remote_url.get_title())
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_all_properties__audio_advanced(self):
@@ -565,6 +593,9 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(response_section["Content-Type"], "audio/midi")
 
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertFalse(remote_url.get_title())
+
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
     def test_get_all_properties__video_advanced(self):
@@ -596,6 +627,9 @@ class BaseUrlTest(FakeInternetTestCase):
         response_section = RemoteServer.read_properties_section("Response", all_properties)
 
         self.assertEqual(response_section["Content-Type"], "video/mp4")
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertFalse(remote_url.get_title())
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -630,6 +664,34 @@ class BaseUrlTest(FakeInternetTestCase):
         properties_string = json.dumps(all_properties)
 
         self.assertTrue(properties_string)
+
+    def test_get_all_properties__onion(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "http://page-with-two-links.onion"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        url.get_response()
+
+        # call tested function
+        all_properties = url.get_all_properties()
+        self.assertTrue(len(all_properties) > 0)
+
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
+        self.assertTrue(properties_section)
+
+        self.assertEqual(properties_section["link"], test_link)
+        self.assertEqual(properties_section["link_request"], test_link)
+
+        response_section = RemoteServer.read_properties_section("Response", all_properties)
+        self.assertTrue(response_section)
+        self.assertEqual(response_section["status_code"], 0)
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertFalse(remote_url.get_title())
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_contents__pass(self):
         test_link = "https://multiple-favicons.com/page.html"

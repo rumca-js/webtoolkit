@@ -706,7 +706,14 @@ class UrlLocationTest(FakeInternetTestCase):
 
         test_link = "http://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
         url = UrlLocation(test_link)
+        self.assertTrue(url.is_onion())
 
+        test_link = "https://dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+        url = UrlLocation(test_link)
+        self.assertTrue(url.is_onion())
+
+        test_link = "https://www.dreadytofatroptsdj6io7l3xptbet6onoyno2yv7jicoxknyazubrad.onion"
+        url = UrlLocation(test_link)
         self.assertTrue(url.is_onion())
 
         # False cases
