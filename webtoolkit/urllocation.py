@@ -493,9 +493,13 @@ class UrlLocation(object):
         url = self.url
         if url.find("?") >= 0:
             wh = url.find("?")
-            return UrlLocation(url[:wh])
-        else:
-            return UrlLocation(url)
+            url = url[:wh]
+
+        if url.find("#") >= 0:
+            wh = url.find("#")
+            url = url[:wh]
+
+        return UrlLocation(url)
 
     def get_clean(self):
         """

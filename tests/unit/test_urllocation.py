@@ -1048,3 +1048,28 @@ class UrlLocationTest(FakeInternetTestCase):
         test_link = "http://mytestpage.com/file.md"
         location = UrlLocation(test_link)
         self.assertEqual(location.get_type(), URL_TYPE_UNKNOWN)
+
+    def test_get_no_arg_link(self):
+        test_link = "http://mytestpage.com/file.md"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com/file.md")
+
+        test_link = "http://mytestpage.com/file.md?argument=test"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com/file.md")
+
+        test_link = "http://mytestpage.com/file.md#section"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com/file.md")
+
+        test_link = "http://mytestpage.com"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com")
+
+        test_link = "http://mytestpage.com?test=something"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com")
+
+        test_link = "http://mytestpage.com#test=something"
+        location = UrlLocation(test_link)
+        self.assertEqual(location.get_no_arg_link().url, "http://mytestpage.com")
