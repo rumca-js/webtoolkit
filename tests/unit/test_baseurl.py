@@ -217,6 +217,21 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
+    def test_get_handler__youtube_channel_no_www(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        # call tested function
+        url = MockUrl(request=self.get_request(test_link))
+
+        handler = url.get_handler()
+
+        self.assertEqual(type(handler), YouTubeChannelHandler)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
     def test_get_handler__youtube_video(self):
         MockRequestCounter.mock_page_requests = 0
 
@@ -799,6 +814,18 @@ class BaseUrlTest(FakeInternetTestCase):
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+        test_link_result = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        url = MockUrl(request=self.get_request(test_link))
+
+        feeds = url.get_feeds()
+        self.assertIn(test_link_result, feeds)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_feeds__youtube_channel_no_www(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
         test_link_result = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
         url = MockUrl(request=self.get_request(test_link))
 
