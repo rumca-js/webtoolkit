@@ -251,7 +251,7 @@ class RemoteUrl(ContentInterface):
 
     def get_hash(self):
         """
-        Retrieves the hash of the response.
+        Retrieves the binary hash of the response.
         :return: The hash of the response, or None if not available.
         """
         response = self.get_response()
@@ -260,7 +260,7 @@ class RemoteUrl(ContentInterface):
 
     def get_body_hash(self):
         """
-        Retrieves the body hash of the response.
+        Retrieves the binary body hash of the response.
         :return: The body hash, or None if not available.
         """
         response = self.get_response()
@@ -269,8 +269,7 @@ class RemoteUrl(ContentInterface):
 
     def get_meta_hash(self):
         """
-        Retrieves the meta hash from the URL's properties.
-        :return: The decoded meta hash, or None if not available.
+        Retrieves the binary meta hash from the URL's properties.
         """
         hash_section = RemoteServer.read_properties_section(
             "PropertiesHash", self.all_properties

@@ -928,6 +928,7 @@ class BaseUrlTest(FakeInternetTestCase):
         hash = url.get_hash()
 
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -943,6 +944,7 @@ class BaseUrlTest(FakeInternetTestCase):
         hash = url.get_hash()
 
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -957,6 +959,7 @@ class BaseUrlTest(FakeInternetTestCase):
         hash = url.get_hash()
 
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -972,6 +975,7 @@ class BaseUrlTest(FakeInternetTestCase):
         hash = url.get_hash()
 
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
@@ -987,6 +991,7 @@ class BaseUrlTest(FakeInternetTestCase):
         hash = url.get_body_hash()
 
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 2)
 
@@ -1000,12 +1005,13 @@ class BaseUrlTest(FakeInternetTestCase):
 
         # call tested function
         hash = url.get_body_hash()
-
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         main_hash = url.get_hash()
 
         self.assertTrue(hash != main_hash)
+        self.assertFalse(isinstance(main_hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -1019,12 +1025,14 @@ class BaseUrlTest(FakeInternetTestCase):
 
         # call tested function
         hash = url.get_body_hash()
+        self.assertFalse(isinstance(hash, str))
 
         self.assertTrue(hash)
 
         main_hash = url.get_hash()
 
         self.assertTrue(hash != main_hash)
+        self.assertFalse(isinstance(main_hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -1038,12 +1046,14 @@ class BaseUrlTest(FakeInternetTestCase):
 
         # call tested function
         hash = url.get_meta_hash()
+        self.assertFalse(isinstance(hash, str))
 
         self.assertTrue(hash)
 
         main_hash = url.get_hash()
 
         self.assertTrue(hash != main_hash)
+        self.assertFalse(isinstance(main_hash, str))
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 

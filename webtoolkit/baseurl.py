@@ -487,26 +487,24 @@ class BaseUrl(ContentInterface):
         return calculate_hash(text)
 
     def get_hash(self):
-        """Returns hash for URL"""
+        """ Returns binary hash for URL"""
         handler = self.get_handler()
         if handler:
             return handler.get_hash()
 
     def get_body_hash(self):
-        """Returns body hash for URL"""
+        """Returns binary body hash for URL"""
         handler = self.get_handler()
         if handler:
             return handler.get_body_hash()
 
     def get_meta_hash(self) -> Optional[str]:
         """
-        Calculates and returns a hash of the page's metadata properties.
-        :return: A base64-encoded hash of the properties.
+        Calculates and returns a binary hash of the page's metadata properties.
         """
         self.get_response()
         properties_data = self.get_properties_data()
-        properties_hash = self.property_encode(calculate_hash(str(properties_data)))
-        return properties_hash
+        return calculate_hash(str(properties_data))
 
     def get_properties(self):
         """

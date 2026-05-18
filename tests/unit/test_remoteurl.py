@@ -156,7 +156,9 @@ class RemoteUrlTest(FakeInternetTestCase):
         u = RemoteUrl("https://linkedin.com")
         response = u.get_response()
 
-        self.assertTrue(u.get_hash())
+        hash = u.get_hash()
+        self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertTrue(response.get_hash())
 
@@ -164,7 +166,9 @@ class RemoteUrlTest(FakeInternetTestCase):
         u = RemoteUrl("https://linkedin.com")
         response = u.get_response()
 
-        self.assertTrue(u.get_body_hash())
+        hash = u.get_body_hash()
+        self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
         self.assertTrue(response.body_hash)
 
@@ -173,8 +177,8 @@ class RemoteUrlTest(FakeInternetTestCase):
         response = u.get_response()
 
         hash = u.get_meta_hash()
-
         self.assertTrue(hash)
+        self.assertFalse(isinstance(hash, str))
 
     def test_get_feeds(self):
         u = RemoteUrl("https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM")
