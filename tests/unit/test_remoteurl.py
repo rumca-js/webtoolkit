@@ -107,6 +107,7 @@ class RemoteUrlTest(FakeInternetTestCase):
 
         self.assertTrue(entries)
         self.assertEqual(len(entries), 3)
+        self.assertTrue(entries[0]["date_published"])
         self.assertNotEqual(entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT")
 
     def test_get_url__url(self):
