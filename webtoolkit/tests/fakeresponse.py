@@ -32,6 +32,7 @@ from webtoolkit.tests.fakeinternetcontents import (
     webpage_html_casinos,
     webpage_html_canonical_1,
     webpage_with_date_published,
+    webpage_with_language,
 )
 from webtoolkit.tests.fake.geekwirecom import (
     geekwire_feed,
@@ -399,6 +400,9 @@ class TestResponseObject(PageResponseObject):
 
         elif url == "https://empty-page.com":
             return ""
+
+        if url == "https://page-with-language.com":
+            return webpage_with_language
 
         elif url == "https://www.codeproject.com/WebServices/NewsRSS.aspx":
             return webpage_code_project_rss

@@ -181,3 +181,15 @@ webpage_with_date_published = """
 </body>
 </html>
 """
+
+webpage_with_language = """
+<html lang="it">
+<head>
+<link type="application/rss+xml" href="https://www.codeproject.com/WebServices/NewsRSS.aspx" />
+ <title>Page with a 'it' language</title>
+</head>
+
+<body>
+</body>
+</html>
+"""

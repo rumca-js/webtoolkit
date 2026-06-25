@@ -190,6 +190,13 @@ class RemoteServer(object):
             return
         return json_obj
 
+    def is_remote_server_ok(link_call):
+        try:
+            with requests.get(url=link_call, timeout=timeout_s, verify=False) as result:
+                return result.status_code == 200
+        except Exception as E:
+            return False
+
     def get_properties(self, url=None, request=None):
         json_obj = self.get_getj(url=url, request=request)
 
