@@ -235,14 +235,35 @@ class RemoteServer(object):
         return responses
 
     def get_response(all_properties):
+        """
+        Returns response from all properties
+        """
+
+        """
         responses = RemoteServer.get_responses(all_properties)
         if not responses:
             return
 
         if "Default" in responses:
             return responses["Default"]
+
+        # first try to return stream that matches request link
+        properties = RemoteServer.read_properties_section("Properties", all_properties)
+        if properties:
+            link = properties.get("link")
+            if link:
+                response = responses.get(link)
+                if response:
+                    return response
+
+        # return first found response
         for url in responses:
             return responses[url]
+        """
+
+        response_data = RemoteServer.read_properties_section("Response", all_properties)
+        response = json_to_response(response_data)
+        return response
 
     def encode(data):
         return urllib.parse.quote(data, safe="")

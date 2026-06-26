@@ -643,6 +643,10 @@ class BaseUrl(ContentInterface):
         """
         Returns response data
         Easy digestible response data
+
+        It is handler responsibility to provide response and streams.
+        Main response should not be valid if any stream is not valid.
+        Hash should also be properly calculated
         """
         response = self.get_response()
         response_data = self.response_to_data(response)

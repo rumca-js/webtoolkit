@@ -81,10 +81,7 @@ class RemoteUrl(ContentInterface):
         if not responses:
             return
 
-        if "Default" in responses:
-            return responses["Default"]
-        for url in responses:
-            return responses[url]
+        return RemoteServer.get_response(self.all_properties)
 
     def get_text(self):
         """Provides URL response text. Useful if link provides one response."""

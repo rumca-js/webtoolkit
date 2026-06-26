@@ -145,9 +145,8 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     def get_response(self):
         """
         There can be many responses.
-        If at least one is invalid - return it
-
-        If responses are valid return best match
+         - If at least one is invalid - return it. Maybe we could merge responses somehow
+         - If responses are valid return best match
         """
         valid_responses = []
         invalid_responses = []
