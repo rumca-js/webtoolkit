@@ -345,6 +345,11 @@ class BaseUrl(ContentInterface):
         canonical = self.get_canonical_url()
         if canonical:
             properties["link_canonical"] = canonical
+
+        handler = self.get_handler()
+        if handler:
+            properties["link_channel"] = handler.get_channel_url()
+
         return properties
 
     def get_canonical_url(self):
@@ -592,13 +597,8 @@ class BaseUrl(ContentInterface):
             """
             TODO detect type of handler. IsChannel?
             """
-            if is_channel:
-                if (
-                    type(page_handler) is not HttpPageHandler
-                    and page_handler.get_channel_name()
-                ):
-                    properties["channel_name"] = page_handler.get_channel_name()
-                    properties["channel_url"] = page_handler.get_channel_url()
+            properties["channel_name"] = page_handler.get_channel_name()
+            properties["channel_url"] = page_handler.get_channel_url()
 
             if (
                 type(page_handler) is HttpPageHandler

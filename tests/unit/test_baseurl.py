@@ -1068,9 +1068,14 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 2)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
+
         self.assertNotIn("link_canonical", urls)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
@@ -1087,7 +1092,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_canonical_link)
@@ -1104,10 +1114,14 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 2)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertNotIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], "https://www.reddit.com/r/searchengines/.rss")
         self.assertEqual(urls["link_request"], "https://www.reddit.com/r/searchengines/.rss")
-        self.assertNotIn("link_canonical", urls)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -1121,10 +1135,14 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 2)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertNotIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], "https://corridordigital.com")
         self.assertEqual(urls["link_request"], "https://www.youtube.com/redirect?event=lorum&redir_token=ipsum&q=https%3A%2F%2Fcorridordigital.com%2F&v=LeB9DcFT810")
-        self.assertNotIn("link_canonical", urls)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -1140,7 +1158,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_link)
@@ -1157,7 +1180,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_link)
@@ -1175,7 +1203,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_canonical_link)
@@ -1192,7 +1225,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_link)
@@ -1210,7 +1248,12 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         urls = url.get_urls()
 
-        self.assertEqual(len(urls), 3)
+        self.assertTrue(len(urls) > 1)
+
+        self.assertIn("link", urls)
+        self.assertIn("link_request", urls)
+        self.assertIn("link_canonical", urls)
+
         self.assertEqual(urls["link"], test_link)
         self.assertEqual(urls["link_request"], test_link)
         self.assertEqual(urls["link_canonical"], test_canonical_link)

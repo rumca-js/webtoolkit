@@ -483,6 +483,14 @@ class UrlLocationTest(FakeInternetTestCase):
         # call tested function
         self.assertTrue(p.is_web_link())
 
+        p = UrlLocation("https://youtube.com/")
+        # call tested function
+        self.assertTrue(p.is_web_link())
+
+        p = UrlLocation("https://test6.domain.com/")
+        # call tested function
+        self.assertTrue(p.is_web_link())
+
         p = UrlLocation("smb://youtube.com")
         # call tested function
         self.assertTrue(p.is_web_link())
@@ -779,6 +787,10 @@ class UrlLocationTest(FakeInternetTestCase):
         test_link = "http://example.com/location"
         url = UrlLocation(test_link)
         self.assertTrue(url.is_webpage_link())
+
+        p = UrlLocation("https://test6.domain.com/")
+        # call tested function
+        self.assertTrue(p.is_webpage_link())
 
         test_link = "http://example.com/location/"
         url = UrlLocation(test_link)

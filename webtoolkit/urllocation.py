@@ -65,7 +65,7 @@ class UrlLocation(object):
                 return domain
             return self._up_not_domain()
 
-    def is_web_link(self):
+    def is_web_link(self) -> bool:
         """
         Checks if it is Internet link:
          - has to have scheme
@@ -132,6 +132,9 @@ class UrlLocation(object):
             return False
 
         if self.is_domain():
+            return True
+
+        if self.url.endswith("/"):
             return True
 
         if self.get_type() == URL_TYPE_HTML:

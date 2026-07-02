@@ -128,7 +128,7 @@ class ContentLinkParser(ContentInterface):
 
         cont = str(self.get_contents())
 
-        all_matches = re.findall('href="([a-zA-Z0-9./\-_?&=@#;:]+)', cont)
+        all_matches = self.find_all_href_items(cont)
 
         for item in all_matches:
             item = self.process_ahref_item(url, domain, item)
@@ -136,6 +136,9 @@ class ContentLinkParser(ContentInterface):
                 links.add(item)
 
         return links
+
+    def find_all_href_items(self, contents):
+        return re.findall('href="([a-zA-Z0-9./\-_?&=@#;:]+)', contents)
 
     def process_ahref_item(self, url, domain, item):
         item = item.strip()

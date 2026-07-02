@@ -195,9 +195,8 @@ class ContentLinkParserTest(FakeInternetTestCase):
 
         # call tested function
         links = p.get_links()
-        for link in links:
-            print(link)
 
+        # TODO use assertIn
         self.assertTrue("https://www.youtube.com" in links)
         self.assertTrue("https://www.youtube.com:443" in links)
         self.assertTrue("https://www.youtube.com:443/location" in links)

@@ -401,16 +401,18 @@ class HtmlPageTest(FakeInternetTestCase):
 
         links = p.get_links()
 
-        self.assertTrue("http://otherpage1.net" in links)
-        self.assertTrue("https://otherpage2.net" in links)
+        self.assertIn("http://otherpage1.net", links)
+        self.assertIn("https://otherpage2.net", links)
 
-        self.assertTrue("http://mytestpage.com/test/test1" in links)
-        self.assertTrue("http://mytestpage.com/test/test2.html" in links)
-        self.assertTrue("http://mytestpage.com/test/test3.htm" in links)
+        self.assertIn("http://mytestpage.com/test/test1", links)
+        self.assertIn("http://mytestpage.com/test/test2.html", links)
+        self.assertIn("http://mytestpage.com/test/test3.htm", links)
         # java script is not accepted by default
-        self.assertTrue("http://mytestpage.com/test/test4.js" not in links)
-        self.assertTrue("http://mytestpage.com/test/test5/" in links)
-        self.assertTrue("https://test6.domain.com/" in links)
+        self.assertNotIn("http://mytestpage.com/test/test4.js", links)
+        self.assertIn("http://mytestpage.com/test/test5/", links)
+        self.assertIn("https://test6.domain.com/", links)
+
+        self.assertEqual(len(links), 7)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -421,16 +423,18 @@ class HtmlPageTest(FakeInternetTestCase):
 
         links = p.get_links()
 
-        self.assertTrue("http://otherpage1.net" in links)
-        self.assertTrue("https://otherpage2.net" in links)
+        self.assertEqual(len(links), 7)
 
-        self.assertTrue("http://mytestpage.com/test/test1" in links)
-        self.assertTrue("http://mytestpage.com/test/test2.html" in links)
-        self.assertTrue("http://mytestpage.com/test/test3.htm" in links)
+        self.assertIn("http://otherpage1.net", links)
+        self.assertIn("https://otherpage2.net", links)
+
+        self.assertIn("http://mytestpage.com/test/test1", links)
+        self.assertIn("http://mytestpage.com/test/test2.html", links)
+        self.assertIn("http://mytestpage.com/test/test3.htm", links)
         # java script is not accepted by default
-        self.assertTrue("http://mytestpage.com/test/test4.js" not in links)
-        self.assertTrue("http://mytestpage.com/test/test5/" in links)
-        self.assertTrue("https://test6.domain.com/" in links)
+        self.assertNotIn("http://mytestpage.com/test/test4.js", links)
+        self.assertIn("http://mytestpage.com/test/test5/", links)
+        self.assertIn("https://test6.domain.com/", links)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
