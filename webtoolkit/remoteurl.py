@@ -33,6 +33,8 @@ class RemoteUrl(ContentInterface):
         remote_server_location=None,
         all_properties=None,
         social_properties=None,
+        key=None,
+        client_id=None,
     ):
         """
         Initializes the RemoteUrl object.
@@ -49,7 +51,7 @@ class RemoteUrl(ContentInterface):
 
         self.request = request
         self.remote_server_location = remote_server_location
-        self.server = RemoteServer(remote_server=self.remote_server_location)
+        self.server = RemoteServer(remote_server=self.remote_server_location, key=key, client_id=client_id)
         self.all_properties = all_properties
         self.social_properties = social_properties
 

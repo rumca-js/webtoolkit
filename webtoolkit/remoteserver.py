@@ -23,12 +23,14 @@ class RemoteServer(object):
     Crawler buddy communication class
     """
 
-    def __init__(self, remote_server=None, timeout_s=30):
+    def __init__(self, remote_server=None, timeout_s=30, client_id=None, key=None):
         self.remote_server = remote_server
         if not self.remote_server:
             self.remote_server = RemoteServer.get_remote_server_location()
 
         self.timeout_s = timeout_s
+        self.client_id = client_id
+        self.key = key
 
     def get_remote_server_location():
         CRAWLER_BUDDY_SERVER = os.environ.get("CRAWLER_BUDDY_SERVER")
@@ -144,6 +146,11 @@ class RemoteServer(object):
         url = request.url
 
         encoded_request = request_encode(request)
+
+        if self.key:
+            encoded_request = encoded_request + "&key="+self.key
+        if self.client_id:
+            encoded_request = encoded_request + "&client_id="+self.client_id
 
         link_call = f"{link_call}?{encoded_request}"
 

@@ -42,6 +42,7 @@ class PageRequestObject(object):
         crawler_type=None,
         handler_name=None,
         handler_type=None,
+        client_id=None
     ):
         self.url = url
         self.user_agent = user_agent
@@ -61,6 +62,7 @@ class PageRequestObject(object):
         self.crawler_type = crawler_type
         self.handler_name = handler_name
         self.handler_type = handler_type
+        self.client_id = client_id
 
         if not self.settings:
             self.settings = {}
@@ -137,6 +139,8 @@ class PageRequestObject(object):
         if self.handler_name != other.handler_name:
             return False
         # if self.handler_type != other.handler_type:
+        if self.client_id != other.client_id:
+            return False
         return True
 
     def __neq__(self, other):
@@ -188,6 +192,8 @@ def request_to_json(request):
         json["handler_name"] = request.handler_name
     if request.handler_type:
         json["handler_type"] = None  # we cannot pass object
+    if request.client_id:
+        json["client_id"] = request.client_id
 
     return json
 
@@ -235,6 +241,7 @@ def json_to_request(json_data):
     request.crawler_type = json_data.get("crawler_type")
     request.handler_name = json_data.get("handler_name")
     request.handler_type = json_data.get("handler_type")
+    request.client_id = json_data.get("client_id")
 
     if request.ssl_verify == "True":
         request.ssl_verify = True
