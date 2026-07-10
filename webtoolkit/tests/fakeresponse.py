@@ -46,6 +46,7 @@ from webtoolkit.tests.fake.youtube import (
     webpage_samtime_youtube_rss,
     youtube_channel_html_linus_tech_tips,
     youtube_channel_rss_linus_tech_tips,
+    youtube_video_html_page,
 )
 from webtoolkit.tests.fake.robotstxtcom import (
     robots_txt_example_com_robots,
@@ -303,14 +304,14 @@ class TestResponseObject(PageResponseObject):
         if url.startswith("https://youtube.com/channel/"):
             return self.get_contents_youtube_channel(url)
 
-        if url.startswith("https://www.youtube.com/watch?v=666"):
-            self.status_code = 500
+        if url.startswith("https://youtube.com/watch"):
+            return self.get_contents_youtube_video(url)
 
-        if url.startswith("https://www.youtube.com/watch?v=666"):
-            return webpage_no_pubdate_rss
+        if url.startswith("https://www.youtube.com/watch"):
+            return self.get_contents_youtube_video(url)
 
-        if url.startswith("https://www.youtube.com/watch?v=date_published"):
-            return webpage_with_date_published
+        if url.startswith("https://m.youtube.com/watch"):
+            return self.get_contents_youtube_video(url)
 
         if url.startswith(
             "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
@@ -607,6 +608,19 @@ class TestResponseObject(PageResponseObject):
             == "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
         ):
             return webpage_samtime_youtube_rss
+
+    def get_contents_youtube_video(self, url):
+        if url.startswith("https://www.youtube.com/watch?v=666"):
+            self.status_code = 500
+
+        if url.startswith("https://www.youtube.com/watch?v=666"):
+            return webpage_no_pubdate_rss
+
+        if url.startswith("https://www.youtube.com/watch?v=date_published"):
+            return webpage_with_date_published
+
+        else:
+            return youtube_video_html_page
 
     def get_contents_instance(self, url):
         if (

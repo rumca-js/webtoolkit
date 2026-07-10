@@ -148,6 +148,9 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
          - If at least one is invalid - return it. Maybe we could merge responses somehow
          - If responses are valid return best match
         """
+        if self.response:
+            return self.response
+
         valid_responses = []
         invalid_responses = []
 
@@ -159,13 +162,17 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
                 invalid_responses.append(response)
 
         if len(invalid_responses) > 0:
-            return invalid_responses[0]
+            self.response =  invalid_responses[0]
+            return self.response
 
         for response in responses:
             if response.url == self.url:
-                return response
+                self.response = response
+                return self.response
 
-        return responses[0]
+        if len(responses) > 0:
+            self.response = responses[0]
+            return self.response
 
     def get_responses(self):
         if self.responses and len(self.responses) > 0:

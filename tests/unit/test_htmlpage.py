@@ -593,11 +593,11 @@ class HtmlPageTest(FakeInternetTestCase):
             "https://linkedin.com/test", webpage_html_schema_fields_nested
         )
         self.assertEqual(
-            reader.get_schema_field_ex("http://schema.org/VideoObject", "url"),
+            reader.get_schema_field_ex("http://schema.org/VideoObject", "url", "href"),
             "https://www.youtube.com/watch?v=111",
         )
         self.assertEqual(
-            reader.get_schema_field_ex("http://schema.org/Person", "url"),
+            reader.get_schema_field_ex("http://schema.org/Person", "url", "href"),
             "http://www.youtube.com/@someotherchannel",
         )
 
@@ -638,7 +638,12 @@ class HtmlPageTest(FakeInternetTestCase):
         self.assertLess(rating_2, rating_1)
 
     def test_get_thumbnail__schema_meta_icon(self):
-        web = """<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="pl"><head><meta charset="UTF-8"><meta content="origin" name="referrer"><meta content="/images/branding/googleg/1x/googleg_standard_color_128dp.png" itemprop="image"><title>Google</title><script nonce="WDUp12mzuYwOMOCAENBRFg">window._hst=Date.now();pe</script></head></html>"""
+        web = """<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="pl"><head>
+        <meta charset="UTF-8">
+        <meta content="origin" name="referrer">
+        <meta content="/images/branding/googleg/1x/googleg_standard_color_128dp.png" itemprop="image">
+        <title>Google</title>
+        <script nonce="WDUp12mzuYwOMOCAENBRFg">window._hst=Date.now();pe</script></head></html>"""
 
         page = HtmlPage("https://google.com", web)
 
@@ -675,3 +680,23 @@ class HtmlPageTest(FakeInternetTestCase):
         link = page.get_canonical_url()
 
         self.assertEqual(link, "https://www.example.com")
+
+    def test_get_tags(self):
+        web = """<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="pl"><head><meta charset="UTF-8">
+        <meta content="origin" name="referrer">
+        <meta content="/images/branding/googleg/1x/googleg_standard_color_128dp.png" itemprop="image">
+        <meta property="og:video:tag" content="tag1">
+        <meta property="og:video:tag" content="tag2">
+        <title>Google</title>
+
+        <script nonce="WDUp12mzuYwOMOCAENBRFg">window._hst=Date.now();pe</script></head></html>"""
+
+        page = HtmlPage("https://google.com", web)
+
+        # call tested function
+        tags = page.get_tags()
+
+        self.assertEqual(
+            tags,
+            "tag1,tag2"
+        )

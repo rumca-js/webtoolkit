@@ -747,6 +747,9 @@ class HtmlPage(ContentInterface):
             return find_element["content"]
 
     def get_schema_field(self, itemprop):
+        """
+        @param itemprop can be "url" or similar
+        """
         elements_with_itemprop = self.soup.find_all(attrs={"itemprop": True})
         for element in elements_with_itemprop:
             itemprop_v = element.get("itemprop")
@@ -762,27 +765,24 @@ class HtmlPage(ContentInterface):
 
             return value
 
-    def get_schema_field_ex(self, itemtype, itemprop):
+    def get_schema_field_ex(self, itemtype, itemprop, field):
         """
-        itemtype can be "http://schema.org/VideoObject"
+        @param itemtype example "http://schema.org/VideoObject"
+        @param itemprop can be "url" or similar
         """
-        # Find elements with itemtype="http://schema.org/VideoObject"
-        video_objects = self.soup.find_all(attrs={"itemtype": itemtype})
-        for video_object in video_objects:
-            # Extract itemprop from elements inside video_object
-            elements_with_itemprop = video_object.find_all(attrs={"itemprop": True})
+        # Find elements with itemtype
+        print("searching")
+        soup_objects = self.soup.find_all(attrs={"itemtype": itemtype})
+        for soup_object in soup_objects:
+            # Extract itemprop from elements inside soup_object
+            elements_with_itemprop = soup_object.find_all(attrs={"itemprop": True})
             for element in elements_with_itemprop:
                 itemprop_v = element.get("itemprop")
 
                 if itemprop_v != itemprop:
                     continue
 
-                if element.name == "link":
-                    value = element.get("href")
-                elif element.name == "meta":
-                    value = element.get("content")
-                else:
-                    value = element.text.strip() if element.text else None
+                value = element.get(field)
 
                 return value
 
@@ -1017,7 +1017,22 @@ class HtmlPage(ContentInterface):
         if not self.contents:
             return None
 
-        return self.get_meta_field("keywords")
+        keywords = self.get_meta_field("keywords")
+        if keywords:
+            return keywords
+
+        tags = ""
+        #tag = self.get_og_field("og:video:tag")
+        elements = self.soup.find_all("meta", property="og:video:tag")
+        for element in elements:
+            if element.name == "meta":
+                value = element.get("content")
+                if tags:
+                    tags += f",{value}"
+                else:
+                    tags += str(value)
+
+        return tags
 
     def get_canonical_url(self):
         canonical_tag = self.soup.find("link", rel="canonical")

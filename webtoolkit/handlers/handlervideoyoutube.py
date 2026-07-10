@@ -9,6 +9,9 @@ from .defaulturlhandler import DefaultCompoundChannelHandler
 
 
 class YouTubeVideoHandler(DefaultCompoundChannelHandler):
+    """
+    Uses default mechanism - http page handler to provide HTML response
+    """
     def __init__(self, url=None, request=None, url_builder=None):
         super().__init__(
             url=url,
@@ -124,8 +127,26 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     def get_link_music(self):
         return "https://music.youtube.com?v={0}".format(self.get_video_code())
 
+    def get_author(self):
+        response = self.response
+        if response:
+            p = response.get_page()
+            if p:
+                return p.get_schema_field_ex("http://schema.org/Person", "name", "content")
+
     def get_channel_name(self):
-        pass
+        response = self.response
+        if response:
+            p = response.get_page()
+            if p:
+                return p.get_schema_field_ex("http://schema.org/Person", "name", "content")
+
+    def get_channel_url(self):
+        response = self.response
+        if response:
+            p = response.get_page()
+            if p:
+                return p.get_schema_field_ex("http://schema.org/Person", "url", "href")
 
     def get_social_data(self):
         url = self.build_http_url(self.get_return_dislike_url_link())

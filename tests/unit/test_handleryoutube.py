@@ -299,6 +299,51 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
 
         self.assertTrue(len(handler.request.cookies) != 0)
 
+    def test_get_channel_name(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=1234"
+        request = PageRequestObject(test_link)
+
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
+        #p = handler.get_page_handler()
+        response = handler.get_response()
+
+        # call tested function
+        channel_name = handler.get_channel_name()
+
+        self.assertTrue(channel_name)
+
+    def test_get_channel_url(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=1234"
+        request = PageRequestObject(test_link)
+
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
+        #p = handler.get_page_handler()
+        response = handler.get_response()
+
+        # call tested function
+        channel_url = handler.get_channel_url()
+
+        self.assertTrue(channel_url)
+
+    def test_get_feeds(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/watch?v=1234"
+        request = PageRequestObject(test_link)
+
+        handler = YouTubeVideoHandler(request=request, url_builder=MockUrl)
+        #p = handler.get_page_handler()
+        response = handler.get_response()
+
+        # call tested function
+        feeds = handler.get_feeds()
+
+        self.assertTrue(len(feeds) > 0)
+
 
 
 class YouTubeChannelHandlerTest(FakeInternetTestCase):
