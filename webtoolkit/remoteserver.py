@@ -51,7 +51,7 @@ class RemoteServer(object):
             return
 
         link = self.remote_server
-        link = f"{link}/getj"
+        link = f"{link}/api/get"
 
         return self.perform_remote_call(link_call=link, request=request)
 
@@ -69,7 +69,7 @@ class RemoteServer(object):
             return
 
         link = self.remote_server
-        link = f"{link}/feedsj"
+        link = f"{link}/api/feeds"
 
         return self.perform_remote_call(link, request)
 
@@ -87,7 +87,7 @@ class RemoteServer(object):
             return
 
         link = self.remote_server
-        link = f"{link}/socialj"
+        link = f"{link}/api/social"
 
         return self.perform_remote_call(link, request)
 
@@ -104,7 +104,7 @@ class RemoteServer(object):
             return
 
         link = self.remote_server
-        link = f"{link}/linkj"
+        link = f"{link}/api/link"
 
         return self.perform_remote_call(link, request)
 
@@ -121,7 +121,7 @@ class RemoteServer(object):
             return
 
         link = self.remote_server
-        link = f"{link}/pingj"
+        link = f"{link}/api/ping"
 
         json = self.perform_remote_call_with_retry(link, request)
         if json:
@@ -277,7 +277,7 @@ class RemoteServer(object):
 
     def get_infoj(self):
         link = self.remote_server
-        link = f"{link}/infoj"
+        link = f"{link}/api/info"
 
         timeout_s = 10
 
