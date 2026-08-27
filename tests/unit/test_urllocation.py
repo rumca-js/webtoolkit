@@ -599,7 +599,7 @@ class UrlLocationTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_get_cleaned_link__stupid_google_link(self):
+    def test_get_cleaned_link__stupid_google_link1(self):
         MockRequestCounter.mock_page_requests = 0
 
         cleaned_link = UrlLocation.get_cleaned_link(
@@ -617,7 +617,8 @@ class UrlLocationTest(FakeInternetTestCase):
 
         cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
-        self.assertEqual(cleaned_link, "https://worldofwarcraft.blizzard.com")
+        expected_link = "https://worldofwarcraft.blizzard.com"
+        self.assertEqual(cleaned_link, expected_link)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -628,7 +629,21 @@ class UrlLocationTest(FakeInternetTestCase):
 
         cleaned_link = UrlLocation.get_cleaned_link(test_link)
 
-        self.assertEqual(cleaned_link, "https://www.muycomputer.com/2025/09/30/f-droid-y-google-adios-a-las-tiendas-de-apps-alternativas/amp")
+        expected_link = "https://www.muycomputer.com/2025/09/30/f-droid-y-google-adios-a-las-tiendas-de-apps-alternativas/amp"
+
+        self.assertEqual(cleaned_link, expected_link)
+
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_get_cleaned_link__stupid_google_link4(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.google.com/goto?url=CAESVQHrOzAVcZvSERtSfnqipyeIBLYPdWctKiAMpeRCYGIG53AhOt6O2oohFrTA6ERi80aMGfpWixlDWFbSXI8_nfSfDnLiEiPvc_lQJ4oASUHm7SD_rA4"
+
+        cleaned_link = UrlLocation.get_cleaned_link(test_link)
+
+        expected_link = "https://www.redditstatus.com"
+        self.assertEqual(cleaned_link, expected_link)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 

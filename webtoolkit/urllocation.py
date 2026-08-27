@@ -544,6 +544,7 @@ class UrlLocation(object):
 
         url = UrlLocation.get_google_redirect_fix(url)
         url = UrlLocation.get_google_redirect_fix2(url)
+        url = UrlLocation.get_google_redirect_fix3(url)
         url = UrlLocation.get_youtube_redirect_fix(url)
         url = UrlLocation.get_linkedin_redirect_fix(url)
         url = UrlLocation.get_bing_redirect_fix(url)
@@ -551,25 +552,31 @@ class UrlLocation(object):
 
         return url.url
 
-    def get_google_redirect_fix(url):
-        stupid_google_string = "https://www.google.com/url"
+    def get_url_arg2(url, param):
+        """
+        TODO - remove, duplicated
+        """
+        parsed_url = urlparse(url)
+        query_params = parse_qs(parsed_url.query)
+        param_value = query_params.get(param, [None])[0]
+        return param_value
+
+    def get_arg_cleaned(param_value):
+        location = UrlLocation(param_value)
+        if not location.is_protocolled_link():
+            param_value = location.get_protocol_url()
+        param_value = UrlLocation.get_cleaned_link(param_value)
+        return param_value
+
+    def get_google_redirect_fix(url, domain_location="url"):
+        stupid_google_string = f"https://www.google.com/{domain_location}"
         if url.find(stupid_google_string) >= 0:
-            parsed_url = urlparse(url)
-            query_params = parse_qs(parsed_url.query)
-            param_value = query_params.get("url", [None])[0]
+            param_value = UrlLocation.get_url_arg2(url, "url")
             if param_value:
-                location = UrlLocation(param_value)
-                if not location.is_protocolled_link():
-                    param_value = location.get_protocol_url()
-                param_value = UrlLocation.get_cleaned_link(param_value)
-                return param_value
-            param_value = query_params.get("q", [None])[0]
+                return UrlLocation.get_arg_cleaned(param_value)
+            param_value = UrlLocation.get_url_arg2(url, "q")
             if param_value:
-                location = UrlLocation(param_value)
-                if not location.is_protocolled_link():
-                    param_value = location.get_protocol_url()
-                param_value = UrlLocation.get_cleaned_link(param_value)
-                return param_value
+                return UrlLocation.get_arg_cleaned(param_value)
 
         return url
 
@@ -578,31 +585,47 @@ class UrlLocation(object):
         if url.find(stupid_google_string) >= 0:
             url = url[len(stupid_google_string) + 1 :]
 
-            location = UrlLocation(url)
-            if not location.is_protocolled_link():
-                url = location.get_protocol_url()
+            return UrlLocation.get_arg_cleaned(url)
 
-            return UrlLocation.get_cleaned_link(url)
+        return url
+
+    def get_google_redirect_fix3(url, domain_location="goto"):
+        """
+        TODO - this does not work
+        """
+        stupid_google_string = f"https://www.google.com/{domain_location}"
+        if url.find(stupid_google_string) >= 0:
+            param_value = UrlLocation.get_url_arg2(url, "url")
+            if param_value:
+                try:
+                    param_value += "=" * (-len(param_value)%4)
+                    param_value = base64.urlsafe_b64decode(param_value)
+                    param_value = param_value.decode('utf-8')
+                    return UrlLocation.get_arg_cleaned(param_value)
+                except UnicodeDecodeError:
+                    pass
+            param_value = UrlLocation.get_url_arg2(url, "q")
+            if param_value:
+                try:
+                    param_value += "=" * (-len(param_value)%4)
+                    param_value = base64.urlsafe_b64decode(param_value)
+                    param_value = param_value.decode('utf-8')
+                    return UrlLocation.get_arg_cleaned(param_value)
+                except UnicodeDecodeError:
+                    pass
 
         return url
 
     def get_youtube_redirect_fix(url):
         stupid_youtube_string = "https://www.youtube.com/redirect"
         if url.find(stupid_youtube_string) >= 0:
-            parsed_url = urlparse(url)
-            query_params = parse_qs(parsed_url.query)
-            param_value = query_params.get("q", [None])[0]
+            param_value = UrlLocation.get_url_arg2(url, "q")
             if not param_value:
                 return url
 
             param_value = unquote(param_value)
-
-            location = UrlLocation(param_value)
-            if not location.is_protocolled_link():
-                param_value = location.get_protocol_url()
-
-            param_value = UrlLocation.get_cleaned_link(param_value)
-            return param_value
+            if param_value:
+                return UrlLocation.get_arg_cleaned(param_value)
 
         return url
 
