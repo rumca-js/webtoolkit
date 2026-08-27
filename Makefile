@@ -8,6 +8,9 @@ test-unit:
 test-real:
 	poetry run python -u -m unittest discover -s tests/real -v 2>&1 | tee test_output.txt
 
+test-memory:
+	poetry run python -u -m unittest discover -s tests/memory -v 2>&1 | tee test_output.txt
+
 build:
 	poetry build
 
