@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "webtoolkit"
-version = "0.1.66"
+version = "0.1.67"
 description = "Web tools and interfaces for Internet data processing."
 authors = ["Iwan Grozny <renegat@renegat0x0.ddns.net>"]
 license = "GPL3"
@@ -15,7 +15,7 @@ python-dateutil = "^2.8.2"
 tldextract = "^5.1.2"
 beautifulsoup4 = "^4.13.5"
 lxml = "^5.4.0"
-brutefeedparser="^0.10.5"
+brutefeedparser="^1.0.0"
 pytz = "^2024.2"
 psutil="*"
 url-cleaner="*"
