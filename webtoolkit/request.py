@@ -34,6 +34,7 @@ class PageRequestObject(object):
         respect_robots=None,
         accept_types=None,
         bytes_limit=None,
+        freshness_interval_s=None, # seconds
         http_proxy=None,
         https_proxy=None,
         settings=None,
@@ -54,6 +55,7 @@ class PageRequestObject(object):
         self.respect_robots = respect_robots
         self.accept_types = accept_types
         self.bytes_limit = bytes_limit
+        self.freshness_interval_s = freshness_interval_s
         self.http_proxy = http_proxy
         self.https_proxy = https_proxy
         self.settings = settings
@@ -125,6 +127,8 @@ class PageRequestObject(object):
             return False
         if self.bytes_limit != other.bytes_limit:
             return False
+        if self.freshness_interval_s != other.freshness_interval_s:
+            return False
         if self.http_proxy != other.http_proxy:
             return False
         if self.https_proxy != other.https_proxy:
@@ -176,6 +180,8 @@ def request_to_json(request):
         json["accept_types"] = request.accept_types
     if request.bytes_limit is not None:
         json["bytes_limit"] = request.bytes_limit
+    if request.freshness_interval_s is not None:
+        json["freshness_interval_s"] = request.freshness_interval_s
     if request.http_proxy is not None:
         json["http_proxy"] = request.http_proxy
     if request.https_proxy is not None:
@@ -233,6 +239,7 @@ def json_to_request(json_data):
     request.bytes_limit = json_data.get("bytes_limit")
     if request.bytes_limit is not None:
         request.bytes_limit = int(request.bytes_limit)
+    request.freshness_interval_s = json_data.get("freshness_interval_s")
     request.http_proxy = json_data.get("http_proxy")
     request.https_proxy = json_data.get("https_proxy")
     request.settings = json_data.get("settings")

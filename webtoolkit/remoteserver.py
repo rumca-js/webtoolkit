@@ -192,7 +192,7 @@ class RemoteServer(object):
             print(str(E))
             return
 
-        if "success" in json_obj and not json_obj["success"]:
+        if json_obj and "success" in json_obj and not json_obj["success"]:
             print("Url:{} Remote error. Not a success".format(link_call))
             return
         return json_obj
