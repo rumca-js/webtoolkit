@@ -45,8 +45,8 @@ HTTP_STATUS_CODE_TIMEOUT = 604                  # web page access timeout
 HTTP_STATUS_CODE_FILE_TOO_BIG = 612
 HTTP_STATUS_CODE_PAGE_UNSUPPORTED = 613
 HTTP_STATUS_CODE_SERVER_ERROR = 614
-HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS = 615 # this server too many requests
-HTTP_STATUS_CODE_SERVER_DATA_NOT_READY = 616
+HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS = 615 # this server too many requests, does not accept new
+HTTP_STATUS_CODE_SERVER_DATA_NOT_READY = 616    # we do not want to keep connections too long. Return not ready. Client can continue
 
 
 def status_code_to_text(status_code):
