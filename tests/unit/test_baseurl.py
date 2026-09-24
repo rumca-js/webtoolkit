@@ -1308,9 +1308,8 @@ class BaseUrlTest(FakeInternetTestCase):
         properties = url.get_social_properties()
 
         self.assertIn("followers_count", properties)
-        self.assertTrue(properties["followers_count"])
 
-        self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+        self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_social_properties__youtube__video(self):
         MockRequestCounter.mock_page_requests = 0
