@@ -442,11 +442,46 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
-    def test_get_all_properties__youtube_channel__advanced(self):
+    def test_get_all_properties__youtube_channel__feed(self):
         self.ignore_memory = True
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+        channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = MockUrl(request=self.get_request(test_link))
+
+        url.get_response()
+
+        # call tested function
+        all_properties = url.get_all_properties()
+        self.assertTrue(len(all_properties) > 0)
+
+        properties_section = RemoteServer.read_properties_section("Properties", all_properties)
+        self.assertTrue(properties_section)
+
+        self.assertIn("title", properties_section)
+        self.assertIn("link", properties_section)
+        self.assertIn("feeds", properties_section)
+
+        self.assertEqual(properties_section["link"], test_link)
+        self.assertEqual(properties_section["link_request"], test_link)
+
+        entries_section = RemoteServer.read_properties_section("Entries", all_properties)
+        self.assertTrue(entries_section)
+        self.assertTrue(len(entries_section) > 0)
+
+        remote_url = RemoteUrl(url=test_link, all_properties=all_properties)
+        self.assertTrue(remote_url.get_title())
+
+        # +1 HTML +1 RSS
+        self.assertEqual(MockRequestCounter.mock_page_requests, 2)
+
+    def test_get_all_properties__youtube_channel__channel(self):
+        self.ignore_memory = True
+        MockRequestCounter.mock_page_requests = 0
+
+        test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
         channel_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
 
         url = MockUrl(request=self.get_request(test_link))
