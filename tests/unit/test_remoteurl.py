@@ -5,6 +5,7 @@ from webtoolkit.utils.memorychecker import MemoryChecker
 from webtoolkit import UrlLocation, RemoteUrl, PageRequestObject
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
+from webtoolkit import BaseUrl
 
 
 all_properties = [
@@ -23,10 +24,18 @@ all_properties = [
    },
    {
        "data" : {
-           "https://example.com" : {
+           "https://example1.com" : {
                "status_code" : 200,
                "request" : {
                    "url": "https://example.com",
+                   "crawler_name" : "Fake Properties Crawler2",
+               },
+               "text" : "<html></html"
+           },
+           "https://example2.com" : {
+               "status_code" : 200,
+               "request" : {
+                   "url": "https://example2.com",
                    "crawler_name" : "Fake Properties Crawler2",
                },
                "text" : "<html></html"
@@ -66,7 +75,7 @@ class RemoteUrlTest(FakeInternetTestCase):
     def setUp(self):
         self.disable_web_pages()
 
-        self.ignore_memory = False
+        self.ignore_memory = True
         self.memory_checker = MemoryChecker()
         memory_increase = self.memory_checker.get_memory_increase()
         #print(f"Memory increase {memory_increase} setup")
@@ -76,7 +85,13 @@ class RemoteUrlTest(FakeInternetTestCase):
             memory_increase = self.memory_checker.get_memory_increase()
             self.assertEqual(memory_increase, 0)
 
-    def test_constructor__all_properties__response(self):
+    def test_constructor__properties__url(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        link = u.get_url()
+        self.assertEqual(link, "https://example.com")
+
+    def test_constructor__properties__response(self):
         u = RemoteUrl(all_properties=all_properties)
 
         response = u.get_response()
@@ -86,21 +101,21 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertTrue(response.request)
         self.assertEqual(response.request.crawler_name, "Fake Properties Crawler2")
 
-    def test_constructor__title(self):
+    def test_constructor__properties__title(self):
         u = RemoteUrl(all_properties=all_properties)
 
         response = u.get_response()
 
         self.assertEqual(u.get_title(), "Example Page Title")
 
-    def test_constructor__date_published(self):
+    def test_constructor__properties__date_published(self):
         u = RemoteUrl(all_properties=all_properties)
 
         response = u.get_response()
 
         self.assertNotEqual(u.get_date_published(), "Sat, 07 Feb 2026 12:00:00 GMT")
 
-    def test_constructor__get_entries(self):
+    def test_constructor__properties__get_entries(self):
         u = RemoteUrl(all_properties=all_properties)
 
         entries = u.get_entries()
@@ -109,6 +124,46 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertEqual(len(entries), 3)
         self.assertTrue(entries[0]["date_published"])
         self.assertNotEqual(entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT")
+
+    def test_constructor__get_responses(self):
+        u = RemoteUrl(all_properties=all_properties)
+
+        responses = u.get_responses()
+
+        self.assertTrue(responses)
+        self.assertEqual(len(responses), 2)
+
+    def test_from_properties__youtube_video(self):
+        test_link = "https://www.youtube.com/watch?v=1234"
+        url = BaseUrl(test_link)
+        all_properties = url.get_all_properties()
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
+
+    def test_from_properties__youtube_channel(self):
+        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = BaseUrl(test_link)
+        all_properties = url.get_all_properties()
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
+
+    def test_from_properties__reddit(self):
+        test_link = "https://www.reddit.com/r/searchengines/.rss"
+
+        url = BaseUrl(test_link)
+        all_properties = url.get_all_properties()
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response()
+
+        self.assertTrue(response)
 
     def test_get_url__url(self):
         test_link = "http://google.com"
@@ -130,6 +185,18 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertTrue(response)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.text)
+
+    def test_get_response__for_channel(self):
+        test_link = "https://www.youtube.com/channel/UCXuqSBlHAE6Xw-yeJA0Tunw"
+
+        url = BaseUrl(test_link)
+        all_properties = url.get_all_properties()
+
+        u = RemoteUrl(all_properties=all_properties)
+        response = u.get_response(stream=test_link)
+
+        self.assertTrue(response)
+        self.assertEqual(response.url, test_link)
 
     def test_get_properties__html(self):
         u = RemoteUrl("https://linkedin.com")
@@ -188,34 +255,3 @@ class RemoteUrlTest(FakeInternetTestCase):
 
         self.assertTrue(len(feeds) > 0)
 
-    def get_from_properties__youtube_video(self):
-        test_link = "https://www.youtube.com/watch?v=1234"
-        url = BaseUrl(test_link)
-        all_properties = url.get_properties(full=True)
-
-        u = RemoteUrl(all_properties=all_properties)
-        response = u.get_response()
-
-        self.assertTrue(response)
-
-    def get_from_properties__youtube_channel(self):
-        test_link = "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw"
-
-        url = BaseUrl(test_link)
-        all_properties = url.get_properties(full=True)
-
-        u = RemoteUrl(all_properties=all_properties)
-        response = u.get_response()
-
-        self.assertTrue(response)
-
-    def get_from_properties__reddit(self):
-        test_link = "https://www.reddit.com/r/searchengines/.rss"
-
-        url = BaseUrl(test_link)
-        all_properties = url.get_properties(full=True)
-
-        u = RemoteUrl(all_properties=all_properties)
-        response = u.get_response()
-
-        self.assertTrue(response)

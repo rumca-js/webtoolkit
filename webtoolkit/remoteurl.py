@@ -47,8 +47,6 @@ class RemoteUrl(ContentInterface):
         if request is not None and url is None:
             url = request.url
 
-        super().__init__(url=url, contents=None)
-
         self.request = request
         self.remote_server_location = remote_server_location
         self.server = RemoteServer(remote_server=self.remote_server_location, key=key, client_id=client_id)
@@ -56,6 +54,14 @@ class RemoteUrl(ContentInterface):
         self.social_properties = social_properties
 
         self.responses = None
+
+        if url is None and self.all_properties:
+            properties = self.get_properties()
+            if properties:
+                url = properties.get("link")
+
+        super().__init__(url=url, contents=None)
+
         if self.all_properties:
             self.get_responses()
 
@@ -77,11 +83,14 @@ class RemoteUrl(ContentInterface):
 
         return self.responses
 
-    def get_response(self):
+    def get_response(self, stream=None):
         """Provides URL response"""
         responses = self.get_responses()
         if not responses:
             return
+
+        if stream:
+            responses[stream]
 
         return RemoteServer.get_response(self.all_properties)
 
