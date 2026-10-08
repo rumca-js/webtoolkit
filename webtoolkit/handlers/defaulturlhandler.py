@@ -110,10 +110,13 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def __init__(self, url=None, contents=None, request=None, url_builder=None):
         self.responses = []
-        self.channel_sources_urls = OrderedDict()
+        self.all_urls_to_fetch = OrderedDict()
         super().__init__(url=url, request=request, url_builder=url_builder)
 
-    def get_channel_sources(self):
+    def get_urls_to_fetch(self):
+        """
+        API that returns which urls will be fetched
+        """
         sources = []
 
         feeds = self.get_feeds()
@@ -178,15 +181,15 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         if self.responses and len(self.responses) > 0:
             return self.responses
 
-        return self.get_responses_implementation(self.get_channel_sources())
+        return self.get_responses_implementation(self.get_urls_to_fetch())
 
-    def get_responses_implementation(self, channel_sources):
+    def get_responses_implementation(self, urls_to_fetch):
         handles = []
         with ThreadPoolExecutor() as executor:
-            for channel_source in channel_sources:
-                if channel_source not in self.channel_sources_urls:
+            for url_to_fetch in urls_to_fetch:
+                if url_to_fetch not in self.all_urls_to_fetch:
                     handles.append(
-                        executor.submit(self.get_response_source, channel_source)
+                        executor.submit(self.get_response_source, url_to_fetch)
                     )
 
             for handle in handles:
@@ -195,12 +198,12 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
                     url.get_response()
 
-                    self.channel_sources_urls[url.url] = url
+                    self.all_urls_to_fetch[url.url] = url
                 except Exception as E:
                     WebLogger.exc(E)
 
         # we capture responses using order of urls
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             if page_url:
                 self.responses.append(page_url.get_response())
 
@@ -208,7 +211,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def is_valid(self):
         is_valid = True
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             response = url.get_response()
             if not response.is_valid():
                 is_valid = False
@@ -216,7 +219,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def is_invalid(self):
         is_invalid = True
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             response = url.get_response()
             if not response.is_invalid():
                 is_invalid = False
@@ -224,7 +227,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def get_hash(self):
         text = ""
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             response = page_url.get_response()
             text += str(response.get_text())
         return calculate_hash(text)
@@ -232,20 +235,20 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     def get_feeds(self):
         feeds = set()
 
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             feeds.update(page_url.get_feeds())
 
         return list(feeds)
 
     def get_streams(self):
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             self.streams[page_url.url] = page_url.get_response()
 
         return self.streams
 
     def get_response_source(self, page_url):
-        if page_url in self.channel_sources_urls.values():
-            return self.channel_sources_urls[page_url]
+        if page_url in self.all_urls_to_fetch.values():
+            return self.all_urls_to_fetch[page_url]
 
         url = self.build_http_url(page_url)
         if url:
@@ -254,62 +257,62 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         return url
 
     def get_entries(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             entries = url.get_entries()
             if entries and len(list(entries)) > 0:
                 return entries
         return []
 
     def get_title(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             title = url.get_title()
             if title:
                 return title
 
     def get_description(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             description = url.get_description()
             if description:
                 return description
 
     def get_language(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             language = url.get_language()
             if language:
                 return language
 
     def get_thumbnail(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             thumbnail = url.get_thumbnail()
             if thumbnail:
                 return thumbnail
 
     def get_author(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             author = url.get_author()
             if author:
                 return author
 
     def get_album(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             album = url.get_author()
             if album:
                 return album
 
     def get_tags(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             tags = url.get_tags()
             if tags:
                 return tags
 
     def get_date_published(self):
-        for url in self.channel_sources_urls.values():
+        for url in self.all_urls_to_fetch.values():
             date_published = url.get_date_published()
             if date_published:
                 return date_published
 
     def close(self):
-        for page_url in self.channel_sources_urls.values():
+        for page_url in self.all_urls_to_fetch.values():
             page_url.close()
 
         super().close()

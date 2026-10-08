@@ -1,8 +1,10 @@
 import json
 
-from ..urllocation import UrlLocation
-from ..pages import RssPage
-from ..webtools import WebLogger
+from webtoolkit.urllocation import UrlLocation
+from webtoolkit.pages import RssPage
+from webtoolkit.webtools import WebLogger
+from webtoolkit.utils.dateutils import DateUtils
+
 from .defaulturlhandler import DefaultUrlHandler, DefaultChannelHandler
 from .handlerhttppage import HttpPageHandler
 
@@ -284,6 +286,23 @@ class GitHubUrlHandler(DefaultUrlHandler):
         locale of platform, not contents
         """
         return None
+
+    def get_date_published(self):
+        """
+        It would be best to fetch JSON, and cleanly extract it.
+        It will cost us additional fetch request, so we do it brutally.
+        """
+        response = self.get_response()
+        if response:
+            text = response.get_text()
+            if text:
+                created_text = ',createdAt:"'
+                wh = text.find(created_text)
+                if wh >= 0:
+                    wh2 = text.find('"', wh + len(created_text) + 1)
+                    if wh2 >= 0:
+                        date = text[wh + len(created_text) : wh2]
+                        return DateUtils.parse_datetime(date)
 
 
 class ReturnDislike(DefaultUrlHandler):

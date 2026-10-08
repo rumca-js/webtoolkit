@@ -74,6 +74,7 @@ from webtoolkit.tests.fake.reddit import (
 )
 from webtoolkit.tests.fake.githubcom import (
     github_json,
+    github_webpage,
 )
 from webtoolkit.tests.fake.returndislike import (
     return_dislike_json,
@@ -362,6 +363,9 @@ class TestResponseObject(PageResponseObject):
 
         if url.startswith("https://api.github.com"):
             return github_json
+
+        if url.startswith("https://github.com/rumca-js"):
+            return github_webpage
 
         if url.startswith("https://hnrss.org"):
             return webpage_hackernews_rss

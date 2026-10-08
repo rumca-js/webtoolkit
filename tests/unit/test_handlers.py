@@ -8,7 +8,11 @@ from webtoolkit import (
 from webtoolkit.tests.fakeinternet import (
    FakeInternetTestCase, MockRequestCounter
 )
+from webtoolkit.tests.fake.githubcom import (
+   github_webpage,
+)
 from webtoolkit.tests.mocks import MockUrl
+from webtoolkit import DateUtils
 
 
 class RedditUrlHandlerTest(FakeInternetTestCase):
@@ -143,6 +147,30 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
         feeds = handler.get_feeds()
 
         self.assertIn("https://github.com/rumca-js/Django-link-archive/commits.atom", feeds)
+
+    def test_get_title(self):
+        test_link = "https://github.com/rumca-js/webtoolkit"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
+        handler.get_response()
+
+        # call tested function
+        title = handler.get_title()
+
+        self.assertEqual(title, "rumca-js/webtoolkit: Internet data processing library")
+
+    def test_get_date_published(self):
+        test_link = "https://github.com/rumca-js/webtoolkit"
+        request = MockUrl(test_link).get_init_request()
+
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
+        handler.get_response()
+
+        # call tested function
+        date_published = handler.get_date_published()
+
+        self.assertEqual(date_published, DateUtils.parse_datetime("2025-10-06T08:24:51.000+02:00"))
 
     def test_get_json_url(self):
         test_link = "https://api.github.com/repos/rumca-js/Django-link-archive"

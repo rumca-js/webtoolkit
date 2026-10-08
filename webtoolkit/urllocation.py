@@ -811,7 +811,9 @@ class UrlLocation(object):
         if self.is_onion():
             return
 
-        return self.get_domain().url + "/robots.txt"
+        domain = self.get_domain()
+        if domain:
+            return domain.url + "/robots.txt"
 
     def is_link_in_domain(self, address):
         if not address.startswith(self.get_domain().url):
