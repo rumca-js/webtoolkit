@@ -209,7 +209,7 @@ class YouTubeChannelHandler(DefaultCompoundChannelHandler):
             if self.code:
                 feed = self.code2feed(self.code)
                 url = self.build_http_url(feed)
-                self.channel_sources_urls[url.url] = url
+                self.all_urls_to_fetch[url.url] = url
                 responses.append(url.get_response())
 
         return responses
