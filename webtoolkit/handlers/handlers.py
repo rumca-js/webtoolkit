@@ -303,6 +303,13 @@ class GitHubUrlHandler(DefaultUrlHandler):
                     if wh2 >= 0:
                         date = text[wh + len(created_text) : wh2]
                         return DateUtils.parse_datetime(date)
+                created_text = '"createdAt":"'
+                wh = text.find(created_text)
+                if wh >= 0:
+                    wh2 = text.find('"', wh + len(created_text) + 1)
+                    if wh2 >= 0:
+                        date = text[wh + len(created_text) : wh2]
+                        return DateUtils.parse_datetime(date)
 
 
 class ReturnDislike(DefaultUrlHandler):
