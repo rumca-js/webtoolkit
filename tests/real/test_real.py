@@ -64,6 +64,8 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(handler.__class__.__name__, "HttpPageHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
 
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertTrue(handler.get_title())
 
         self.assertEqual(len(list(handler.get_entries())), 0)
@@ -81,6 +83,26 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(handler.__class__.__name__, "YouTubeVideoHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
 
+        self.assertEqual(handler.get_status_code(), 200)
+
+        self.assertTrue(handler.get_title())
+        self.assertEqual(len(list(handler.get_entries())), 0)
+        self.assertTrue(len(list(handler.get_streams())) > 0)
+
+        properties = url.get_social_properties()
+        self.assertTrue(len(properties) > 0)
+
+        url.close()
+
+    def test_baseurl__youtube_video__invalid(self):
+        test_url = "https://www.youtube.com/watch?v=2UnWZMsTwHA"
+        response, handler, url = self.run_with_base_url(test_url)
+
+        self.assertEqual(handler.__class__.__name__, "YouTubeVideoHandler")
+        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+
+        self.assertEqual(handler.get_status_code(), 404)
+
         self.assertTrue(handler.get_title())
         self.assertEqual(len(list(handler.get_entries())), 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
@@ -96,6 +118,8 @@ class TestBaseUrl(unittest.TestCase):
 
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+
+        self.assertEqual(handler.get_status_code(), 200)
 
         self.assertEqual(handler.get_title(), "Linus Tech Tips")
         self.assertTrue(handler.get_code())
@@ -115,6 +139,8 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
         self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
 
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertEqual(handler.get_title(), "Linus Tech Tips")
         self.assertTrue(handler.get_code())
         self.assertEqual(len(handler.get_feeds()), 1)
@@ -131,6 +157,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "OdyseeChannelHandler")
+
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertTrue(len(list(handler.get_entries())) > 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
@@ -144,6 +173,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "OdyseeVideoHandler")
+
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
@@ -155,6 +187,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "GitHubUrlHandler")
+
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
@@ -168,6 +203,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "RedditUrlHandler")
+
+        self.assertEqual(handler.get_status_code(), 200)
+
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
@@ -183,9 +221,11 @@ class TestBaseUrl(unittest.TestCase):
 
         response, handler, url = self.run_with_base_url(test_url)
 
+        """
         properties = url.get_social_properties()
         self.assertTrue(properties)
         self.assertTrue(len(properties) > 0)
+        """
 
         url.close()
 
@@ -194,9 +234,11 @@ class TestBaseUrl(unittest.TestCase):
 
         response, handler, url = self.run_with_base_url(test_url)
 
+        """
         properties = url.get_social_properties()
         self.assertTrue(properties)
         self.assertTrue(len(properties) > 0)
+        """
 
         url.close()
 

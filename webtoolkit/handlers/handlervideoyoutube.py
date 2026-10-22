@@ -5,6 +5,7 @@ from ..utils.dateutils import DateUtils
 from ..urllocation import UrlLocation
 from ..pages import ReturnDislikeJson
 from ..webtools import WebLogger
+from ..statuses import HTTP_STATUS_NOT_FOUND
 from .defaulturlhandler import DefaultCompoundChannelHandler
 
 
@@ -186,3 +187,15 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         locale of platform, not contents
         """
         return None
+
+    def get_responses_implementation(self, urls_to_fetch):
+        """
+         - YouTube returns 200 for unavailable videos.
+         - we check if there is schema information about video. If none, it is error
+        """
+        responses = super().get_responses_implementation(urls_to_fetch)
+        for response in responses:
+            if response.is_html():
+                if response.get_text().find("schema.org") == -1:
+                    response.status_code = HTTP_STATUS_NOT_FOUND
+        return responses
