@@ -16,7 +16,7 @@ from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from email.utils import parseaddr
 
-from utils.dateutils import DateUtils
+from webtoolkit.utils.dateutils import DateUtils
 
 
 class Email(object):
