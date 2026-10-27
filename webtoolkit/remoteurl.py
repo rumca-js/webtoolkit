@@ -250,7 +250,7 @@ class RemoteUrl(ContentInterface):
 
         return set(feeds)
 
-    def get_links(self):
+    def get_content_links(self):
         """
         Retrieves information about links (canonical, archive, etc.) for the URL.
         :return: A dictionary of link information.

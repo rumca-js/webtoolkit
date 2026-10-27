@@ -30,6 +30,7 @@ from .urllocation import (
     URL_TYPE_FONT,
     URL_TYPE_UNKNOWN,
 )
+from .contentlinkparser import ContentLinkParser
 
 from .statuses import status_code_to_text
 from .response import response_to_json, PageResponseObject
@@ -336,6 +337,11 @@ class BaseUrl(ContentInterface):
             return self.handler.get_url()
         else:
             return self.request.url
+
+    def get_content_links(self):
+        contents = self.get_contents()
+        parser = ContentLinkParser(url=self.get_url(), contents=contents)
+        return parser.get_links()
 
     def get_urls(self):
         """Returns various link versions for URL"""
