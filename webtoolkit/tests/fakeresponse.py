@@ -938,6 +938,12 @@ class FakeInternetData(object):
 
         return None
 
+    def get_linkj(self, url):
+        if url.find("google.com") >= 0:
+            return {"links" : ["https://google.com"]}
+
+        return []
+
     def get_feedsj(self, url, settings=None):
         return []
 

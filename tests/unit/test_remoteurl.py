@@ -255,3 +255,10 @@ class RemoteUrlTest(FakeInternetTestCase):
 
         self.assertTrue(len(feeds) > 0)
 
+    def test_get_content_links(self):
+        u = RemoteUrl("https://google.com")
+        response = u.get_response()
+        links = u.get_content_links()
+
+        self.assertTrue(len(links) > 0)
+
