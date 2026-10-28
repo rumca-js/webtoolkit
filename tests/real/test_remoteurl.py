@@ -52,4 +52,7 @@ class TestRemoteUrl(unittest.TestCase):
         properties = url.get_social_properties()
         self.assertTrue(len(properties) > 0)
 
+        links = url.get_content_links()
+        self.assertTrue(len(links) > 0)
+
         return response

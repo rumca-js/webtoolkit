@@ -108,6 +108,23 @@ class RemoteServer(object):
 
         return self.perform_remote_call(link, request)
 
+    def get_scanlinks(self, request=None, url=None):
+        """
+        @returns [] in case of error
+        """
+        if url and not request:
+            request = PageRequestObject(url)
+            request.url = url
+            request.url = request.url.strip()
+
+        if not request or not request.url:
+            return
+
+        link = self.remote_server
+        link = f"{link}/api/scanlinks"
+
+        return self.perform_remote_call(link, request)
+
     def get_pingj(self, request=None, url=None):
         """
         @returns None in case of error
@@ -343,7 +360,8 @@ class RemoteServer(object):
             #r.raise_for_status()
 
         except requests.RequestException as E:
-            print(str(response_json))
+            print("Cannot post request")
+            #print(str(response_json))
 
     def findj(self, crawl_id=None, url=None, crawler_name=None, handler_name=None):
         timeout_s = 60

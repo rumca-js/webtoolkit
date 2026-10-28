@@ -255,7 +255,7 @@ class RemoteUrl(ContentInterface):
         Retrieves information about links (canonical, archive, etc.) for the URL.
         :return: A dictionary of link information.
         """
-        data = self.server.get_linkj(url=self.url)
+        data = self.server.get_scanlinks(url=self.url)
         if data:
             if "links" in data:
                 return data["links"]

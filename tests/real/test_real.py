@@ -95,20 +95,19 @@ class TestBaseUrl(unittest.TestCase):
         url.close()
 
     def test_baseurl__youtube_video__invalid(self):
+        # video no longer exists
         test_url = "https://www.youtube.com/watch?v=2UnWZMsTwHA"
-        response, handler, url = self.run_with_base_url(test_url)
 
-        self.assertEqual(handler.__class__.__name__, "YouTubeVideoHandler")
-        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
-
-        self.assertEqual(handler.get_status_code(), 404)
+        url = BaseUrl(url=test_url)
+        response = url.get_response()
+        handler = url.get_handler()
 
         self.assertTrue(handler.get_title())
-        self.assertEqual(len(list(handler.get_entries())), 0)
-        self.assertTrue(len(list(handler.get_streams())) > 0)
+        self.assertTrue(handler.get_hash())
+        self.assertTrue(handler.get_body_hash())
 
-        properties = url.get_social_properties()
-        self.assertTrue(len(properties) > 0)
+        self.assertTrue(response is not None)
+        self.assertFalse(response.is_valid())
 
         url.close()
 
