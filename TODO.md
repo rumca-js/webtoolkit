@@ -19,6 +19,7 @@
 
  - get_response vs get_responses vs get_streams. one is redundant. which is api?
  - provide playwright crawler(s)
+ - provide api to obtain head information
 
 ## Medium Priority
 
