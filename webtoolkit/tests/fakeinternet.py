@@ -46,6 +46,7 @@ class FakeInternetTestCase(unittest.TestCase):
         RemoteServer.get_feedsj = self.get_feedsj
         RemoteServer.get_pingj = self.get_pingj
         RemoteServer.get_linkj = self.get_linkj
+        RemoteServer.get_scanlinks = self.get_scanlinks
 
         BaseUrl.get_request_for_url = self.get_request_for_url
 
@@ -77,6 +78,12 @@ class FakeInternetTestCase(unittest.TestCase):
         return data.ping(url, settings=settings)
 
     def get_linkj(self, url, settings=None):
+        data = FakeInternetData(url)
+        return data.get_linkj(url)
+
+    def get_scanlinks(self, request=None, url=None):
+        if url is None and request is not None:
+            url = request.url
         data = FakeInternetData(url)
         return data.get_linkj(url)
 

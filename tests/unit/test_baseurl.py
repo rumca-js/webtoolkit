@@ -48,6 +48,36 @@ class BaseUrlTest(FakeInternetTestCase):
         request.crawler_type = MockCrawler(url)
         return request
 
+    def test_context_manager_returns_self(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        with url as ctx:
+            self.assertIs(ctx, url)
+
+    def test_context_manager_closes_on_normal_exit(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        with url:
+            pass
+
+        self.assertIsNone(url.request)
+        self.assertIsNone(url.response)
+
+    def test_context_manager_closes_on_exception(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        try:
+            with url:
+                raise RuntimeError("simulated error")
+        except RuntimeError:
+            pass
+
+        self.assertIsNone(url.request)
+        self.assertIsNone(url.response)
+
     def test_get_cleaned_link(self):
         MockRequestCounter.mock_page_requests = 0
 
@@ -112,6 +142,36 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(link, "https://corridordigital.com")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
+
+    def test_context_manager_returns_self(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        with url as ctx:
+            self.assertIs(ctx, url)
+
+    def test_context_manager_closes_on_normal_exit(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        with url:
+            pass
+
+        self.assertIsNone(url.request)
+        self.assertIsNone(url.response)
+
+    def test_context_manager_closes_on_exception(self):
+        test_link = "https://my-server:8185/view/somethingsomething"
+
+        url = MockUrl(request=self.get_request(test_link))
+        try:
+            with url:
+                raise RuntimeError("simulated error")
+        except RuntimeError:
+            pass
+
+        self.assertIsNone(url.request)
+        self.assertIsNone(url.response)
 
     def test_get_cleaned_link(self):
         MockRequestCounter.mock_page_requests = 0

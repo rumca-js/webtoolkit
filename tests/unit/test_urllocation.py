@@ -636,6 +636,9 @@ class UrlLocationTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_cleaned_link__stupid_google_link4(self):
+        """
+        Note: it is server sided reidrect, we are unable to decode it
+        """
         MockRequestCounter.mock_page_requests = 0
 
         test_link = "https://www.google.com/goto?url=CAESVQHrOzAVcZvSERtSfnqipyeIBLYPdWctKiAMpeRCYGIG53AhOt6O2oohFrTA6ERi80aMGfpWixlDWFbSXI8_nfSfDnLiEiPvc_lQJ4oASUHm7SD_rA4"

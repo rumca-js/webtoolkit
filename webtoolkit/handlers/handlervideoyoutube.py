@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
@@ -127,6 +128,28 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
 
     def get_link_music(self):
         return "https://music.youtube.com?v={0}".format(self.get_video_code())
+
+    def get_channel_id_from_page(self):
+        """Extracts externalChannelId from the YouTube watch page JSON blob."""
+        response = self.response
+        if not response:
+            return None
+        text = response.get_text()
+        if not text:
+            return None
+        m = re.search(r'"externalChannelId"\s*:\s*"([^"]+)"', text)
+        if m:
+            return m.group(1)
+        return None
+
+    def get_feeds(self):
+        feeds = set(super().get_feeds())
+        channel_id = self.get_channel_id_from_page()
+        if channel_id:
+            feeds.add(
+                "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(channel_id)
+            )
+        return list(feeds)
 
     def get_author(self):
         response = self.response

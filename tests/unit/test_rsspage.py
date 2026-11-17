@@ -274,6 +274,10 @@ class RssPageTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_get_entries__hackernews(self):
+        """
+        it is a known error in hacker news that it does not work correctly, because
+        the RSS page is incorrect
+        """
         MockRequestCounter.mock_page_requests = 0
         reader = RssPage("https://linkedin.com/test", webpage_hackernews_rss)
 
