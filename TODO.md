@@ -17,7 +17,8 @@
   - **Issue**: `BaseUrl` and `Handler` lazily stash and mutate `self.response` across getter calls, causing non-thread-safe side-effects and hidden state coupling.
   - **Action**: Make the response acquisition lifecycle explicit or decouple response access from class state mutation.
 
-- provide playwright crawler(s)
+ - get_response vs get_responses vs get_streams. one is redundant. which is api?
+ - provide playwright crawler(s)
 
 ## Medium Priority
 
