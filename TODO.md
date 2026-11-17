@@ -20,6 +20,7 @@
  - get_response vs get_responses vs get_streams. one is redundant. which is api?
  - provide playwright crawler(s)
  - provide api to obtain head information
+ - is keeping url_builder a good pattern?
 
 ## Medium Priority
 
