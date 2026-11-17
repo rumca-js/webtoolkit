@@ -8,14 +8,16 @@
   - **Action**: Implement `__enter__` and `__exit__` on `BaseUrl` and handlers (`with BaseUrl(...) as url: ...`) for deterministic exception-safe cleanup.
 
 - [ ] **Expose Error Reporting for Social / Channel Properties**
-  - **Location**: `webtoolkit/handlers/handlers.py`, `webtoolkit/handlers/handlervideoyoutube.py`, `webtoolkit/handlers/handlerchannelodysee.py`
-  - **Issue**: Handlers extracting social metadata fail silently on rate limits, network blocks, or upstream schema shifts, leaving callers unable to distinguish empty results from failures.
-  - **Action**: Attach structured error info / HTTP statuses to returned social property payloads or raise catchable domain exceptions.
+  - **Location**: `webtoolkit/baseurl.py`, `webtoolkit/remoteurl.py`
+  - **Issue**: url returns social properties as a map. does not have any place for errors.
+  - **Action**: Provide return value with error information, or responses, or streams information
 
 - [ ] **Decouple Stateful `self.response` Stashing Across Layers**
   - **Location**: `webtoolkit/baseurl.py`, `webtoolkit/handlers/handlerhttppage.py`
   - **Issue**: `BaseUrl` and `Handler` lazily stash and mutate `self.response` across getter calls, causing non-thread-safe side-effects and hidden state coupling.
   - **Action**: Make the response acquisition lifecycle explicit or decouple response access from class state mutation.
+
+- provide playwright crawler(s)
 
 ## Medium Priority
 
@@ -28,11 +30,6 @@
   - **Location**: `webtoolkit/baseurl.py`
   - **Issue**: Ambiguous and overlapping method names between single response access and multi-stream responses.
   - **Action**: Unify and standardize response accessor names (e.g. `get_response()` for main page, `get_streams()` / `get_all_responses()` for multi-stream media).
-
-- [ ] **Consolidate `get_properties` and `get_all_properties`**
-  - **Location**: `webtoolkit/baseurl.py`
-  - **Issue**: Redundant methods with conflicting parameter structures returning overlapping metadata dictionaries.
-  - **Action**: Consolidate into a single `get_properties(include_social=False)` method with explicit filtering options.
 
 ## Low Priority
 
