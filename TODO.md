@@ -21,6 +21,7 @@
  - provide playwright crawler(s)
  - provide api to obtain head information
  - is keeping url_builder a good pattern?
+ - RemoteUrl could provide get_links (channel url)
 
 ## Medium Priority
 
