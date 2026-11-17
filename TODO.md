@@ -22,6 +22,7 @@
 
 ## Medium Priority
 
+- provide missing test cases for urllocation
 - [ ] **Replace `UrlLocation.parse_url()` Raw List with Structured Type**
   - **Location**: `webtoolkit/urllocation.py`
   - **Issue**: `parse_url()` returns a raw Python `list` (`["https", "://", ...]`), which is fragile and index-dependent.
