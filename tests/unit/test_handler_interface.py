@@ -1,6 +1,7 @@
 import unittest
 from webtoolkit.contentinterface import ContentInterface
 from webtoolkit.handlers.handlerinterface import HandlerInterface
+from webtoolkit.handlers.handlerhttppage import HttpPageHandler
 from webtoolkit.socialdata import SocialData
 
 
@@ -44,6 +45,31 @@ class TestHandlerInterfaceSocialData(unittest.TestCase):
         self.assertEqual(social.view_count, 1000)
         self.assertEqual(social.stars, 5.0)
         self.assertIsNone(social.thumbs_down)
+
+    def test_handlerinterface_close_nulls_state(self):
+        hi = HandlerInterface(url="https://example.com")
+        hi.response = object()
+        hi.request = object()
+        hi.streams = {"Default": object()}
+        hi.close()
+        self.assertIsNone(hi.response)
+        self.assertIsNone(hi.request)
+        self.assertEqual(hi.streams, {})
+
+    def test_httphandler_close_nulls_p(self):
+        h = HttpPageHandler(url="https://example.com")
+        # simulate a fetched page object
+        h.p = object()
+        h.response = object()
+        h.close()
+        self.assertIsNone(h.p)
+        self.assertIsNone(h.response)
+
+    def test_httphandler_close_before_fetch_is_safe(self):
+        h = HttpPageHandler(url="https://example.com")
+        h.close()  # p and response are already None — must not raise
+        self.assertIsNone(h.p)
+        self.assertIsNone(h.response)
 
 
 if __name__ == "__main__":

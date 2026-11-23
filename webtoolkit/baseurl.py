@@ -80,6 +80,7 @@ class BaseUrl(ContentInterface):
         self.url = self.request.url
         self.handler = None
         self.response = None
+        self._closed = False
         self.url_builder = url_builder
 
         if self.request.url:
@@ -213,6 +214,9 @@ class BaseUrl(ContentInterface):
         """
         Returns full response, with page handling object
         """
+        if self._closed:
+            raise RuntimeError("BaseUrl is closed")
+
         if self.response:
             return self.response
 
@@ -714,6 +718,10 @@ class BaseUrl(ContentInterface):
         return False
 
     def close(self):
+        """
+        Dispose of everything we have
+        """
+        self._closed = True
         try:
             if self.handler:
                 streams = self.handler.get_streams()
@@ -729,5 +737,6 @@ class BaseUrl(ContentInterface):
         finally:
             if self.handler:
                 self.handler.close()
+            self.handler = None
             self.request = None
             self.response = None

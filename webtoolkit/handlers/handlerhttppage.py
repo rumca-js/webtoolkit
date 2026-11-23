@@ -244,6 +244,13 @@ class HttpPageHandler(HandlerInterface):
 
         return True
 
+    def close(self):
+        """
+        Dispose of everything we have
+        """
+        super().close()
+        self.p = None
+
     def get_favicon(self):
         if self.p:
             if type(self.p) is HtmlPage:

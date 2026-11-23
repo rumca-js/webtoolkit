@@ -7,7 +7,22 @@ BaseUrl (webtoolkit/baseurl.py)
     caches responses, and exposes ContentInterface getters.
   - Key methods: get_response(), get_title(), get_description(), get_date_published(),
     get_author(), get_feeds(), get_entries(), get_links(), get_social_data(),
-    get_social_properties(), is_alive()
+    get_social_properties(), is_alive(), close()
+  - Context manager: implements __enter__ and __exit__, ensuring deterministic disposal.
+
+### Lifecycle & Disposal
+
+BaseUrl instances are designed for single URL usage, fetched once, and disposed cleanly:
+- **State Machine**:
+  - `INIT`: `BaseUrl(url=...)` created. `self._closed = False`, `self.response = None`, `self.handler = None`.
+  - `ACTIVE`: `get_response()` or content getter invoked. Handler is created, response is fetched and cached. Subsequent calls return cached `self.response`.
+  - `CLOSED`: `close()` or context manager exit (`__exit__`). `self._closed = True`, all fetch artifacts (`response`, `handler`, `request`) are nulled.
+  - Attempting to call `get_response()` (or dependent getters like `get_contents()`, `get_binary()`, `get_meta_hash()`, `get_all_properties()`, `get_response_data()`) while in the `CLOSED` state raises `RuntimeError("BaseUrl is closed")`.
+- **Disposal Chain**:
+  - `BaseUrl.close()`: Sets `self._closed = True`, tears down crawler references in stream requests, calls `self.handler.close()`, and nulls `self.handler`, `self.request`, `self.response`.
+  - `HandlerInterface.close()`: Sets `self.response = None`, `self.request = None`, `self.streams = {}`.
+  - `HttpPageHandler.close()`: Calls `super().close()` and additionally sets `self.p = None` (clearing parsed page objects like `HtmlPage`, `RssPage`).
+  - `close()` is idempotent: multiple invocations do not raise.
 
 RemoteUrl (webtoolkit/remoteurl.py)
   - Drop-in alternative to BaseUrl for delegating crawling and parsing to a remote

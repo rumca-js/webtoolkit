@@ -22,6 +22,7 @@
 - [ ] RemoteUrl could provide get_links (channel url)
 - [ ] provide API to obtain HEAD information
 - [ ] provide playwright crawler(s)
+- handler contains self.p field (page). seems redundant, but is it?
 
 ## Low Priority
 

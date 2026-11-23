@@ -65,6 +65,8 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertIsNone(url.request)
         self.assertIsNone(url.response)
+        self.assertIsNone(url.handler)
+        self.assertTrue(url._closed)
 
     def test_context_manager_closes_on_exception(self):
         test_link = "https://my-server:8185/view/somethingsomething"
@@ -78,6 +80,75 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertIsNone(url.request)
         self.assertIsNone(url.response)
+        self.assertIsNone(url.handler)
+        self.assertTrue(url._closed)
+
+    def test_close_nulls_state(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        url.get_response()
+        self.assertIsNotNone(url.response)
+        self.assertIsNotNone(url.handler)
+        self.assertIsNotNone(url.request)
+        self.assertFalse(url._closed)
+
+        url.close()
+        self.assertIsNone(url.response)
+        self.assertIsNone(url.handler)
+        self.assertIsNone(url.request)
+        self.assertTrue(url._closed)
+
+    def test_get_response_after_close_raises(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        url.close()
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_response()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+    def test_content_getters_after_close_raise(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        url.close()
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_contents()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_binary()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_meta_hash()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_all_properties()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_response_data()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
+    def test_close_is_idempotent(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        url.close()
+        url.close()
+        self.assertTrue(url._closed)
+        self.assertIsNone(url.response)
+        self.assertIsNone(url.handler)
+        self.assertIsNone(url.request)
+
+    def test_close_before_fetch_is_safe(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        self.assertFalse(url._closed)
+        url.close()
+        self.assertTrue(url._closed)
+        self.assertIsNone(url.response)
+        self.assertIsNone(url.handler)
+        self.assertIsNone(url.request)
 
     def test_get_cleaned_link(self):
         MockRequestCounter.mock_page_requests = 0
@@ -143,36 +214,6 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertEqual(link, "https://corridordigital.com")
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
-
-    def test_context_manager_returns_self(self):
-        test_link = "https://my-server:8185/view/somethingsomething"
-
-        url = MockUrl(request=self.get_request(test_link))
-        with url as ctx:
-            self.assertIs(ctx, url)
-
-    def test_context_manager_closes_on_normal_exit(self):
-        test_link = "https://my-server:8185/view/somethingsomething"
-
-        url = MockUrl(request=self.get_request(test_link))
-        with url:
-            pass
-
-        self.assertIsNone(url.request)
-        self.assertIsNone(url.response)
-
-    def test_context_manager_closes_on_exception(self):
-        test_link = "https://my-server:8185/view/somethingsomething"
-
-        url = MockUrl(request=self.get_request(test_link))
-        try:
-            with url:
-                raise RuntimeError("simulated error")
-        except RuntimeError:
-            pass
-
-        self.assertIsNone(url.request)
-        self.assertIsNone(url.response)
 
     def test_get_cleaned_link(self):
         MockRequestCounter.mock_page_requests = 0

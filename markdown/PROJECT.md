@@ -73,9 +73,16 @@ Extracted Content (implements ContentInterface)
   - Extractors should return `None` or empty containers on missing data rather than raising unhandled exceptions.
   - Return typed objects (`datetime` for dates, `list[str]` for tags/feeds).
 - **Testing**:
+  - The project uses the standard library `unittest` runner (not `pytest`).
   - Never make external network requests in unit tests (`tests/unit/`).
   - Keep live network tests in `tests/real/`.
-  - Always execute test suites inside Poetry environment (`poetry run`) or via `Makefile` targets: `make test-unit`, `make test-real`, `make test-memory`.
+  - Always execute test suites inside Poetry environment (`poetry run`) or via `Makefile` targets.
+  - Commands:
+    - Run all unit tests: `make test-unit` (or `poetry run python -u -m unittest discover -s tests/unit -v`)
+    - Run a single test file: `poetry run python -m unittest tests/unit/test_<name>.py`
+    - Run a specific test method: `poetry run python -m unittest tests.unit.test_<name>.<ClassName>.<test_method>`
+    - Run live integration tests: `make test-real`
+    - Run memory leak tests: `make test-memory`
 
 # Developer Notes
 
