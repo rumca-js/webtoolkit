@@ -17,6 +17,7 @@ from .pages import (
     RssPage,
     HtmlPage,
 )
+from .socialdata import SocialData
 from .webtools import (
     calculate_hash,
     WebLogger,
@@ -498,7 +499,7 @@ class BaseUrl(ContentInterface):
         return calculate_hash(text)
 
     def get_hash(self):
-        """ Returns binary hash for URL"""
+        """Returns binary hash for URL"""
         handler = self.get_handler()
         if handler:
             return handler.get_hash()
@@ -700,6 +701,10 @@ class BaseUrl(ContentInterface):
 
         json_data = handler.get_json_data()
         return handler.get_social_data()
+
+    def get_social_data(self) -> SocialData:
+        """Returns social data"""
+        return self.get_social_properties()
 
     def __enter__(self):
         return self

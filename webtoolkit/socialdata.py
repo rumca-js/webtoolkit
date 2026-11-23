@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
 
 @dataclass
@@ -22,8 +22,59 @@ class SocialData:
     errors: list[str] | None = None
     sources: list[SocialSourceResult] = field(default_factory=list)
 
+    def to_dict(self) -> dict:
+        """Returns a JSON-serializable dict representation."""
+        return asdict(self)
+
     def set_sources(self, sources: list[SocialSourceResult]) -> "SocialData":
         self.sources = sources
         errors = [s.error for s in sources if not s.ok and s.error]
         self.errors = errors or None
         return self
+
+    @classmethod
+    def from_dict(cls, data: dict | None) -> "SocialData":
+        if isinstance(data, cls):
+            return data
+        if not data or not isinstance(data, dict):
+            return cls()
+
+        sources = []
+        raw_sources = data.get("sources")
+        if isinstance(raw_sources, list):
+            for s in raw_sources:
+                if isinstance(s, dict):
+                    sources.append(
+                        SocialSourceResult(
+                            name=s.get("name", ""),
+                            ok=bool(s.get("ok", False)),
+                            error=s.get("error"),
+                        )
+                    )
+                elif isinstance(s, SocialSourceResult):
+                    sources.append(s)
+
+        instance = cls(
+            thumbs_up=data.get("thumbs_up"),
+            thumbs_down=data.get("thumbs_down"),
+            view_count=data.get("view_count"),
+            rating=data.get("rating"),
+            upvote_ratio=data.get("upvote_ratio"),
+            upvote_diff=data.get("upvote_diff"),
+            upvote_view_ratio=data.get("upvote_view_ratio"),
+            stars=data.get("stars"),
+            followers_count=data.get("followers_count"),
+        )
+        if sources:
+            instance.set_sources(sources)
+
+        raw_errors = data.get("errors")
+        if raw_errors and isinstance(raw_errors, list):
+            if instance.errors:
+                for err in raw_errors:
+                    if err and err not in instance.errors:
+                        instance.errors.append(err)
+            else:
+                instance.errors = [str(e) for e in raw_errors if e] or None
+
+        return instance

@@ -6,11 +6,13 @@ BaseUrl (webtoolkit/baseurl.py)
   - Main user-facing class. Accepts a URL string, dispatches to handlers and crawlers,
     caches responses, and exposes ContentInterface getters.
   - Key methods: get_response(), get_title(), get_description(), get_date_published(),
-    get_author(), get_feeds(), get_entries(), get_links(), is_alive()
+    get_author(), get_feeds(), get_entries(), get_links(), get_social_data(),
+    get_social_properties(), is_alive()
 
 RemoteUrl (webtoolkit/remoteurl.py)
   - Drop-in alternative to BaseUrl for delegating crawling and parsing to a remote
-    crawler-buddy service. Exposes the same ContentInterface API.
+    crawler-buddy service. Exposes the same ContentInterface API, including
+    get_social_data() and get_social_properties() returning SocialData instances.
 
 ## Handler Layer (webtoolkit/handlers/)
 
@@ -69,6 +71,7 @@ SocialData & SocialSourceResult:
     `ReturnDislike`) implement `get_social_data() -> SocialData` with granular per-source error
     reporting and logging.
   - `SocialData.set_sources(sources)` helper populates `sources` and extracts non-empty error strings into `errors`.
+  - `SocialData.from_dict(data)` deserializes raw JSON/dict responses, extracting engagement metrics, nested sources, and errors.
   - `HandlerInterface.get_social_data()` maps available getter methods into `SocialData`.
 
 ## Data Objects

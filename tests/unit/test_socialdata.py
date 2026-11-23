@@ -84,6 +84,68 @@ class TestSocialData(unittest.TestCase):
         self.assertEqual(data.sources, sources)
         self.assertEqual(data.errors, ["timeout"])
 
+    def test_from_dict_none_or_empty(self):
+        self.assertEqual(SocialData.from_dict(None), SocialData())
+        self.assertEqual(SocialData.from_dict({}), SocialData())
+        self.assertEqual(SocialData.from_dict("invalid"), SocialData())
+
+    def test_from_dict_metrics(self):
+        d = {
+            "thumbs_up": 10,
+            "thumbs_down": 1,
+            "view_count": 100,
+            "rating": 4.0,
+            "stars": 5.0,
+            "followers_count": 50,
+        }
+        res = SocialData.from_dict(d)
+        self.assertEqual(res.thumbs_up, 10)
+        self.assertEqual(res.thumbs_down, 1)
+        self.assertEqual(res.view_count, 100)
+        self.assertEqual(res.rating, 4.0)
+        self.assertEqual(res.stars, 5.0)
+        self.assertEqual(res.followers_count, 50)
+        self.assertIsNone(res.errors)
+        self.assertEqual(res.sources, [])
+
+    def test_from_dict_with_sources_and_errors(self):
+        d = {
+            "view_count": 200,
+            "sources": [
+                {"name": "youtube", "ok": True, "error": None},
+                {"name": "returndislike", "ok": False, "error": "rate limited"},
+            ],
+            "errors": ["rate limited"],
+        }
+        res = SocialData.from_dict(d)
+        self.assertEqual(res.view_count, 200)
+        self.assertEqual(len(res.sources), 2)
+        self.assertEqual(res.sources[0].name, "youtube")
+        self.assertTrue(res.sources[0].ok)
+        self.assertEqual(res.sources[1].name, "returndislike")
+        self.assertFalse(res.sources[1].ok)
+        self.assertEqual(res.errors, ["rate limited"])
+
+    def test_from_dict_already_social_data(self):
+        orig = SocialData(stars=10.0)
+        self.assertIs(SocialData.from_dict(orig), orig)
+
+    def test_to_dict(self):
+        data = SocialData(stars=5.0, view_count=100)
+        d = data.to_dict()
+        self.assertIsInstance(d, dict)
+        self.assertEqual(d["stars"], 5.0)
+        self.assertEqual(d["view_count"], 100)
+        self.assertIn("sources", d)
+        self.assertIn("errors", d)
+
+    def test_to_dict_with_sources(self):
+        data = SocialData(thumbs_up=10)
+        data.set_sources([SocialSourceResult(name="yt", ok=True)])
+        d = data.to_dict()
+        self.assertEqual(d["sources"][0]["name"], "yt")
+        self.assertTrue(d["sources"][0]["ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

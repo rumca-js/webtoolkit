@@ -2,72 +2,83 @@ from datetime import datetime
 
 from webtoolkit.utils.memorychecker import MemoryChecker
 
-from webtoolkit import UrlLocation, RemoteUrl, PageRequestObject
+from webtoolkit import UrlLocation, RemoteUrl, PageRequestObject, SocialData
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase, MockRequestCounter
 from webtoolkit.tests.fakeinternetcontents import webpage_with_real_rss_links
 from webtoolkit import BaseUrl
 
 
 all_properties = [
-   {
-       "data" : {
-           "title" : "Example Page Title",
-           "link": "https://example.com",
-           "feeds": "https://example.com/rss",
-           "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
-       },
-       "name" : "Properties",
-   },
-   {
-       "data" : {},
-       "name" : "Text",
-   },
-   {
-       "data" : {
-           "https://example1.com" : {
-               "status_code" : 200,
-               "request" : {
-                   "url": "https://example.com",
-                   "crawler_name" : "Fake Properties Crawler2",
-               },
-               "text" : "<html></html"
-           },
-           "https://example2.com" : {
-               "status_code" : 200,
-               "request" : {
-                   "url": "https://example2.com",
-                   "crawler_name" : "Fake Properties Crawler2",
-               },
-               "text" : "<html></html"
-           }
-       },
-       "name" : "Streams",
-   },
-   {
-       "data" : {
-           "crawler_name" : "Fake Properties Crawler1",
-       },
-       "name" : "Request",
-   },
-   {
-       "data" : {
-           "status_code" : 200,
-           "request" : {
-               "url": "https://example.com",
-               "crawler_name" : "Fake Properties Crawler2",
-           }
-       },
-       "name" : "Response",
-   },
-   {
-       "data" : 
-       [
-           {"title" : "0", "link" : "https://0.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
-           {"title" : "1", "link" : "https://1.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
-           {"title" : "2", "link" : "https://2.com", "date_published" : "Sat, 07 Feb 2026 12:00:00 GMT"},
-       ],
-       "name" : "Entries",
-   },
+    {
+        "data": {
+            "title": "Example Page Title",
+            "link": "https://example.com",
+            "feeds": "https://example.com/rss",
+            "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
+        },
+        "name": "Properties",
+    },
+    {
+        "data": {},
+        "name": "Text",
+    },
+    {
+        "data": {
+            "https://example1.com": {
+                "status_code": 200,
+                "request": {
+                    "url": "https://example.com",
+                    "crawler_name": "Fake Properties Crawler2",
+                },
+                "text": "<html></html",
+            },
+            "https://example2.com": {
+                "status_code": 200,
+                "request": {
+                    "url": "https://example2.com",
+                    "crawler_name": "Fake Properties Crawler2",
+                },
+                "text": "<html></html",
+            },
+        },
+        "name": "Streams",
+    },
+    {
+        "data": {
+            "crawler_name": "Fake Properties Crawler1",
+        },
+        "name": "Request",
+    },
+    {
+        "data": {
+            "status_code": 200,
+            "request": {
+                "url": "https://example.com",
+                "crawler_name": "Fake Properties Crawler2",
+            },
+        },
+        "name": "Response",
+    },
+    {
+        "data": [
+            {
+                "title": "0",
+                "link": "https://0.com",
+                "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
+            },
+            {
+                "title": "1",
+                "link": "https://1.com",
+                "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
+            },
+            {
+                "title": "2",
+                "link": "https://2.com",
+                "date_published": "Sat, 07 Feb 2026 12:00:00 GMT",
+            },
+        ],
+        "name": "Entries",
+    },
 ]
 
 
@@ -78,7 +89,7 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.ignore_memory = True
         self.memory_checker = MemoryChecker()
         memory_increase = self.memory_checker.get_memory_increase()
-        #print(f"Memory increase {memory_increase} setup")
+        # print(f"Memory increase {memory_increase} setup")
 
     def tearDown(self):
         if not self.ignore_memory:
@@ -123,7 +134,9 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertTrue(entries)
         self.assertEqual(len(entries), 3)
         self.assertTrue(entries[0]["date_published"])
-        self.assertNotEqual(entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT")
+        self.assertNotEqual(
+            entries[0]["date_published"], "Sat, 07 Feb 2026 12:00:00 GMT"
+        )
 
     def test_constructor__get_responses(self):
         u = RemoteUrl(all_properties=all_properties)
@@ -211,8 +224,37 @@ class RemoteUrlTest(FakeInternetTestCase):
         u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
         properties = u.get_social_properties()
 
-        self.assertTrue(properties)
-        self.assertIn("stars", properties)
+        self.assertIsInstance(properties, SocialData)
+        self.assertTrue(properties.stars)
+
+    def test_get_social_data(self):
+        u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
+        data = u.get_social_data()
+
+        self.assertIsInstance(data, SocialData)
+        self.assertTrue(data.stars)
+
+    def test_get_social_properties_failure(self):
+        u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
+        u.server.get_socialj = lambda url=None, request=None: None
+        data = u.get_social_properties()
+
+        self.assertIsInstance(data, SocialData)
+        self.assertEqual(data.errors, ["Remote call failed"])
+        self.assertEqual(len(data.sources), 1)
+        self.assertEqual(data.sources[0].name, "remote")
+        self.assertFalse(data.sources[0].ok)
+        self.assertEqual(data.sources[0].error, "Remote call failed")
+
+    def test_init_with_dict_social_properties(self):
+        u = RemoteUrl(
+            "https://example.com",
+            social_properties={"stars": 42.0, "errors": ["custom error"]},
+        )
+        data = u.get_social_properties()
+        self.assertIsInstance(data, SocialData)
+        self.assertEqual(data.stars, 42.0)
+        self.assertEqual(data.errors, ["custom error"])
 
     def test_get_text(self):
         u = RemoteUrl("https://google.com")
@@ -249,7 +291,9 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertFalse(isinstance(hash, str))
 
     def test_get_feeds(self):
-        u = RemoteUrl("https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM")
+        u = RemoteUrl(
+            "https://www.youtube.com/feeds/videos.xml?channel_id=SAMTIMESAMTIMESAMTIMESAM"
+        )
         response = u.get_response()
         feeds = u.get_feeds()
 
@@ -261,4 +305,3 @@ class RemoteUrlTest(FakeInternetTestCase):
         links = u.get_content_links()
 
         self.assertTrue(len(links) > 0)
-

@@ -16,6 +16,7 @@ from .contentinterface import ContentInterface
 from .remoteserver import RemoteServer
 from .request import PageRequestObject
 from .response import PageResponseObject
+from .socialdata import SocialData, SocialSourceResult
 from .webtools import json_decode_field
 from .webtools import date_str_to_date
 
@@ -49,9 +50,14 @@ class RemoteUrl(ContentInterface):
 
         self.request = request
         self.remote_server_location = remote_server_location
-        self.server = RemoteServer(remote_server=self.remote_server_location, key=key, client_id=client_id)
+        self.server = RemoteServer(
+            remote_server=self.remote_server_location, key=key, client_id=client_id
+        )
         self.all_properties = all_properties
-        self.social_properties = social_properties
+        if social_properties is not None:
+            self.social_properties = SocialData.from_dict(social_properties)
+        else:
+            self.social_properties = None
 
         self.responses = None
 
@@ -289,13 +295,29 @@ class RemoteUrl(ContentInterface):
         if hash_section:
             return json_decode_field(hash_section)
 
-    def get_social_properties(self):
+    def get_social_properties(self) -> SocialData:
         """
         Retrieves social media properties for the URL.
-        :return: A dictionary of social media properties.
+        :return: SocialData object.
         """
         if self.social_properties is None:
-            self.social_properties = self.server.get_socialj(
-                url=self.url, request=self.request
-            )
+            raw_social = self.server.get_socialj(url=self.url, request=self.request)
+            if raw_social is None:
+                self.social_properties = SocialData().set_sources(
+                    [
+                        SocialSourceResult(
+                            name="remote",
+                            ok=False,
+                            error="Remote call failed",
+                        )
+                    ]
+                )
+            else:
+                self.social_properties = SocialData.from_dict(raw_social)
         return self.social_properties
+
+    def get_social_data(self) -> SocialData:
+        """
+        Returns social data
+        """
+        return self.get_social_properties()
