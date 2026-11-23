@@ -70,15 +70,24 @@ class RedditUrlHandler(DefaultUrlHandler):
         """
         url_link = self.get_json_url()
         if url_link:
-            url = self.build_http_url(url_link)
-            contents = url.get_contents()
-            self.streams[url_link] = url.get_response()
-            url.close()
+            if url_link in self.streams and self.streams[url_link]:
+                response = self.streams[url_link]
+                return response.get_text()
 
-            if contents:
-                return contents
+            url = self.build_http_url(url_link)
+            if url:
+                contents = url.get_contents()
+                response = url.get_response()
+                if response:
+                    self.streams[url_link] = response
+                url.close()
+
+                if contents:
+                    return contents
+                else:
+                    WebLogger.error("Reddit:No url link contents {}".format(url_link))
             else:
-                WebLogger.error("Reddit:No url link contents {}".format(url_link))
+                WebLogger.error("Reddit:Cannot build url {}".format(url_link))
         else:
             WebLogger.error("Reddit:no Url link")
 
@@ -114,7 +123,9 @@ class RedditUrlHandler(DefaultUrlHandler):
             else:
                 err = "reddit_json: no social data available"
                 WebLogger.error(err)
-                sources.append(SocialSourceResult(name="reddit_json", ok=False, error=err))
+                sources.append(
+                    SocialSourceResult(name="reddit_json", ok=False, error=err)
+                )
         except Exception as e:
             err = str(e)
             WebLogger.error(f"reddit_json exception: {err}")
@@ -264,20 +275,36 @@ class GitHubUrlHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            url = self.build_http_url(url_link)
-            contents = url.get_contents()
-            self.streams[url_link] = url.get_response()
-            url.close()
+            if url_link in self.streams and self.streams[url_link]:
+                response = self.streams[url_link]
+                if response and response.get_text():
+                    try:
+                        return json.loads(response.get_text())
+                    except ValueError:
+                        WebLogger.error(
+                            "GitHub:Cannot process contents {}".format(url_link)
+                        )
+                return
 
-            if contents:
-                try:
-                    return json.loads(contents)
-                except ValueError:
-                    WebLogger.error(
-                        "GitHub:Cannot process contents {}".format(url_link)
-                    )
+            url = self.build_http_url(url_link)
+            if url:
+                contents = url.get_contents()
+                response = url.get_response()
+                if response:
+                    self.streams[url_link] = response
+                url.close()
+
+                if contents:
+                    try:
+                        return json.loads(contents)
+                    except ValueError:
+                        WebLogger.error(
+                            "GitHub:Cannot process contents {}".format(url_link)
+                        )
+                else:
+                    WebLogger.error("GitHub:No url link contents {}".format(url_link))
             else:
-                WebLogger.error("GitHub:No url link contents {}".format(url_link))
+                WebLogger.error("GitHub:Cannot build url {}".format(url_link))
         else:
             WebLogger.error("GitHub:no Url link")
 
@@ -292,7 +319,9 @@ class GitHubUrlHandler(DefaultUrlHandler):
             else:
                 err = "github_api: no social data available"
                 WebLogger.error(err)
-                sources.append(SocialSourceResult(name="github_api", ok=False, error=err))
+                sources.append(
+                    SocialSourceResult(name="github_api", ok=False, error=err)
+                )
         except Exception as e:
             err = str(e)
             WebLogger.error(f"github_api exception: {err}")
@@ -428,11 +457,15 @@ class ReturnDislike(DefaultUrlHandler):
             else:
                 err = "return_dislike: no social data available"
                 WebLogger.error(err)
-                sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+                sources.append(
+                    SocialSourceResult(name="return_dislike", ok=False, error=err)
+                )
         except Exception as e:
             err = str(e)
             WebLogger.error(f"return_dislike exception: {err}")
-            sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+            sources.append(
+                SocialSourceResult(name="return_dislike", ok=False, error=err)
+            )
 
         merged = super().get_social_data()
         return merged.set_sources(sources)
@@ -487,20 +520,38 @@ class HackerNewsHandler(DefaultUrlHandler):
 
         url_link = self.get_json_url()
         if url_link:
-            url = self.build_http_url(url_link)
-            contents = url.get_contents()
-            self.streams[url_link] = url.get_response()
-            url.close()
+            if url_link in self.streams and self.streams[url_link]:
+                response = self.streams[url_link]
+                if response and response.get_text():
+                    try:
+                        return json.loads(response.get_text())
+                    except ValueError:
+                        WebLogger.error(
+                            "HackerNews:Cannot process contents {}".format(url_link)
+                        )
+                return
 
-            if contents:
-                try:
-                    return json.loads(contents)
-                except ValueError:
+            url = self.build_http_url(url_link)
+            if url:
+                contents = url.get_contents()
+                response = url.get_response()
+                if response:
+                    self.streams[url_link] = response
+                url.close()
+
+                if contents:
+                    try:
+                        return json.loads(contents)
+                    except ValueError:
+                        WebLogger.error(
+                            "HackerNews:Cannot process contents {}".format(url_link)
+                        )
+                else:
                     WebLogger.error(
-                        "HackerNews:Cannot process contents {}".format(url_link)
+                        "HackerNews:No url link contents {}".format(url_link)
                     )
             else:
-                WebLogger.error("HackerNews:No url link contents {}".format(url_link))
+                WebLogger.error("HackerNews:Cannot build url {}".format(url_link))
         else:
             WebLogger.error("HackerNews:no Url link")
 
@@ -515,11 +566,15 @@ class HackerNewsHandler(DefaultUrlHandler):
             else:
                 err = "hackernews_api: no social data available"
                 WebLogger.error(err)
-                sources.append(SocialSourceResult(name="hackernews_api", ok=False, error=err))
+                sources.append(
+                    SocialSourceResult(name="hackernews_api", ok=False, error=err)
+                )
         except Exception as e:
             err = str(e)
             WebLogger.error(f"hackernews_api exception: {err}")
-            sources.append(SocialSourceResult(name="hackernews_api", ok=False, error=err))
+            sources.append(
+                SocialSourceResult(name="hackernews_api", ok=False, error=err)
+            )
 
         merged = super().get_social_data()
         return merged.set_sources(sources)

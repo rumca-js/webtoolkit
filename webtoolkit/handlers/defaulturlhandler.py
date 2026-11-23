@@ -61,8 +61,7 @@ class DefaultUrlHandler(HttpPageHandler):
         WebLogger.error("Default Url Handler - no builder")
 
     def build_default_url(self, url, crawler_name=None):
-        """
-        """
+        """ """
         if not url:
             return
 
@@ -165,7 +164,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
                 invalid_responses.append(response)
 
         if len(invalid_responses) > 0:
-            self.response =  invalid_responses[0]
+            self.response = invalid_responses[0]
             return self.response
 
         for response in responses:
@@ -205,14 +204,17 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
         # we capture responses using order of urls
         for page_url in self.all_urls_to_fetch.values():
             if page_url:
-                self.responses.append(page_url.get_response())
+                resp = page_url.get_response()
+                self.responses.append(resp)
+                if resp and page_url.url:
+                    self.streams[page_url.url] = resp
 
         return self.responses
 
     def is_valid(self):
         is_valid = True
         for page_url in self.all_urls_to_fetch.values():
-            response = url.get_response()
+            response = page_url.get_response()
             if not response.is_valid():
                 is_valid = False
         return is_valid
@@ -220,7 +222,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
     def is_invalid(self):
         is_invalid = True
         for page_url in self.all_urls_to_fetch.values():
-            response = url.get_response()
+            response = page_url.get_response()
             if not response.is_invalid():
                 is_invalid = False
         return is_invalid
@@ -242,12 +244,13 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def get_streams(self):
         for page_url in self.all_urls_to_fetch.values():
-            self.streams[page_url.url] = page_url.get_response()
+            if page_url and page_url.url:
+                self.streams[page_url.url] = page_url.get_response()
 
-        return self.streams
+        return super().get_streams()
 
     def get_response_source(self, page_url):
-        if page_url in self.all_urls_to_fetch.values():
+        if page_url in self.all_urls_to_fetch:
             return self.all_urls_to_fetch[page_url]
 
         url = self.build_http_url(page_url)
@@ -295,7 +298,7 @@ class DefaultCompoundChannelHandler(DefaultChannelHandler):
 
     def get_album(self):
         for url in self.all_urls_to_fetch.values():
-            album = url.get_author()
+            album = url.get_album()
             if album:
                 return album
 

@@ -15,6 +15,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     """
     Uses default mechanism - http page handler to provide HTML response
     """
+
     def __init__(self, url=None, request=None, url_builder=None):
         super().__init__(
             url=url,
@@ -149,7 +150,9 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         channel_id = self.get_channel_id_from_page()
         if channel_id:
             feeds.add(
-                "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(channel_id)
+                "https://www.youtube.com/feeds/videos.xml?channel_id={}".format(
+                    channel_id
+                )
             )
         return list(feeds)
 
@@ -158,14 +161,18 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         if response:
             p = response.get_page()
             if p:
-                return p.get_schema_field_ex("http://schema.org/Person", "name", "content")
+                return p.get_schema_field_ex(
+                    "http://schema.org/Person", "name", "content"
+                )
 
     def get_channel_name(self):
         response = self.response
         if response:
             p = response.get_page()
             if p:
-                return p.get_schema_field_ex("http://schema.org/Person", "name", "content")
+                return p.get_schema_field_ex(
+                    "http://schema.org/Person", "name", "content"
+                )
 
     def get_channel_url(self):
         response = self.response
@@ -177,25 +184,44 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
     def get_social_data(self) -> SocialData:
         sources = []
         try:
-            url = self.build_http_url(self.get_return_dislike_url_link())
-            response = url.get_response() if url else None
+            dislike_url = self.get_return_dislike_url_link()
+            response = None
+            if dislike_url:
+                if dislike_url in self.streams and self.streams[dislike_url]:
+                    response = self.streams[dislike_url]
+                else:
+                    child = self.build_http_url(dislike_url)
+                    if child:
+                        response = child.get_response()
+                        if response:
+                            self.streams[dislike_url] = response
+                        child.close()
+
             if response and response.is_valid():
-                self.return_dislike_json = ReturnDislikeJson(contents=response.get_text())
+                self.return_dislike_json = ReturnDislikeJson(
+                    contents=response.get_text()
+                )
                 if self.return_dislike_json.get_json():
                     sources.append(SocialSourceResult(name="return_dislike", ok=True))
                 else:
                     err = "return_dislike: empty or invalid JSON response"
                     WebLogger.error(err)
-                    sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+                    sources.append(
+                        SocialSourceResult(name="return_dislike", ok=False, error=err)
+                    )
             else:
                 status = getattr(response, "status_code", "no response")
                 err = f"return_dislike: HTTP {status}"
                 WebLogger.error(err)
-                sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+                sources.append(
+                    SocialSourceResult(name="return_dislike", ok=False, error=err)
+                )
         except Exception as e:
             err = str(e)
             WebLogger.error(f"return_dislike exception: {err}")
-            sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+            sources.append(
+                SocialSourceResult(name="return_dislike", ok=False, error=err)
+            )
 
         merged = super().get_social_data()
         return merged.set_sources(sources)
@@ -232,8 +258,8 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
 
     def get_responses_implementation(self, urls_to_fetch):
         """
-         - YouTube returns 200 for unavailable videos.
-         - we check if there is schema information about video. If none, it is error
+        - YouTube returns 200 for unavailable videos.
+        - we check if there is schema information about video. If none, it is error
         """
         responses = super().get_responses_implementation(urls_to_fetch)
         for response in responses:

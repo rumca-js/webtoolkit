@@ -32,8 +32,11 @@ RemoteUrl (webtoolkit/remoteurl.py)
 ## Handler Layer (webtoolkit/handlers/)
 
 HandlerInterface (handlerinterface.py)
-  - Abstract base for all handlers. Extends DefaultContentPage. Holds response, streams,
-    and url_builder. Subclasses override is_handled_by(), input2code(), code2url().
+  - Abstract base for all handlers. Extends DefaultContentPage. Holds response, streams
+    container map (`dict[str, PageResponseObject]`), and url_builder.
+  - Implements container-backed `get_response()` (returns primary response), `get_responses()` (returns all streams),
+    and `get_streams()` (serialized JSON map). Subclasses override is_handled_by(), input2code(), code2url().
+  - Platform handlers fetch auxiliary endpoints into `streams` via `build_http_url()`, preserving downstream custom crawlers.
 
 DefaultUrlHandler (defaulturlhandler.py)
   - Fallback handler for plain HTTP URLs. Delegates to HttpPageHandler.
@@ -83,8 +86,8 @@ SocialData & SocialSourceResult:
     `followers_count`), `errors: list[str] | None`, and `sources: list[SocialSourceResult]`.
   - `SocialSourceResult`: Per-source tracking dataclass (`name`, `ok`, `error`).
   - Handlers (`HandlerVideoYoutube`, `RedditUrlHandler`, `GitHubUrlHandler`, `HackerNewsHandler`,
-    `ReturnDislike`) implement `get_social_data() -> SocialData` with granular per-source error
-    reporting and logging.
+    `ReturnDislike`) fetch auxiliary API responses into `streams` via `build_http_url()` and implement
+    `get_social_data() -> SocialData` with granular per-source error reporting and logging.
   - `SocialData.set_sources(sources)` helper populates `sources` and extracts non-empty error strings into `errors`.
   - `SocialData.from_dict(data)` deserializes raw JSON/dict responses, extracting engagement metrics, nested sources, and errors.
   - `HandlerInterface.get_social_data()` maps available getter methods into `SocialData`.

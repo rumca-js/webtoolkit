@@ -2,7 +2,7 @@
 
 ## Layers
 - **Url Layer** (`BaseUrl`, `RemoteUrl`): Entry points for users/consumers representing web resources. Coordinates handlers, requests, caching, and page extraction.
-- **Handler Layer** (`handlers/`): Domain- and protocol-specific handlers providing custom parsing, API interaction, and page extraction strategies.
+- **Handler Layer** (`handlers/`): Domain- and protocol-specific handlers providing custom parsing, API interaction, and page extraction strategies. Handlers may be compound/multi-source, managing response containers (`streams`) mapping URLs to `PageResponseObject`s.
 - **Crawler Layer** (`crawlers/`): Network transport abstraction layer (`CrawlerInterface`, `RequestsCrawler`) executing HTTP requests and returning raw responses.
 - **Pages Layer** (`pages.py`, `contentinterface.py`): Content representation and extraction objects implementing `ContentInterface`.
 - **Remote Layer** (`RemoteUrl`, `RemoteServer`): Client implementation for delegating crawling and parsing to a remote service (`crawler-buddy`).
@@ -13,19 +13,17 @@
 Url (BaseUrl / RemoteUrl)
     │
     ▼
-Handler (HandlerInterface / HttpPageHandler / Specialized Handler)
+Handler (HandlerInterface / Compound / Specialized Handler)
     │
+    ├─► Crawler(s) (RequestsCrawler / RemoteServer)
+    │       │
+    │       ▼
+    │   Response Container (streams: {url: PageResponseObject})
+    │       │
+    │       ├─► Primary Response (self.url) ──► Page Parser (PageFactory) ──► get_response() / ContentInterface
+    │       └─► Auxiliary Responses (APIs)  ──► Social Parser             ──► get_social_data() (SocialData)
     ▼
-Crawler (CrawlerInterface / RequestsCrawler or RemoteServer)
-    │
-    ▼
-Raw Response (PageResponseObject)
-    │
-    ▼
-Page Parser (PageFactory -> HtmlPage / RssPage / OpmlPage / JsonPage)
-    │
-    ▼
-Extracted Content (implements ContentInterface)
+Extracted Content / Metadata
 ```
 
 # Project Layout
@@ -59,6 +57,15 @@ Extracted Content (implements ContentInterface)
 - `tests/real/`: Integration tests interacting with real network endpoints.
 - `tests/memory/`: Memory consumption and leak tests.
 
+# Extensions
+
+`BaseUrl` is designed to be extended by downstream applications (e.g., a custom `Url` class) to inject domain-specific crawler selection, rate limiting, and custom handler registries.
+
+To ensure child requests spawned by handlers honor the extension:
+- `url_builder` (pointing to the `BaseUrl` subclass) is injected into handlers.
+- `DefaultUrlHandler.build_http_url(url)`: Creates a child `url_builder` instance forced to `HttpPageHandler` to fetch raw content (HTML/JSON) without recursive handler dispatch.
+- `DefaultUrlHandler.build_default_url(url)`: Creates a child `url_builder` instance using standard handler resolution according to the subclass's configuration.
+
 # Coding Conventions
 
 - **Python Version**: Python 3.9+.
@@ -72,6 +79,10 @@ Extracted Content (implements ContentInterface)
   - Content extractors must inherit from `ContentInterface` or `DefaultContentPage`.
   - Extractors should return `None` or empty containers on missing data rather than raising unhandled exceptions.
   - Return typed objects (`datetime` for dates, `list[str]` for tags/feeds).
+  - Multi-source / compound handlers must store fetched responses in `self.streams: dict[str, PageResponseObject]` keyed by URL, rather than discarding auxiliary responses or mutating ad-hoc fields.
+  - **Transport Agnosticism**: All fetch mechanisms (HTTP GET, POST/GraphQL, Playwright, CLI/subprocesses like `yt-dlp`, or remote daemons) encapsulate results into `PageResponseObject` before populating `streams`. APIs (`get_response`, `get_responses`, `get_streams`, `get_social_data`) operate exclusively on `PageResponseObject` instances, decoupled from transport details.
+  - `get_response()` returns the primary content response (matching `self.url` or primary entry in `streams`).
+  - `get_social_data()` aggregates engagement metrics across relevant responses in `streams`, capturing endpoint status in `SocialData.sources: list[SocialSourceResult]`.
 - **Testing**:
   - The project uses the standard library `unittest` runner (not `pytest`).
   - Never make external network requests in unit tests (`tests/unit/`).

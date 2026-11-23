@@ -52,9 +52,17 @@ class HttpPageHandler(HandlerInterface):
         Obtains response, analyzes structure, etc
         """
         if self.response:
+            if self.url and self.url not in self.streams:
+                self.streams[self.url] = self.response
             return self.response
 
-        self.get_response_implementation()
+        if self.url and self.url in self.streams and self.streams[self.url]:
+            self.response = self.streams[self.url]
+        else:
+            self.get_response_implementation()
+
+        if self.response and self.url and self.url not in self.streams:
+            self.streams[self.url] = self.response
 
         self.p = self.get_page_handler()
 
@@ -78,6 +86,8 @@ class HttpPageHandler(HandlerInterface):
             self.update_request_for_services()
             builder = CrawlerCaller(url=url, request=self.request)
             self.response = builder.get_response()
+            if self.response and url:
+                self.streams[url] = self.response
 
             return self.response
 

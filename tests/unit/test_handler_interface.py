@@ -3,6 +3,7 @@ from webtoolkit.contentinterface import ContentInterface
 from webtoolkit.handlers.handlerinterface import HandlerInterface
 from webtoolkit.handlers.handlerhttppage import HttpPageHandler
 from webtoolkit.socialdata import SocialData
+from webtoolkit.tests.mocks import MockUrl
 
 
 class TestHandlerInterfaceSocialData(unittest.TestCase):
@@ -70,6 +71,33 @@ class TestHandlerInterfaceSocialData(unittest.TestCase):
         h.close()  # p and response are already None — must not raise
         self.assertIsNone(h.p)
         self.assertIsNone(h.response)
+
+    def test_get_response_uses_streams(self):
+        hi = HandlerInterface(url="https://example.com")
+        mock_resp = object()
+        hi.streams["https://example.com"] = mock_resp
+        resp = hi.get_response()
+        self.assertIs(resp, mock_resp)
+        self.assertIs(hi.response, mock_resp)
+
+    def test_get_responses_returns_all_streams(self):
+        hi = HandlerInterface(url="https://example.com")
+        resp1 = object()
+        resp2 = object()
+        hi.streams["https://example.com"] = resp1
+        hi.streams["https://example.com/api"] = resp2
+        responses = hi.get_responses()
+        self.assertEqual(len(responses), 2)
+        self.assertIn(resp1, responses)
+        self.assertIn(resp2, responses)
+
+    def test_get_streams_contains_all_fetched_urls(self):
+        hi = HandlerInterface(url="https://example.com")
+        hi.response = object()
+        hi.streams["https://example.com/aux"] = object()
+        streams = hi.get_streams()
+        self.assertIn("https://example.com", streams)
+        self.assertIn("https://example.com/aux", streams)
 
 
 if __name__ == "__main__":

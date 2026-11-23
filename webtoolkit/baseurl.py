@@ -263,8 +263,9 @@ class BaseUrl(ContentInterface):
 
         if streams:
             for key, response in streams.items():
-                response_json = response_to_json(response)
-                result[key] = response_json
+                if response is not None:
+                    response_json = response_to_json(response)
+                    result[key] = response_json
 
         return result
 

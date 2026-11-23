@@ -26,10 +26,12 @@
 
 ## Low Priority
 
-- [ ] is keeping url_builder a good pattern?
+- [ ] Refactor extension mechanism and child URL factory (`url_builder`, `build_http_url`, `build_default_url`)
+  - `handlers/defaulturlhandler.py`, `baseurl.py`
+  - Current pattern creates cyclical layer dependencies (handlers instantiate top-level `BaseUrl` via `url_builder`), causes resource leaks from unclosed child `BaseUrl` instances, and requires hardcoded `"HttpPageHandler"` hacks to prevent infinite recursion.
+  - Implement one of two cleaner patterns:
+    - **Option A (Transport / Fetcher Injection)**: Pass a shared `fetcher`/transport context into handlers. Handlers call `self.fetcher.fetch(url, parent_request=self.request)` to obtain raw auxiliary responses without constructing full `BaseUrl` instances or re-triggering handler dispatch.
+    - **Option B (Declarative Multi-Source / Container Pattern)**: Handlers declare required endpoints via `get_required_urls()` (e.g. primary watch page + auxiliary dislike API). The orchestrator (`BaseUrl`) fetches all endpoints using its configured crawlers and injects responses into `handler.streams = {url: response}` before property extraction. Handlers remain pure parsers with no fetch or builder responsibilities.
 - [ ] support method chaining in UrlLocation (up(), get_clean() should return self)
   - urllocation.py
-- [ ] refactor child URL factory in handlers (build_http_url, build_default_url)
-  - handlers/defaulturlhandler.py
-  - ad-hoc helpers create BaseUrl instances directly inside handler implementations
 - [ ] handlerviewyoutube.py — get_feeds should convert channelId to feed url

@@ -85,8 +85,18 @@ class HandlerInterface(DefaultContentPage):
         return calculate_hash(text)
 
     def get_streams(self):
-        self.streams["Default"] = self.response
+        if self.response and self.url and self.url not in self.streams:
+            self.streams[self.url] = self.response
+        elif self.response and not self.url and "Default" not in self.streams:
+            self.streams["Default"] = self.response
         return self.streams
+
+    def get_responses(self):
+        if self.streams:
+            return list(self.streams.values())
+        if self.response:
+            return [self.response]
+        return []
 
     def get_body_hash(self):
         return self.get_hash()
@@ -133,7 +143,16 @@ class HandlerInterface(DefaultContentPage):
         return []
 
     def get_response(self):
-        raise NotImplementedError
+        if self.response:
+            if self.url and self.url not in self.streams:
+                self.streams[self.url] = self.response
+            return self.response
+
+        if self.url and self.url in self.streams and self.streams[self.url]:
+            self.response = self.streams[self.url]
+            return self.response
+
+        return None
 
     def get_channel_name(self):
         pass

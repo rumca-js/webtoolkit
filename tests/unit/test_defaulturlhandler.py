@@ -1,4 +1,9 @@
-from webtoolkit import PageRequestObject, DefaultUrlHandler, HttpPageHandler
+from webtoolkit import (
+    PageRequestObject,
+    DefaultUrlHandler,
+    HttpPageHandler,
+    DefaultCompoundChannelHandler,
+)
 from webtoolkit.tests.fakeinternet import FakeInternetTestCase
 from webtoolkit.tests.mocks import MockUrl, MockRequestCounter
 
@@ -17,7 +22,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -44,7 +49,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -71,7 +76,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -98,7 +103,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -125,7 +130,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -144,7 +149,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -163,7 +168,7 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         request.crawler_type = None
         request.handler_name = "test2"
         request.handler_type = None
-        request.cookies = {"CONSENT" : "test-YES"}
+        request.cookies = {"CONSENT": "test-YES"}
 
         handler = DefaultUrlHandler(test_url, request=request, url_builder=MockUrl)
 
@@ -171,3 +176,26 @@ class DefaultUrlHandlerTest(FakeInternetTestCase):
         response = handler.get_response()
 
         self.assertTrue(response)
+
+    def test_compound_channel_handler_validity_and_streams(self):
+        MockRequestCounter.mock_page_requests = 0
+
+        test_url = "https://google.com"
+        handler = DefaultCompoundChannelHandler(test_url, url_builder=MockUrl)
+
+        # Trigger responses
+        responses = handler.get_responses()
+        self.assertTrue(len(responses) > 0)
+        self.assertTrue(handler.is_valid())
+        self.assertFalse(handler.is_invalid())
+
+        streams = handler.get_streams()
+        self.assertTrue(len(streams) > 0)
+
+    def test_compound_channel_handler_get_album(self):
+        test_url = "https://google.com"
+        handler = DefaultCompoundChannelHandler(test_url, url_builder=MockUrl)
+        handler.get_responses()
+        # get_album calls get_album on child BaseUrl without raising AttributeError
+        album = handler.get_album()
+        self.assertIsNone(album)
