@@ -8,6 +8,7 @@
     causing non-thread-safe side-effects and hidden state coupling
   - make the response acquisition lifecycle explicit or decouple response access
     from class state mutation
+  - maybe storing self.response at every layer is not OK
 
 ## Medium Priority
 
