@@ -32,6 +32,7 @@ Extracted Content (implements ContentInterface)
 
 ## Core Package (`webtoolkit/`)
 - `baseurl.py`: Main user-facing class (`BaseUrl`). Inherits from `ContentInterface`, dispatches to handlers and crawlers, and caches responses.
+- `socialdata.py`: Structured social metrics and source error reporting dataclasses (`SocialData`, `SocialSourceResult`).
 - `remoteurl.py`: Remote URL consumer (`RemoteUrl`) interacting with external crawler services.
 - `remoteserver.py`: Connection and client communication wrapper for remote crawler daemons (`crawler-buddy`).
 - `urllocation.py`: URL parsing, sanitization, domain extraction, and hierarchical navigation (`UrlLocation`).
@@ -74,7 +75,7 @@ Extracted Content (implements ContentInterface)
 - **Testing**:
   - Never make external network requests in unit tests (`tests/unit/`).
   - Keep live network tests in `tests/real/`.
-  - Execute test suites via `Makefile` targets: `make test-unit`, `make test-real`, `make test-memory`.
+  - Always execute test suites inside Poetry environment (`poetry run`) or via `Makefile` targets: `make test-unit`, `make test-real`, `make test-memory`.
 
 # Developer Notes
 

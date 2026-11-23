@@ -249,17 +249,22 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         # call tested function
         social_data = handler.get_social_data()
 
-        self.assertFalse(social_data is None)
+        self.assertIsNotNone(social_data)
 
-        self.assertTrue(social_data["thumbs_up"])
-        self.assertTrue(social_data["thumbs_down"])
-        self.assertTrue(social_data["view_count"])
-        self.assertTrue(social_data["rating"])
-        self.assertTrue(social_data["upvote_ratio"])
-        self.assertTrue(social_data["upvote_diff"])
-        self.assertTrue(social_data["upvote_view_ratio"])
-        self.assertFalse(social_data["stars"])
-        self.assertFalse(social_data["followers_count"])
+        self.assertTrue(social_data.thumbs_up)
+        self.assertTrue(social_data.thumbs_down)
+        self.assertTrue(social_data.view_count)
+        self.assertTrue(social_data.rating)
+        self.assertTrue(social_data.upvote_ratio)
+        self.assertTrue(social_data.upvote_diff)
+        self.assertTrue(social_data.upvote_view_ratio)
+        self.assertFalse(social_data.stars)
+        self.assertFalse(social_data.followers_count)
+
+        self.assertIsNone(social_data.errors)
+        self.assertEqual(len(social_data.sources), 1)
+        self.assertEqual(social_data.sources[0].name, "return_dislike")
+        self.assertTrue(social_data.sources[0].ok)
 
     def test_get_social_data__none(self):
         MockRequestCounter.mock_page_requests = 0
@@ -270,17 +275,63 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         # call tested function
         social_data = handler.get_social_data()
 
-        self.assertFalse(social_data is None)
+        self.assertIsNotNone(social_data)
 
-        self.assertFalse(social_data["thumbs_up"])
-        self.assertFalse(social_data["thumbs_down"])
-        self.assertFalse(social_data["view_count"])
-        self.assertFalse(social_data["rating"])
-        self.assertFalse(social_data["upvote_ratio"])
-        self.assertFalse(social_data["upvote_diff"])
-        self.assertFalse(social_data["upvote_view_ratio"])
-        self.assertFalse(social_data["stars"])
-        self.assertFalse(social_data["followers_count"])
+        self.assertFalse(social_data.thumbs_up)
+        self.assertFalse(social_data.thumbs_down)
+        self.assertFalse(social_data.view_count)
+        self.assertFalse(social_data.rating)
+        self.assertFalse(social_data.upvote_ratio)
+        self.assertFalse(social_data.upvote_diff)
+        self.assertFalse(social_data.upvote_view_ratio)
+        self.assertFalse(social_data.stars)
+        self.assertFalse(social_data.followers_count)
+
+        self.assertIsNotNone(social_data.errors)
+        self.assertEqual(len(social_data.sources), 1)
+        self.assertFalse(social_data.sources[0].ok)
+
+    def test_get_social_data__http_error(self):
+        test_link = "https://www.youtube.com/watch?v=123"
+
+        class FailingResponse:
+            status_code = 500
+
+            def is_valid(self):
+                return False
+
+        class FailingUrl(MockUrl):
+            def get_response(self):
+                if "votes?videoId" in self.url:
+                    return FailingResponse()
+                return super().get_response()
+
+        handler = YouTubeVideoHandler(test_link, url_builder=FailingUrl)
+        social_data = handler.get_social_data()
+
+        self.assertIsNotNone(social_data.errors)
+        self.assertIn("return_dislike: HTTP 500", social_data.errors[0])
+        self.assertEqual(len(social_data.sources), 1)
+        self.assertFalse(social_data.sources[0].ok)
+        self.assertIsNone(social_data.thumbs_up)
+
+    def test_get_social_data__exception(self):
+        test_link = "https://www.youtube.com/watch?v=123"
+
+        class ExceptionUrl(MockUrl):
+            def get_response(self):
+                if "votes?videoId" in self.url:
+                    raise ConnectionError("Network unreachable")
+                return super().get_response()
+
+        handler = YouTubeVideoHandler(test_link, url_builder=ExceptionUrl)
+        social_data = handler.get_social_data()
+
+        self.assertIsNotNone(social_data.errors)
+        self.assertIn("Network unreachable", social_data.errors[0])
+        self.assertEqual(len(social_data.sources), 1)
+        self.assertFalse(social_data.sources[0].ok)
+        self.assertIsNone(social_data.thumbs_up)
 
     def test_get_language(self):
         MockRequestCounter.mock_page_requests = 0

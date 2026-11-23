@@ -4,6 +4,8 @@ from webtoolkit import (
    HackerNewsHandler,
    TwitterUrlHandler,
    FourChanChannelHandler,
+   ReturnDislike,
+   SocialData,
 )
 from webtoolkit.tests.fakeinternet import (
    FakeInternetTestCase, MockRequestCounter
@@ -93,6 +95,49 @@ class RedditUrlHandlerTest(FakeInternetTestCase):
         self.assertTrue(properties["followers_count"])
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
+
+    def test_get_social_data__post(self):
+        test_link = "https://www.reddit.com/r/redditdev/comments/1hw8p3j/i_used_the_reddit_api_to_save_myself_time_with_my/"
+        request = MockUrl(test_link).get_init_request()
+        url = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
+
+        social = url.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.upvote_ratio)
+        self.assertIsNotNone(social.rating)
+        self.assertIsNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertTrue(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "reddit_json")
+
+    def test_get_social_data__subreddit(self):
+        test_link = "https://www.reddit.com/r/InternetIsBeautiful"
+        request = MockUrl(test_link).get_init_request()
+        url = RedditUrlHandler(test_link, request=request, url_builder=MockUrl)
+
+        social = url.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.followers_count)
+        self.assertIsNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertTrue(social.sources[0].ok)
+
+    def test_get_social_data__failure(self):
+        test_link = "https://www.reddit.com/r/nonexistent_sub_12345"
+        request = MockUrl(test_link).get_init_request()
+
+        class EmptyMockUrl(MockUrl):
+            def get_contents(self):
+                return ""
+
+        url = RedditUrlHandler(test_link, request=request, url_builder=EmptyMockUrl)
+        social = url.get_social_data()
+
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertFalse(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "reddit_json")
 
 
 class GitHubUrlHandlerTest(FakeInternetTestCase):
@@ -194,6 +239,37 @@ class GitHubUrlHandlerTest(FakeInternetTestCase):
 
         self.assertIn("stars", data)
 
+    def test_get_social_data__valid(self):
+        test_link = "https://github.com/rumca-js/Django-link-archive"
+        request = MockUrl(test_link).get_init_request()
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=MockUrl)
+
+        social = handler.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.stars)
+        self.assertIsNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertTrue(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "github_api")
+
+    def test_get_social_data__failure(self):
+        test_link = "https://github.com/rumca-js/nonexistent-repo"
+        request = MockUrl(test_link).get_init_request()
+
+        class EmptyMockUrl(MockUrl):
+            def get_contents(self):
+                return ""
+
+        handler = GitHubUrlHandler(test_link, request=request, url_builder=EmptyMockUrl)
+        social = handler.get_social_data()
+
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertFalse(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "github_api")
+        self.assertIsNone(social.stars)
+
 
 class HackerNewsHandlerTest(FakeInternetTestCase):
     def setUp(self):
@@ -209,6 +285,68 @@ class HackerNewsHandlerTest(FakeInternetTestCase):
         self.assertEqual(handler.get_json_url(), "https://hacker-news.firebaseio.com/v0/item/42728015.json?print=pretty")
 
         self.assertIn("upvote_diff", data)
+
+    def test_get_social_data__valid(self):
+        test_link = "https://news.ycombinator.com/item?id=42728015"
+        request = MockUrl(test_link).get_init_request()
+        handler = HackerNewsHandler(test_link, request=request, url_builder=MockUrl)
+
+        social = handler.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.upvote_diff)
+        self.assertIsNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertTrue(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "hackernews_api")
+
+    def test_get_social_data__failure(self):
+        test_link = "https://news.ycombinator.com/item?id=42728015"
+        request = MockUrl(test_link).get_init_request()
+
+        class EmptyMockUrl(MockUrl):
+            def get_contents(self):
+                return ""
+
+        handler = HackerNewsHandler(test_link, request=request, url_builder=EmptyMockUrl)
+        social = handler.get_social_data()
+
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertFalse(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "hackernews_api")
+        self.assertIsNone(social.upvote_diff)
+
+
+class ReturnDislikeTest(FakeInternetTestCase):
+    def setUp(self):
+        self.disable_web_pages()
+
+    def test_get_social_data__valid(self):
+        url = "https://returnyoutubedislikeapi.com/votes?videoId=123"
+        request = MockUrl(url).get_init_request()
+        handler = ReturnDislike(video_code="123", request=request, url_builder=MockUrl)
+        social = handler.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.thumbs_up)
+        self.assertIsNotNone(social.thumbs_down)
+        self.assertIsNotNone(social.view_count)
+        self.assertIsNotNone(social.rating)
+        self.assertIsNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertTrue(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "return_dislike")
+
+    def test_get_social_data__failure(self):
+        url = "https://returnyoutubedislikeapi.com/votes?videoId=666"
+        request = MockUrl(url).get_init_request()
+        handler = ReturnDislike(video_code="666", request=request, url_builder=MockUrl)
+        social = handler.get_social_data()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.errors)
+        self.assertEqual(len(social.sources), 1)
+        self.assertFalse(social.sources[0].ok)
+        self.assertEqual(social.sources[0].name, "return_dislike")
 
 
 class TwitterUrlHandlerTest(FakeInternetTestCase):

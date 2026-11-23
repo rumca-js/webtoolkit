@@ -18,6 +18,7 @@ from webtoolkit import (
     BaseUrl,
     RemoteServer,
     RemoteUrl,
+    SocialData,
 )
 from webtoolkit.utils.memorychecker import MemoryChecker
 
@@ -1367,7 +1368,8 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
-        self.assertIn("followers_count", properties)
+        self.assertIsInstance(properties, SocialData)
+        self.assertIsNone(properties.followers_count)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
@@ -1383,12 +1385,10 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
-        self.assertIn("view_count", properties)
-        self.assertTrue(properties["view_count"])
-        self.assertIn("thumbs_up", properties)
-        self.assertTrue(properties["thumbs_up"])
-        self.assertIn("thumbs_down", properties)
-        self.assertTrue(properties["thumbs_down"])
+        self.assertIsInstance(properties, SocialData)
+        self.assertTrue(properties.view_count)
+        self.assertTrue(properties.thumbs_up)
+        self.assertTrue(properties.thumbs_down)
 
         # return dislike + youtube json
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
@@ -1403,8 +1403,8 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
-        self.assertIn("stars", properties)
-        self.assertTrue(properties["stars"])
+        self.assertIsInstance(properties, SocialData)
+        self.assertTrue(properties.stars)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -1418,9 +1418,8 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
-        self.assertTrue(properties)
-        self.assertIn("upvote_ratio", properties)
-        self.assertTrue(properties["upvote_ratio"])
+        self.assertIsInstance(properties, SocialData)
+        self.assertTrue(properties.upvote_ratio)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 1)
 
@@ -1434,9 +1433,10 @@ class BaseUrlTest(FakeInternetTestCase):
         # call tested function
         properties = url.get_social_properties()
 
-        self.assertIn("view_count", properties)
-        self.assertIn("thumbs_up", properties)
-        self.assertIn("thumbs_down", properties)
+        self.assertIsInstance(properties, SocialData)
+        self.assertIsNone(properties.view_count)
+        self.assertIsNone(properties.thumbs_up)
+        self.assertIsNone(properties.thumbs_down)
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 

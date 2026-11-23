@@ -58,6 +58,19 @@ Page types (all implement ContentInterface):
   - XmlPage — Generic XML
   - DefaultContentPage — Fallback / base implementation
 
+## Social Data Layer (webtoolkit/socialdata.py)
+
+SocialData & SocialSourceResult:
+  - `SocialData`: Dataclass containing social engagement metrics (`thumbs_up`, `thumbs_down`,
+    `view_count`, `rating`, `upvote_ratio`, `upvote_diff`, `upvote_view_ratio`, `stars`,
+    `followers_count`), `errors: list[str] | None`, and `sources: list[SocialSourceResult]`.
+  - `SocialSourceResult`: Per-source tracking dataclass (`name`, `ok`, `error`).
+  - Handlers (`HandlerVideoYoutube`, `RedditUrlHandler`, `GitHubUrlHandler`, `HackerNewsHandler`,
+    `ReturnDislike`) implement `get_social_data() -> SocialData` with granular per-source error
+    reporting and logging.
+  - `SocialData.set_sources(sources)` helper populates `sources` and extracts non-empty error strings into `errors`.
+  - `HandlerInterface.get_social_data()` maps available getter methods into `SocialData`.
+
 ## Data Objects
 
 PageRequestObject (request.py)

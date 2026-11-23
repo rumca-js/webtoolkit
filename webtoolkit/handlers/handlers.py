@@ -4,6 +4,7 @@ from webtoolkit.urllocation import UrlLocation
 from webtoolkit.pages import RssPage
 from webtoolkit.webtools import WebLogger
 from webtoolkit.utils.dateutils import DateUtils
+from webtoolkit.socialdata import SocialData, SocialSourceResult
 
 from .defaulturlhandler import DefaultUrlHandler, DefaultChannelHandler
 from .handlerhttppage import HttpPageHandler
@@ -97,17 +98,34 @@ class RedditUrlHandler(DefaultUrlHandler):
         text = json_text[wh_semi + 1 : wh_colon].strip()
         return text
 
-    def get_social_data(self):
+    def get_social_data(self) -> SocialData:
         """
         Returns social data.
 
         @note Reddit is heavily scrape-ratioed. Do not scrape social data if it is not necessary.
         """
-        if self.social_data is None:
-            self.get_json_data()
+        sources = []
+        try:
+            if self.social_data is None:
+                self.get_json_data()
 
-        if len(self.social_data) > 0:
-            return super().get_social_data()
+            if self.social_data:
+                sources.append(SocialSourceResult(name="reddit_json", ok=True))
+            else:
+                err = "reddit_json: no social data available"
+                WebLogger.error(err)
+                sources.append(SocialSourceResult(name="reddit_json", ok=False, error=err))
+        except Exception as e:
+            err = str(e)
+            WebLogger.error(f"reddit_json exception: {err}")
+            sources.append(SocialSourceResult(name="reddit_json", ok=False, error=err))
+
+        merged = super().get_social_data()
+        return merged.set_sources(sources)
+
+    def get_rating(self):
+        if self.social_data:
+            return self.social_data.get("rating")
 
     def get_json_data(self):
         if self.social_data is not None:
@@ -263,6 +281,26 @@ class GitHubUrlHandler(DefaultUrlHandler):
         else:
             WebLogger.error("GitHub:no Url link")
 
+    def get_social_data(self) -> SocialData:
+        sources = []
+        try:
+            if not self.social_data:
+                self.get_json_data()
+
+            if self.social_data and "stars" in self.social_data:
+                sources.append(SocialSourceResult(name="github_api", ok=True))
+            else:
+                err = "github_api: no social data available"
+                WebLogger.error(err)
+                sources.append(SocialSourceResult(name="github_api", ok=False, error=err))
+        except Exception as e:
+            err = str(e)
+            WebLogger.error(f"github_api exception: {err}")
+            sources.append(SocialSourceResult(name="github_api", ok=False, error=err))
+
+        merged = super().get_social_data()
+        return merged.set_sources(sources)
+
     def get_json_data(self):
         if self.social_data != {}:
             return self.social_data
@@ -332,6 +370,7 @@ class ReturnDislike(DefaultUrlHandler):
             request=request,
             url_builder=url_builder,
         )
+        self._json = None
 
     def code2url(self, input_code):
         return "https://returnyoutubedislikeapi.com/votes?videoId=" + input_code
@@ -378,6 +417,26 @@ class ReturnDislike(DefaultUrlHandler):
         if self._json:
             return self._json.get("rating")
 
+    def get_social_data(self) -> SocialData:
+        sources = []
+        try:
+            if not self._json:
+                self.load_response()
+
+            if self._json:
+                sources.append(SocialSourceResult(name="return_dislike", ok=True))
+            else:
+                err = "return_dislike: no social data available"
+                WebLogger.error(err)
+                sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+        except Exception as e:
+            err = str(e)
+            WebLogger.error(f"return_dislike exception: {err}")
+            sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+
+        merged = super().get_social_data()
+        return merged.set_sources(sources)
+
     def get_json_data(self):
         self.get_response()
 
@@ -415,11 +474,11 @@ class HackerNewsHandler(DefaultUrlHandler):
         if post_id:
             return f"https://hacker-news.firebaseio.com/v0/item/{post_id}.json?print=pretty"
         else:
-            WebLogger.error("Reddit:did not found post id {}".format(self.url))
+            WebLogger.error("HackerNews:did not find post id {}".format(self.url))
 
     def get_json_object(self):
         """
-        This function loads reddit comment JSON.
+        This function loads hacker news item JSON.
         We cannot load it through python's json loads.
         This is not a proper JSON that we can load.
 
@@ -438,12 +497,32 @@ class HackerNewsHandler(DefaultUrlHandler):
                     return json.loads(contents)
                 except ValueError:
                     WebLogger.error(
-                        "GitHub:Cannot process contents {}".format(url_link)
+                        "HackerNews:Cannot process contents {}".format(url_link)
                     )
             else:
-                WebLogger.error("GitHub:No url link contents {}".format(url_link))
+                WebLogger.error("HackerNews:No url link contents {}".format(url_link))
         else:
-            WebLogger.error("GitHub:no Url link")
+            WebLogger.error("HackerNews:no Url link")
+
+    def get_social_data(self) -> SocialData:
+        sources = []
+        try:
+            if not self.social_data:
+                self.get_json_data()
+
+            if self.social_data and "upvote_diff" in self.social_data:
+                sources.append(SocialSourceResult(name="hackernews_api", ok=True))
+            else:
+                err = "hackernews_api: no social data available"
+                WebLogger.error(err)
+                sources.append(SocialSourceResult(name="hackernews_api", ok=False, error=err))
+        except Exception as e:
+            err = str(e)
+            WebLogger.error(f"hackernews_api exception: {err}")
+            sources.append(SocialSourceResult(name="hackernews_api", ok=False, error=err))
+
+        merged = super().get_social_data()
+        return merged.set_sources(sources)
 
     def get_json_data(self):
         if self.social_data != {}:

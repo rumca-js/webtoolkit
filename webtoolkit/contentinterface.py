@@ -14,6 +14,7 @@ from .webtools import (
     WebLogger,
 )
 from .urllocation import UrlLocation
+from .socialdata import SocialData
 
 
 class ContentInterface(object):
@@ -27,6 +28,12 @@ class ContentInterface(object):
 
     def get_contents(self):
         return self.contents
+
+    def get_social_data(self) -> SocialData:
+        """
+        Returns social data
+        """
+        raise NotImplementedError
 
     def get_title(self):
         """

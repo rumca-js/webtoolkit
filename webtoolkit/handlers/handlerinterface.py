@@ -3,6 +3,7 @@ Handler interface that can be implemented to provide more complex logic for read
 """
 
 from webtoolkit import DefaultContentPage, calculate_hash_binary, calculate_hash
+from ..socialdata import SocialData
 
 
 class HandlerInterface(DefaultContentPage):
@@ -201,25 +202,21 @@ class HandlerInterface(DefaultContentPage):
         """
         pass
 
-    def get_social_data(self):
+    def get_social_data(self) -> SocialData:
         """
-        This function returns:
-         - social data, if it has them
-         - nothing in case of error
+        This function returns SocialData populated from getters.
         """
-        json_obj = {}
-
-        json_obj["thumbs_up"] = self.get_thumbs_up()
-        json_obj["thumbs_down"] = self.get_thumbs_down()
-        json_obj["view_count"] = self.get_view_count()
-        json_obj["rating"] = self.get_rating()
-        json_obj["upvote_ratio"] = self.get_upvote_ratio()
-        json_obj["upvote_diff"] = self.get_upvote_diff()
-        json_obj["upvote_view_ratio"] = self.get_upvote_view_ratio()
-        json_obj["stars"] = self.get_user_stars()
-        json_obj["followers_count"] = self.get_followers_count()
-
-        return json_obj
+        return SocialData(
+            thumbs_up=self.get_thumbs_up(),
+            thumbs_down=self.get_thumbs_down(),
+            view_count=self.get_view_count(),
+            rating=self.get_rating(),
+            upvote_ratio=self.get_upvote_ratio(),
+            upvote_diff=self.get_upvote_diff(),
+            upvote_view_ratio=self.get_upvote_view_ratio(),
+            stars=self.get_user_stars(),
+            followers_count=self.get_followers_count(),
+        )
 
     def close(self):
         self.response = None

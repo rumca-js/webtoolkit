@@ -6,6 +6,7 @@ from ..utils.dateutils import DateUtils
 from ..urllocation import UrlLocation
 from ..pages import ReturnDislikeJson
 from ..webtools import WebLogger
+from ..socialdata import SocialData, SocialSourceResult
 from ..statuses import HTTP_STATUS_NOT_FOUND
 from .defaulturlhandler import DefaultCompoundChannelHandler
 
@@ -20,6 +21,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
             request=request,
             url_builder=url_builder,
         )
+        self.return_dislike_json = None
 
         if not self.is_handled_by():
             return
@@ -172,14 +174,31 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
             if p:
                 return p.get_schema_field_ex("http://schema.org/Person", "url", "href")
 
-    def get_social_data(self):
-        url = self.build_http_url(self.get_return_dislike_url_link())
+    def get_social_data(self) -> SocialData:
+        sources = []
+        try:
+            url = self.build_http_url(self.get_return_dislike_url_link())
+            response = url.get_response() if url else None
+            if response and response.is_valid():
+                self.return_dislike_json = ReturnDislikeJson(contents=response.get_text())
+                if self.return_dislike_json.get_json():
+                    sources.append(SocialSourceResult(name="return_dislike", ok=True))
+                else:
+                    err = "return_dislike: empty or invalid JSON response"
+                    WebLogger.error(err)
+                    sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+            else:
+                status = getattr(response, "status_code", "no response")
+                err = f"return_dislike: HTTP {status}"
+                WebLogger.error(err)
+                sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
+        except Exception as e:
+            err = str(e)
+            WebLogger.error(f"return_dislike exception: {err}")
+            sources.append(SocialSourceResult(name="return_dislike", ok=False, error=err))
 
-        response = url.get_response()
-        if response.is_valid():
-            self.return_dislike_json = ReturnDislikeJson(contents=response.get_text())
-
-        return super().get_social_data()
+        merged = super().get_social_data()
+        return merged.set_sources(sources)
 
     def get_return_dislike_url_link(self):
         return (

@@ -2,11 +2,6 @@
 
 ## High Priority
 
-- [ ] Expose error reporting for social / channel properties
-  - baseurl.py, remoteurl.py
-  - url returns social properties as a map with no place for errors
-  - provide return value with error information, or responses, or streams info
-
 - [ ] Decouple stateful self.response stashing across layers
   - baseurl.py, handlers/handlerhttppage.py
   - BaseUrl and Handler lazily stash and mutate self.response across getter calls,
