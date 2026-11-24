@@ -64,7 +64,7 @@ class BaseUrlTest(FakeInternetTestCase):
             pass
 
         self.assertIsNone(url.request)
-        self.assertIsNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNone(url.handler)
         self.assertTrue(url._closed)
 
@@ -79,7 +79,7 @@ class BaseUrlTest(FakeInternetTestCase):
             pass
 
         self.assertIsNone(url.request)
-        self.assertIsNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNone(url.handler)
         self.assertTrue(url._closed)
 
@@ -87,13 +87,13 @@ class BaseUrlTest(FakeInternetTestCase):
         test_link = "https://multiple-favicons.com/page.html"
         url = MockUrl(request=self.get_request(test_link))
         url.get_response()
-        self.assertIsNotNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNotNone(url.handler)
         self.assertIsNotNone(url.request)
         self.assertFalse(url._closed)
 
         url.close()
-        self.assertIsNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNone(url.handler)
         self.assertIsNone(url.request)
         self.assertTrue(url._closed)
@@ -130,13 +130,17 @@ class BaseUrlTest(FakeInternetTestCase):
             url.get_response_data()
         self.assertEqual(str(ctx.exception), "BaseUrl is closed")
 
+        with self.assertRaises(RuntimeError) as ctx:
+            url.get_general_response()
+        self.assertEqual(str(ctx.exception), "BaseUrl is closed")
+
     def test_close_is_idempotent(self):
         test_link = "https://multiple-favicons.com/page.html"
         url = MockUrl(request=self.get_request(test_link))
         url.close()
         url.close()
         self.assertTrue(url._closed)
-        self.assertIsNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNone(url.handler)
         self.assertIsNone(url.request)
 
@@ -146,9 +150,22 @@ class BaseUrlTest(FakeInternetTestCase):
         self.assertFalse(url._closed)
         url.close()
         self.assertTrue(url._closed)
-        self.assertIsNone(url.response)
+        self.assertFalse(hasattr(url, "response"))
         self.assertIsNone(url.handler)
         self.assertIsNone(url.request)
+
+    def test_baseurl_inherits_urlinterface(self):
+        from webtoolkit.urlinterface import UrlInterface
+        self.assertTrue(issubclass(BaseUrl, UrlInterface))
+
+    def test_get_general_response_delegation(self):
+        test_link = "https://multiple-favicons.com/page.html"
+        url = MockUrl(request=self.get_request(test_link))
+        self.assertIsNone(url.get_general_response())
+        url.get_response()
+        gen_resp = url.get_general_response()
+        self.assertIsNotNone(gen_resp)
+        self.assertEqual(gen_resp.status_code, 200)
 
     def test_get_cleaned_link(self):
         MockRequestCounter.mock_page_requests = 0

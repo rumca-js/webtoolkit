@@ -37,7 +37,6 @@ class HttpPageHandler(HandlerInterface):
             url_builder=url_builder,
         )
         self.p = None
-        self.response = None
 
     def is_handled_by(self):
         url = self.url
@@ -51,33 +50,24 @@ class HttpPageHandler(HandlerInterface):
         """
         Obtains response, analyzes structure, etc
         """
-        if self.response:
-            if self.url and self.url not in self.streams:
-                self.streams[self.url] = self.response
-            return self.response
-
         if self.url and self.url in self.streams and self.streams[self.url]:
-            self.response = self.streams[self.url]
-        else:
-            self.get_response_implementation()
+            return self.streams[self.url]
 
-        if self.response and self.url and self.url not in self.streams:
-            self.streams[self.url] = self.response
+        response = self.get_response_implementation()
 
         self.p = self.get_page_handler()
 
         if self.p and type(self.p) == RssPage:
-            if self.response:
-                self.response.set_recognized_content_type("application/rss+xml")
+            if response:
+                response.set_recognized_content_type("application/rss+xml")
         elif self.p and type(self.p) == HtmlPage:
-            if self.response:
-                self.response.set_recognized_content_type("text/html")
+            if response:
+                response.set_recognized_content_type("text/html")
 
-        if self.p and self.response:
-            self.response.set_body_hash(self.get_body_hash())
+        if self.p and response:
+            response.set_body_hash(self.get_body_hash())
 
-        if self.response:
-            return self.response
+        return response
 
     def get_response_implementation(self):
         url = self.url
@@ -85,11 +75,11 @@ class HttpPageHandler(HandlerInterface):
         if self.is_handled_by():
             self.update_request_for_services()
             builder = CrawlerCaller(url=url, request=self.request)
-            self.response = builder.get_response()
-            if self.response and url:
-                self.streams[url] = self.response
+            response = builder.get_response()
+            if response and url:
+                self.streams[url] = response
 
-            return self.response
+            return response
 
     def update_request_for_services(self):
         """
@@ -111,13 +101,15 @@ class HttpPageHandler(HandlerInterface):
         """
         Obtains only contents
         """
-        if self.response and self.response.get_text():
-            return self.response.get_text()
+        response = self.get_response()
+        if response and response.get_text():
+            return response.get_text()
 
         self.get_response_implementation()
 
-        if self.response and self.response.get_text():
-            return self.response.get_text()
+        response = self.get_response()
+        if response and response.get_text():
+            return response.get_text()
 
     def get_page_handler(self):
         """
@@ -128,16 +120,17 @@ class HttpPageHandler(HandlerInterface):
         if self.p:
             return self.p
 
+        response = self.get_response()
         contents = None
-        if self.response and self.response.get_text():
-            contents = self.response.get_text()
+        if response and response.get_text():
+            contents = response.get_text()
 
         if not contents:
             return
 
         url = self.url
 
-        self.p = PageFactory.get(self.response, contents)
+        self.p = PageFactory.get(response, contents)
         return self.p
 
     def get_title(self):
@@ -194,7 +187,9 @@ class HttpPageHandler(HandlerInterface):
             return
 
         props = self.p.get_properties()
-        props["status_code"] = self.response.status_code
+        response = self.get_response()
+        if response:
+            props["status_code"] = response.status_code
         return props
 
     def get_page_rating_vector(self):
@@ -205,8 +200,9 @@ class HttpPageHandler(HandlerInterface):
         """
         TODO include this somehow
         """
-        if self.response:
-            result.append(self.get_page_rating_status_code(self.response.status_code))
+        response = self.get_response()
+        if response:
+            result.append(self.get_page_rating_status_code(response.status_code))
 
         result.extend(self.p.get_page_rating_vector())
         return result
@@ -237,15 +233,16 @@ class HttpPageHandler(HandlerInterface):
         return [rating, 10]
 
     def get_status_code(self):
-        if not self.response:
+        response = self.get_response()
+        if not response:
             return PageResponseObject.STATUS_CODE_UNDEF
 
-        return self.response.status_code
+        return response.status_code
 
     def is_valid(self):
 
         # not valid HTTP response
-        response = self.response
+        response = self.get_response()
         if not response or not response.is_valid():
             return False
 

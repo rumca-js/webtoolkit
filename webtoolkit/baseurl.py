@@ -17,6 +17,7 @@ from .pages import (
     RssPage,
     HtmlPage,
 )
+from .urlinterface import UrlInterface
 from .socialdata import SocialData
 from .webtools import (
     calculate_hash,
@@ -58,7 +59,7 @@ from .crawlers import (
 from .domaincache import DomainCache
 
 
-class BaseUrl(ContentInterface):
+class BaseUrl(UrlInterface):
     """
     Base Url class capable of reading network pages.
     """
@@ -79,7 +80,6 @@ class BaseUrl(ContentInterface):
 
         self.url = self.request.url
         self.handler = None
-        self.response = None
         self._closed = False
         self.url_builder = url_builder
 
@@ -208,7 +208,7 @@ class BaseUrl(ContentInterface):
         """
         response = self.get_response()
         if response:
-            return self.response.get_binary()
+            return response.get_binary()
 
     def get_response(self):
         """
@@ -217,33 +217,44 @@ class BaseUrl(ContentInterface):
         if self._closed:
             raise RuntimeError("BaseUrl is closed")
 
-        if self.response:
-            return self.response
-
         if not self.handler:
             self.handler = self.get_handler_implementation()
 
         if self.handler:
             if self.request.respect_robots:
                 if not self.is_allowed():
-                    return
+                    return None
 
-            self.response = self.handler.get_response()
-            if self.response:
-                if not self.response.is_valid():
+            response = self.handler.get_response()
+            if response:
+                if not response.is_valid():
                     WebLogger.error(
                         "Url:{} Response is invalid:{}".format(
-                            self.request.url, self.response
+                            self.request.url, response
                         ),
-                        detail_text=str(response_to_json(self.response)),
+                        detail_text=str(response_to_json(response)),
                     )
 
-            return self.response
+            return response
 
         location = UrlLocation(self.request.url)
         if location.is_onion():
-            self.response = PageResponseObject(url=self.request.url, status_code=0)
-            return self.response
+            return PageResponseObject(url=self.request.url, status_code=0)
+
+    def get_general_response(self):
+        """
+        Returns general response from handler
+        """
+        if self._closed:
+            raise RuntimeError("BaseUrl is closed")
+
+        if not self.handler:
+            self.handler = self.get_handler_implementation()
+
+        if self.handler:
+            return self.handler.get_general_response()
+
+        return None
 
     def get_streams(self):
         """
@@ -397,10 +408,11 @@ class BaseUrl(ContentInterface):
         if not self.handler:
             return False
 
-        if self.response is None:
+        response = self.get_response()
+        if response is None:
             return False
 
-        if self.response and not self.response.is_valid():
+        if not response.is_valid():
             return False
 
         if not self.handler.is_valid():
@@ -450,8 +462,9 @@ class BaseUrl(ContentInterface):
 
     def get_status_code(self) -> int | None:
         """Returns status code"""
-        if self.response:
-            return self.response.get_status_code()
+        response = self.get_response()
+        if response:
+            return response.get_status_code()
 
         return 0
 
@@ -740,4 +753,3 @@ class BaseUrl(ContentInterface):
                 self.handler.close()
             self.handler = None
             self.request = None
-            self.response = None

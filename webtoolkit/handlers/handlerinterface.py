@@ -2,8 +2,9 @@
 Handler interface that can be implemented to provide more complex logic for reading meta data.
 """
 
-from webtoolkit import DefaultContentPage, calculate_hash_binary, calculate_hash
+from webtoolkit import DefaultContentPage, calculate_hash_binary, calculate_hash, WebLogger
 from ..socialdata import SocialData
+from ..response import PageResponseObject
 
 
 class HandlerInterface(DefaultContentPage):
@@ -22,7 +23,6 @@ class HandlerInterface(DefaultContentPage):
             contents=contents,
         )
         self.h = None
-        self.response = None
         self.streams = {}
         self.dead = None
         self.code = None  # social media handle, ID of channel, etc.
@@ -66,8 +66,9 @@ class HandlerInterface(DefaultContentPage):
         raise NotImplementedError
 
     def get_contents(self):
-        if self.response:
-            return self.response.get_text()
+        response = self.get_response()
+        if response:
+            return response.get_text()
 
     def get_hash(self):
         response = self.get_response()
@@ -85,18 +86,10 @@ class HandlerInterface(DefaultContentPage):
         return calculate_hash(text)
 
     def get_streams(self):
-        if self.response and self.url and self.url not in self.streams:
-            self.streams[self.url] = self.response
-        elif self.response and not self.url and "Default" not in self.streams:
-            self.streams["Default"] = self.response
         return self.streams
 
     def get_responses(self):
-        if self.streams:
-            return list(self.streams.values())
-        if self.response:
-            return [self.response]
-        return []
+        return list(self.streams.values())
 
     def get_body_hash(self):
         return self.get_hash()
@@ -134,8 +127,9 @@ class HandlerInterface(DefaultContentPage):
             return self.handler.get_date_published()
 
     def get_status_code(self):
-        if self.response:
-            return self.response.get_status_code()
+        response = self.get_response()
+        if response:
+            return response.get_status_code()
 
         return 0
 
@@ -143,16 +137,26 @@ class HandlerInterface(DefaultContentPage):
         return []
 
     def get_response(self):
-        if self.response:
-            if self.url and self.url not in self.streams:
-                self.streams[self.url] = self.response
-            return self.response
-
-        if self.url and self.url in self.streams and self.streams[self.url]:
-            self.response = self.streams[self.url]
-            return self.response
-
+        if self.url and self.url in self.streams:
+            return self.streams[self.url]
         return None
+
+    def get_general_response(self):
+        if not self.streams or not self.url:
+            return None
+
+        invalid_urls = []
+        for url, stream in self.streams.items():
+            if not stream or not stream.is_valid() or stream.status_code == 0:
+                invalid_urls.append(url)
+
+        if invalid_urls:
+            WebLogger.warning(
+                f"Invalid stream(s) detected for {self.url}: {', '.join(invalid_urls)}"
+            )
+            return PageResponseObject(url=self.url, status_code=0)
+
+        return self.streams.get(self.url)
 
     def get_channel_name(self):
         pass
@@ -238,6 +242,5 @@ class HandlerInterface(DefaultContentPage):
         )
 
     def close(self):
-        self.response = None
         self.request = None
         self.streams = {}

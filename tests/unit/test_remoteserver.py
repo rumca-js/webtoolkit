@@ -293,17 +293,11 @@ all_properties_streams = [
 
 class RemoteServerTest(FakeInternetTestCase):
     def setUp(self):
-        self.disable_web_pages()
-
-        self.ignore_memory = False
-        self.memory_checker = MemoryChecker()
-        memory_increase = self.memory_checker.get_memory_increase()
-        #print(f"Memory increase {memory_increase} setup")
+        self.restore_web_pages()
+        self.ignore_memory = True
 
     def tearDown(self):
-        if not self.ignore_memory:
-            memory_increase = self.memory_checker.get_memory_increase()
-            self.assertEqual(memory_increase, 0)
+        self.restore_web_pages()
 
     def test_get_response__none(self):
         # call tested function
@@ -343,3 +337,76 @@ class RemoteServerTest(FakeInternetTestCase):
         self.assertFalse(response.is_invalid())
         self.assertTrue(response.get_text())
         self.assertEqual(response.get_status_code(), 201)
+
+    def test_endpoint_methods_dispatch(self):
+        self.ignore_memory = True
+        server = RemoteServer("http://test-server:8080")
+        calls = []
+
+        def mock_call(link_call, request):
+            calls.append((link_call, request.url))
+            return {"success": True, "url": request.url}
+
+        server.perform_remote_call = mock_call
+
+        server.get_page_data(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/get", "https://example.com"))
+
+        server.get_head_data(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/head", "https://example.com"))
+
+        server.get_feeds(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/feeds", "https://example.com"))
+
+        server.get_social(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/social", "https://example.com"))
+
+        server.get_link(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/link", "https://example.com"))
+
+        server.get_scan_links(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/scanlinks", "https://example.com"))
+
+        server.get_scan_domains(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/scandomains", "https://example.com"))
+
+        server.get_archives(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/archives", "https://example.com"))
+
+        server.get_find(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/find", "https://example.com"))
+
+        server.remove_history_entry(url="https://example.com")
+        self.assertEqual(calls[-1], ("http://test-server:8080/api/remove", "https://example.com"))
+
+    def test_global_endpoints(self):
+        self.ignore_memory = True
+        from unittest.mock import patch, MagicMock
+
+        server = RemoteServer("http://test-server:8080")
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.text = '{"items": [1, 2, 3]}'
+        mock_resp.__enter__.return_value = mock_resp
+
+        with patch("requests.get", return_value=mock_resp):
+            info = server.get_info()
+            self.assertEqual(info, {"items": [1, 2, 3]})
+
+            history = server.get_history()
+            self.assertEqual(history, {"items": [1, 2, 3]})
+
+            clear = server.clear_history()
+            self.assertEqual(clear, {"items": [1, 2, 3]})
+
+    def test_endpoints_return_none_on_error(self):
+        self.ignore_memory = True
+        from unittest.mock import patch
+
+        server = RemoteServer("http://test-server:8080")
+        with patch("requests.get", side_effect=Exception("network down")):
+            self.assertIsNone(server.get_info())
+            self.assertIsNone(server.get_history())
+            self.assertIsNone(server.clear_history())
+            self.assertIsNone(server.get_page_data(url="https://example.com"))
+

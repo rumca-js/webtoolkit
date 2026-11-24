@@ -395,6 +395,20 @@ class YouTubeVideoHandlerTest(FakeInternetTestCase):
         feeds = handler.get_feeds()
 
         self.assertTrue(len(feeds) > 0)
+        self.assertIn(
+            "https://www.youtube.com/feeds/videos.xml?channel_id=UCweAx0TIRdAylp6G1nviqbQ",
+            feeds,
+        )
+
+    def test_get_feeds_channel_id_conversion(self):
+        handler = YouTubeVideoHandler("https://www.youtube.com/watch?v=custom123")
+        handler.get_channel_id_from_page = lambda: "TEST_CHANNEL_ID_999"
+
+        feeds = handler.get_feeds()
+        self.assertIn(
+            "https://www.youtube.com/feeds/videos.xml?channel_id=TEST_CHANNEL_ID_999",
+            feeds,
+        )
 
 
 class YouTubeChannelHandlerTest(FakeInternetTestCase):

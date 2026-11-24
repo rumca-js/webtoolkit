@@ -13,6 +13,7 @@ from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Set
 
 from .contentinterface import ContentInterface
+from .urlinterface import UrlInterface
 from .remoteserver import RemoteServer
 from .request import PageRequestObject
 from .response import PageResponseObject
@@ -21,7 +22,7 @@ from .webtools import json_decode_field
 from .webtools import date_str_to_date
 
 
-class RemoteUrl(ContentInterface):
+class RemoteUrl(UrlInterface):
     """
     Represents a URL to be processed by a remote network crawler.
     This class can either fetch data from a remote server or operate on data that has already been fetched.
@@ -80,7 +81,7 @@ class RemoteUrl(ContentInterface):
     def get_responses(self):
         """Provides URL responses"""
         if self.all_properties is None:
-            self.all_properties = self.server.get_getj(
+            self.all_properties = self.server.get_page_data(
                 url=self.url, request=self.request
             )
 
@@ -109,7 +110,7 @@ class RemoteUrl(ContentInterface):
     def get_binary(self):
         """Provides URL response binary"""
         response = self.get_response()
-        if response and respose.get_binary():
+        if response and response.get_binary():
             return response.get_binary()
 
     def get_properties(self):
@@ -246,7 +247,7 @@ class RemoteUrl(ContentInterface):
             if properties:
                 feeds = properties.get("feeds")
         else:
-            feeds_json = self.server.get_feedsj(url=self.url)
+            feeds_json = self.server.get_feeds(url=self.url)
             if not feeds_json:
                 return set()
             feeds = feeds_json.get("feeds")
@@ -261,11 +262,46 @@ class RemoteUrl(ContentInterface):
         Retrieves information about links (canonical, archive, etc.) for the URL.
         :return: A dictionary of link information.
         """
-        data = self.server.get_scanlinks(url=self.url)
+        data = self.server.get_scan_links(url=self.url)
         if data:
             if "links" in data:
                 return data["links"]
         return []
+
+    def get_links(self) -> list[str]:
+        """
+        Retrieves links for channel or page URLs.
+        Returns list[str] or empty list on failure; never raises.
+        """
+        try:
+            data = self.server.get_link(url=self.url)
+            if data and isinstance(data, dict):
+                links = data.get("links")
+                if isinstance(links, list):
+                    return [str(link) for link in links]
+            if self.all_properties:
+                props = self.get_properties()
+                if props and "links" in props and isinstance(props["links"], list):
+                    return [str(link) for link in props["links"]]
+        except Exception:
+            pass
+        return []
+
+    def get_general_response(self) -> Optional[PageResponseObject]:
+        """
+        Reconstructs response from remote server payloads.
+        Returns PageResponseObject(status_code=0) if any source reported an error,
+        otherwise returns primary response object.
+        """
+        responses = self.get_responses()
+        if not responses:
+            return None
+
+        for resp in responses.values():
+            if not resp or not resp.is_valid() or resp.status_code == 0:
+                return PageResponseObject(url=self.url, status_code=0)
+
+        return self.get_response()
 
     def get_hash(self):
         """
@@ -301,7 +337,7 @@ class RemoteUrl(ContentInterface):
         :return: SocialData object.
         """
         if self.social_properties is None:
-            raw_social = self.server.get_socialj(url=self.url, request=self.request)
+            raw_social = self.server.get_social(url=self.url, request=self.request)
             if raw_social is None:
                 self.social_properties = SocialData().set_sources(
                     [

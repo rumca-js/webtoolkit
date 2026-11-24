@@ -31,10 +31,11 @@ Extracted Content / Metadata
 ## Core Package (`webtoolkit/`)
 - `baseurl.py`: Main user-facing class (`BaseUrl`). Inherits from `ContentInterface`, dispatches to handlers and crawlers, and caches responses.
 - `socialdata.py`: Structured social metrics and source error reporting dataclasses (`SocialData`, `SocialSourceResult`).
-- `remoteurl.py`: Remote URL consumer (`RemoteUrl`) interacting with external crawler services.
-- `remoteserver.py`: Connection and client communication wrapper for remote crawler daemons (`crawler-buddy`).
+- `remoteurl.py`: Remote URL consumer (`RemoteUrl`) implementing `UrlInterface`, interacting with external crawler services (`crawler-buddy`).
+- `remoteserver.py`: Connection and client communication wrapper for remote crawler daemons (`crawler-buddy`), providing 1-to-1 endpoint methods (`get_page_data`, `get_head_data`, `get_feeds`, `get_social`, `get_link`, `get_scan_links`, `get_scan_domains`, `get_archives`, `get_ping`, `get_info`, `get_history`, `get_find`, `clear_history`, `remove_history_entry`).
 - `urllocation.py`: URL parsing, sanitization, domain extraction, and hierarchical navigation (`UrlLocation`).
 - `contentinterface.py`: Abstract base interface defining content extraction methods (`get_title()`, `get_description()`, `get_date_published()`, etc.).
+- `urlinterface.py`: Abstract interface extending `ContentInterface` for URL objects exposing raw HTTP response access (`get_response()`, `get_general_response()`).
 - `pages.py`: Page representations (`HtmlPage`, `RssPage`, `OpmlPage`, `JsonPage`, `XmlPage`, `DefaultContentPage`) and `PageFactory`.
 - `contentlinkparser.py`: HTML link parsing, feed discovery, asset link extraction.
 - `contenttext.py`: Text extraction, cleaning, and normalization utilities.

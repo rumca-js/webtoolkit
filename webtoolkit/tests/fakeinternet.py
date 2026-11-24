@@ -33,6 +33,22 @@ from webtoolkit.tests.fakeresponse import FakeInternetData, TestResponseObject
 from webtoolkit.tests.mocks import MockRequestCounter, MockCrawler
 
 
+_ORIGINAL_REMOTESERVER_METHODS = {
+    "get_page_data": RemoteServer.get_page_data,
+    "get_getj": RemoteServer.get_getj,
+    "get_social": RemoteServer.get_social,
+    "get_socialj": RemoteServer.get_socialj,
+    "get_feeds": RemoteServer.get_feeds,
+    "get_feedsj": RemoteServer.get_feedsj,
+    "get_ping": RemoteServer.get_ping,
+    "get_pingj": RemoteServer.get_pingj,
+    "get_link": RemoteServer.get_link,
+    "get_linkj": RemoteServer.get_linkj,
+    "get_scan_links": RemoteServer.get_scan_links,
+    "get_scanlinks": RemoteServer.get_scanlinks,
+}
+
+
 class FakeInternetTestCase(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,14 +57,25 @@ class FakeInternetTestCase(unittest.TestCase):
     def disable_web_pages(self):
         WebConfig.use_print_logging()
 
+        RemoteServer.get_page_data = self.get_getj
         RemoteServer.get_getj = self.get_getj
+        RemoteServer.get_social = self.get_socialj
         RemoteServer.get_socialj = self.get_socialj
+        RemoteServer.get_feeds = self.get_feedsj
         RemoteServer.get_feedsj = self.get_feedsj
+        RemoteServer.get_ping = self.get_pingj
         RemoteServer.get_pingj = self.get_pingj
+        RemoteServer.get_link = self.get_linkj
         RemoteServer.get_linkj = self.get_linkj
+        RemoteServer.get_scan_links = self.get_scanlinks
         RemoteServer.get_scanlinks = self.get_scanlinks
 
         BaseUrl.get_request_for_url = self.get_request_for_url
+
+    @classmethod
+    def restore_web_pages(cls):
+        for name, method in _ORIGINAL_REMOTESERVER_METHODS.items():
+            setattr(RemoteServer, name, method)
 
     def get_getj(self, url=None, request=None):
         # print("FakeInternet:get_getj: Url:{}".format(url))

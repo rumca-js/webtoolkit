@@ -38,111 +38,109 @@ class RemoteServer(object):
         if CRAWLER_BUDDY_SERVER and CRAWLER_BUDDY_PORT:
             return f"http://{CRAWLER_BUDDY_SERVER}:{CRAWLER_BUDDY_PORT}"
 
-    def get_getj(self, request=None, url=None):
-        """
-        @returns None in case of error
-        """
+    def _call_url_endpoint(self, endpoint, request=None, url=None):
         if url and not request:
             request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
+            request.url = url.strip()
 
         if not request or not request.url:
-            return
+            return None
 
-        link = self.remote_server
-        link = f"{link}/api/get"
-
+        link = f"{self.remote_server}{endpoint}"
         return self.perform_remote_call(link_call=link, request=request)
 
+    def _call_global_endpoint(self, endpoint, timeout_s=10):
+        if not self.remote_server:
+            return None
+
+        link = f"{self.remote_server}{endpoint}"
+        try:
+            with requests.get(url=link, timeout=timeout_s, verify=False) as result:
+                if result.status_code == 200 and result.text:
+                    return json.loads(result.text)
+                return None
+        except Exception:
+            return None
+
+    def get_page_data(self, request=None, url=None):
+        """Maps to /api/get"""
+        return self._call_url_endpoint("/api/get", request=request, url=url)
+
+    def get_getj(self, request=None, url=None):
+        return self.get_page_data(request=request, url=url)
+
+    def get_head_data(self, request=None, url=None):
+        """Maps to /api/head"""
+        return self._call_url_endpoint("/api/head", request=request, url=url)
+
+    def get_feeds(self, request=None, url=None):
+        """Maps to /api/feeds"""
+        return self._call_url_endpoint("/api/feeds", request=request, url=url)
+
     def get_feedsj(self, request=None, url=None):
-        """
-        @returns None in case of error
-        """
+        return self.get_feeds(request=request, url=url)
 
-        if url and not request:
-            request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
-
-        if not request or not request.url:
-            return
-
-        link = self.remote_server
-        link = f"{link}/api/feeds"
-
-        return self.perform_remote_call(link, request)
+    def get_social(self, request=None, url=None):
+        """Maps to /api/social"""
+        return self._call_url_endpoint("/api/social", request=request, url=url)
 
     def get_socialj(self, request=None, url=None):
-        """
-        @returns None in case of error
-        """
+        return self.get_social(request=request, url=url)
 
-        if url and not request:
-            request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
-
-        if not request or not request.url:
-            return
-
-        link = self.remote_server
-        link = f"{link}/api/social"
-
-        return self.perform_remote_call(link, request)
+    def get_link(self, request=None, url=None):
+        """Maps to /api/link"""
+        return self._call_url_endpoint("/api/link", request=request, url=url)
 
     def get_linkj(self, request=None, url=None):
-        """
-        @returns None in case of error
-        """
-        if url and not request:
-            request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
+        return self.get_link(request=request, url=url)
 
-        if not request or not request.url:
-            return
-
-        link = self.remote_server
-        link = f"{link}/api/link"
-
-        return self.perform_remote_call(link, request)
+    def get_scan_links(self, request=None, url=None):
+        """Maps to /api/scanlinks"""
+        return self._call_url_endpoint("/api/scanlinks", request=request, url=url)
 
     def get_scanlinks(self, request=None, url=None):
-        """
-        @returns [] in case of error
-        """
-        if url and not request:
-            request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
+        return self.get_scan_links(request=request, url=url)
 
-        if not request or not request.url:
-            return
+    def get_scan_domains(self, request=None, url=None):
+        """Maps to /api/scandomains"""
+        return self._call_url_endpoint("/api/scandomains", request=request, url=url)
 
-        link = self.remote_server
-        link = f"{link}/api/scanlinks"
+    def get_archives(self, request=None, url=None):
+        """Maps to /api/archives"""
+        return self._call_url_endpoint("/api/archives", request=request, url=url)
 
-        return self.perform_remote_call(link, request)
+    def get_find(self, request=None, url=None):
+        """Maps to /api/find"""
+        return self._call_url_endpoint("/api/find", request=request, url=url)
+
+    def remove_history_entry(self, request=None, url=None):
+        """Maps to /api/remove"""
+        return self._call_url_endpoint("/api/remove", request=request, url=url)
+
+    def get_ping(self, request=None, url=None):
+        """Maps to /api/ping"""
+        json_obj = self._call_url_endpoint("/api/ping", request=request, url=url)
+        if isinstance(json_obj, dict):
+            return json_obj.get("status")
+        return json_obj
 
     def get_pingj(self, request=None, url=None):
-        """
-        @returns None in case of error
-        """
-        if url and not request:
-            request = PageRequestObject(url)
-            request.url = url
-            request.url = request.url.strip()
+        return self.get_ping(request=request, url=url)
 
-        if not request or not request.url:
-            return
+    def get_info(self):
+        """Maps to /api/info"""
+        return self._call_global_endpoint("/api/info")
 
-        link = self.remote_server
-        link = f"{link}/api/ping"
+    def get_infoj(self):
+        return self.get_info()
 
-        json = self.perform_remote_call_with_retry(link, request)
-        if json:
-            return json.get("status")
+    def get_history(self):
+        """Maps to /api/history"""
+        return self._call_global_endpoint("/api/history")
+
+    def clear_history(self):
+        """Maps to /api/clear"""
+        return self._call_global_endpoint("/api/clear")
 
     def perform_remote_call_with_retry(self, link_call, request):
         """
@@ -222,7 +220,7 @@ class RemoteServer(object):
             return False
 
     def get_properties(self, url=None, request=None):
-        json_obj = self.get_getj(url=url, request=request)
+        json_obj = self.get_page_data(url=url, request=request)
 
         if json_obj:
             return RemoteServer.read_properties_section("Properties", json_obj)

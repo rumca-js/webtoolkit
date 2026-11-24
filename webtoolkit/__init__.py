@@ -9,6 +9,7 @@ from .response import *
 from .request import *
 
 from .contentinterface import ContentInterface
+from .urlinterface import UrlInterface
 from .contentlinkparser import ContentLinkParser
 from .contenttext import ContentText
 from .urllocation import UrlLocation

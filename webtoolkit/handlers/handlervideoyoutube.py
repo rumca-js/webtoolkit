@@ -134,7 +134,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
 
     def get_channel_id_from_page(self):
         """Extracts externalChannelId from the YouTube watch page JSON blob."""
-        response = self.response
+        response = self.streams.get(self.url)
         if not response:
             return None
         text = response.get_text()
@@ -157,7 +157,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
         return list(feeds)
 
     def get_author(self):
-        response = self.response
+        response = self.streams.get(self.url)
         if response:
             p = response.get_page()
             if p:
@@ -166,7 +166,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
                 )
 
     def get_channel_name(self):
-        response = self.response
+        response = self.streams.get(self.url)
         if response:
             p = response.get_page()
             if p:
@@ -175,7 +175,7 @@ class YouTubeVideoHandler(DefaultCompoundChannelHandler):
                 )
 
     def get_channel_url(self):
-        response = self.response
+        response = self.streams.get(self.url)
         if response:
             p = response.get_page()
             if p:

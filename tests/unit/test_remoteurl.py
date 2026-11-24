@@ -236,7 +236,7 @@ class RemoteUrlTest(FakeInternetTestCase):
 
     def test_get_social_properties_failure(self):
         u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
-        u.server.get_socialj = lambda url=None, request=None: None
+        u.server.get_social = lambda url=None, request=None: None
         data = u.get_social_properties()
 
         self.assertIsInstance(data, SocialData)
@@ -305,3 +305,42 @@ class RemoteUrlTest(FakeInternetTestCase):
         links = u.get_content_links()
 
         self.assertTrue(len(links) > 0)
+
+    def test_remoteurl_inherits_urlinterface(self):
+        from webtoolkit.urlinterface import UrlInterface
+        self.assertTrue(issubclass(RemoteUrl, UrlInterface))
+
+    def test_get_links(self):
+        from unittest.mock import MagicMock
+        u = RemoteUrl("https://youtube.com/channel/123")
+        u.server.get_link = MagicMock(return_value={"links": ["https://youtube.com/watch?v=1", "https://youtube.com/watch?v=2"]})
+        links = u.get_links()
+        self.assertEqual(len(links), 2)
+        self.assertIn("https://youtube.com/watch?v=1", links)
+
+    def test_get_links_failure_returns_empty(self):
+        from unittest.mock import MagicMock
+        u = RemoteUrl("https://youtube.com/channel/123")
+        u.server.get_link = MagicMock(side_effect=Exception("network error"))
+        links = u.get_links()
+        self.assertEqual(links, [])
+
+    def test_get_general_response_all_valid(self):
+        u = RemoteUrl(all_properties=all_properties)
+        gen_resp = u.get_general_response()
+        self.assertIsNotNone(gen_resp)
+        self.assertEqual(gen_resp.status_code, 200)
+
+    def test_get_general_response_stream_failure(self):
+        import copy
+        props_with_failure = copy.deepcopy(all_properties)
+        # set one stream to 404
+        for section in props_with_failure:
+            if section["name"] == "Streams":
+                section["data"]["https://example1.com"]["status_code"] = 404
+
+        u = RemoteUrl(all_properties=props_with_failure)
+        gen_resp = u.get_general_response()
+        self.assertIsNotNone(gen_resp)
+        self.assertEqual(gen_resp.status_code, 0)
+
