@@ -233,6 +233,20 @@ class RemoteUrlTest(FakeInternetTestCase):
         social = u.get_social_properties()
         self.assertIsInstance(social, SocialData)
 
+    def test_youtube_video_properties_and_social(self):
+        u = RemoteUrl("https://www.youtube.com/watch?v=tLPZmPaHme0")
+        props = u.get_properties()
+        self.assertIsInstance(props, dict)
+        social = u.get_social_properties()
+        self.assertIsInstance(social, SocialData)
+
+    def test_youtube_channel_properties_and_social(self):
+        u = RemoteUrl("https://www.youtube.com/channel/UCCHcEUksSVKsRDH86j77Ntg")
+        props = u.get_properties()
+        self.assertIsInstance(props, dict)
+        social = u.get_social_properties()
+        self.assertIsInstance(social, SocialData)
+
     def test_get_social_properties(self):
         u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
         properties = u.get_social_properties()

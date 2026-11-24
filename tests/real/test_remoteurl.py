@@ -106,6 +106,69 @@ class TestRemoteUrl(unittest.TestCase):
         self.assertIsInstance(feeds, (list, set))
         print(f"GitHub feeds: {feeds}")
 
+    def test_youtube_video(self):
+        test_url = "https://www.youtube.com/watch?v=tLPZmPaHme0"
+        response, url = self.run_with_remote_url(test_url)
+
+        self.assertEqual(response.status_code, 200)
+
+        properties = url.get_properties()
+        self.assertIsInstance(properties, dict)
+        self.assertTrue(len(properties) > 0)
+
+        title = url.get_title()
+        self.assertTrue(title)
+        print(f"YouTube title: {title}")
+
+        canonical = url.get_canonical_link()
+        self.assertEqual(canonical, test_url)
+        print(f"YouTube canonical: {canonical}")
+
+        social = url.get_social_properties()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.view_count)
+        self.assertGreater(social.view_count, 0)
+        self.assertIsNotNone(social.thumbs_up)
+        self.assertGreater(social.thumbs_up, 0)
+        print(f"YouTube views: {social.view_count}")
+        print(f"YouTube thumbs up: {social.thumbs_up}")
+        print(f"YouTube thumbs down: {social.thumbs_down}")
+
+        social_data = url.get_social_data()
+        self.assertIsInstance(social_data, SocialData)
+
+    def test_youtube_channel(self):
+        test_url = "https://www.youtube.com/channel/UCCHcEUksSVKsRDH86j77Ntg"
+        response, url = self.run_with_remote_url(test_url)
+
+        self.assertEqual(response.status_code, 200)
+
+        properties = url.get_properties()
+        self.assertIsInstance(properties, dict)
+        self.assertTrue(len(properties) > 0)
+
+        title = url.get_title()
+        self.assertTrue(title)
+        print(f"YouTube channel title: {title}")
+
+        canonical = url.get_canonical_link()
+        self.assertEqual(canonical, test_url)
+        print(f"YouTube channel canonical: {canonical}")
+
+        feeds = url.get_feeds()
+        self.assertIsInstance(feeds, (list, set))
+        self.assertTrue(len(feeds) > 0)
+        print(f"YouTube channel feeds: {feeds}")
+
+        social = url.get_social_properties()
+        self.assertIsInstance(social, SocialData)
+        self.assertIsNotNone(social.followers_count)
+        self.assertGreater(social.followers_count, 0)
+        print(f"YouTube channel subscribers: {social.followers_count}")
+
+        social_data = url.get_social_data()
+        self.assertIsInstance(social_data, SocialData)
+
 
 if __name__ == "__main__":
     unittest.main()
