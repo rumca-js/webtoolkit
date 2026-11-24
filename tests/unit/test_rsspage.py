@@ -111,7 +111,12 @@ class RssPageTest(FakeInternetTestCase):
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
     def test_is_valid__warhammer_true(self):
+        """
+        brutefeedparser warms its internal caches (linecache, BS4) on the first parse
+        of a large/complex feed, causing an RSS memory spike that is not a real leak.
+        """
         MockRequestCounter.mock_page_requests = 0
+        self.ignore_memory = True
         reader = RssPage("https://linkedin.com/test", warhammer_community_rss)
         entries = reader.get_entries()
 
