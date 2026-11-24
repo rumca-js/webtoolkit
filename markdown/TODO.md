@@ -2,17 +2,7 @@
 
 ## High Priority
 
-- [ ] rationalize response access API (get_response, get_responses, get_streams)
-  - baseurl.py
-  - ambiguous and overlapping method names for single vs multi-stream responses
-- [ ] `FakeInternetTestCase.disable_web_pages()` doesn't patch new canonical method names
-  - `webtoolkit/tests/fakeinternet.py`
-  - when new endpoint methods are added to `RemoteServer`, `disable_web_pages()` must be manually updated, causing hard-to-diagnose test failures
-  - consider a registration/decorator mechanism so URL-taking `RemoteServer` methods are auto-patched
-- [ ] two pre-existing test failures on `main` pollute CI output
-  - `test_get_entries__hackernews` in `test_rsspage.py`
-  - `test_get_cleaned_link__stupid_google_link4` in `test_urllocation.py`
-  - either `skipTest` them with explanation or fix the underlying issues
+
 
 ## Medium Priority
 
@@ -26,6 +16,13 @@
 
 ## Low Priority
 
+- [ ] rationalize response access API (get_response, get_responses, get_streams). They don't look understandble. Maybe their names should be changed. Maybe they should be part of UrlInteface, or HandlerInterface? Similarly get_properties and get_all_properties. Are these OK?
+  - baseurl.py
+  - ambiguous and overlapping method names for single vs multi-stream responses
+- [ ] `FakeInternetTestCase.disable_web_pages()` doesn't patch new canonical method names
+  - `webtoolkit/tests/fakeinternet.py`
+  - when new endpoint methods are added to `RemoteServer`, `disable_web_pages()` must be manually updated, causing hard-to-diagnose test failures
+  - consider a registration/decorator mechanism so URL-taking `RemoteServer` methods are auto-patched
 - [ ] Refactor extension mechanism and child URL factory (`url_builder`, `build_http_url`, `build_default_url`)
   - `handlers/defaulturlhandler.py`, `baseurl.py`
   - Current pattern creates cyclical layer dependencies (handlers instantiate top-level `BaseUrl` via `url_builder`), causes resource leaks from unclosed child `BaseUrl` instances, and requires hardcoded `"HttpPageHandler"` hacks to prevent infinite recursion.
