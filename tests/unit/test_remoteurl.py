@@ -220,6 +220,19 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertIn("description", properties)
         self.assertIn("link", properties)
 
+    def test_get_properties_none_section(self):
+        u = RemoteUrl("https://example.com")
+        u.all_properties = [{"name": "OtherSection", "data": {}}]
+        props = u.get_properties()
+        self.assertEqual(props, {})
+
+    def test_github_repo_properties_and_social(self):
+        u = RemoteUrl("https://github.com/codecrafters-io/build-your-own-x")
+        props = u.get_properties()
+        self.assertIsInstance(props, dict)
+        social = u.get_social_properties()
+        self.assertIsInstance(social, SocialData)
+
     def test_get_social_properties(self):
         u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
         properties = u.get_social_properties()
@@ -308,18 +321,28 @@ class RemoteUrlTest(FakeInternetTestCase):
 
     def test_remoteurl_inherits_urlinterface(self):
         from webtoolkit.urlinterface import UrlInterface
+
         self.assertTrue(issubclass(RemoteUrl, UrlInterface))
 
     def test_get_links(self):
         from unittest.mock import MagicMock
+
         u = RemoteUrl("https://youtube.com/channel/123")
-        u.server.get_link = MagicMock(return_value={"links": ["https://youtube.com/watch?v=1", "https://youtube.com/watch?v=2"]})
+        u.server.get_link = MagicMock(
+            return_value={
+                "links": [
+                    "https://youtube.com/watch?v=1",
+                    "https://youtube.com/watch?v=2",
+                ]
+            }
+        )
         links = u.get_links()
         self.assertEqual(len(links), 2)
         self.assertIn("https://youtube.com/watch?v=1", links)
 
     def test_get_links_failure_returns_empty(self):
         from unittest.mock import MagicMock
+
         u = RemoteUrl("https://youtube.com/channel/123")
         u.server.get_link = MagicMock(side_effect=Exception("network error"))
         links = u.get_links()
@@ -333,6 +356,7 @@ class RemoteUrlTest(FakeInternetTestCase):
 
     def test_get_general_response_stream_failure(self):
         import copy
+
         props_with_failure = copy.deepcopy(all_properties)
         # set one stream to 404
         for section in props_with_failure:
@@ -343,4 +367,3 @@ class RemoteUrlTest(FakeInternetTestCase):
         gen_resp = u.get_general_response()
         self.assertIsNotNone(gen_resp)
         self.assertEqual(gen_resp.status_code, 0)
-

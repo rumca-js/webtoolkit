@@ -55,7 +55,7 @@ Extracted Content / Metadata
 
 ## Test Suite (`tests/`)
 - `tests/unit/`: Isolated unit tests using fake network mocks.
-- `tests/real/`: Integration tests interacting with real network endpoints.
+- `tests/real/`: Integration tests interacting with real network endpoints. Remote tests (`test_remoteurl.py`) can configure endpoint via `CRAWLER_BUDDY_URL` or `REMOTE_SERVER_LOCATION` (defaults to `http://127.0.0.1:3000`).
 - `tests/memory/`: Memory consumption and leak tests.
 
 # Extensions

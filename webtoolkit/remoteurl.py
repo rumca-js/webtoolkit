@@ -133,8 +133,9 @@ class RemoteUrl(UrlInterface):
             if date_published:
                 if isinstance(date_published, str):
                     properties["date_published"] = date_str_to_date(date_published)
+            return properties
 
-        return properties
+        return {}
 
     def get_all_properties(self):
         """

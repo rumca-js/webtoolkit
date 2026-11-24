@@ -11,3 +11,8 @@
    - **Failure**: `AssertionError: 'https://www.google.com/goto?url=CAESVQHrOzAVcZvSERtSf...' != 'https://www.redditstatus.com'`.
    - **Reason**: Google `/goto?url=...` links employ server-side redirects with encoded protobuf/token payloads that cannot be decoded client-side without executing the redirect request.
    - **Note in test**: Explicitly noted in test docstring: `"Note: it is server sided reidrect, we are unable to decode it"`.
+
+3. **Crawler-Buddy 615 status in integration tests (`tests/real/test_remoteurl.py`)**
+   - **Failure**: Remote server returns HTTP 615 (`HTTP_STATUS_CODE_SERVER_TOO_MANY_REQUESTS`).
+   - **Reason**: The remote crawler-buddy daemon running at `http://192.168.0.200:3000` may be overloaded or running an older build without adequate worker memory/slots. (Resolved when using updated crawler-server at `http://127.0.0.1:3000`).
+

@@ -146,6 +146,16 @@ class TestSocialData(unittest.TestCase):
         self.assertEqual(d["sources"][0]["name"], "yt")
         self.assertTrue(d["sources"][0]["ok"])
 
+    def test_social_data_len(self):
+        data = SocialData()
+        self.assertEqual(len(data), 0)
+
+        data = SocialData(stars=5.0)
+        self.assertEqual(len(data), 1)
+
+        data = SocialData(stars=5.0, view_count=100, thumbs_up=10)
+        self.assertEqual(len(data), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

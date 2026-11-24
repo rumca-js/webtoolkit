@@ -22,6 +22,21 @@ class SocialData:
     errors: list[str] | None = None
     sources: list[SocialSourceResult] = field(default_factory=list)
 
+    def __len__(self) -> int:
+        """Returns the number of populated metrics."""
+        metrics = (
+            self.thumbs_up,
+            self.thumbs_down,
+            self.view_count,
+            self.rating,
+            self.upvote_ratio,
+            self.upvote_diff,
+            self.upvote_view_ratio,
+            self.stars,
+            self.followers_count,
+        )
+        return sum(1 for m in metrics if m is not None)
+
     def to_dict(self) -> dict:
         """Returns a JSON-serializable dict representation."""
         return asdict(self)

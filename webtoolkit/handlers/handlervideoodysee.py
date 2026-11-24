@@ -90,6 +90,9 @@ class OdyseeVideoHandler(DefaultUrlHandler):
     def get_feeds(self):
         from .handlerchannelodysee import OdyseeChannelHandler
 
+        if not self.channel_code:
+            return []
+
         feeds = OdyseeChannelHandler(channel_code=self.channel_code).get_feeds()
         return feeds
 

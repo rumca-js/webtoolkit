@@ -1,8 +1,7 @@
 # TODO
 
 ## High Priority
-
-
+check if fetching social data works for https://www.youtube.com/watch?v=PwlMKcBtQw8
 
 ## Medium Priority
 

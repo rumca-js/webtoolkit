@@ -59,6 +59,9 @@ class OdyseeChannelHandler(DefaultCompoundChannelHandler):
             return True
 
     def input2code(self, url):
+        if not url:
+            return None
+
         wh = url.find("odysee.com")
         if wh == -1:
             return None

@@ -1,20 +1,22 @@
 """
 Set of manual, real world tests
 """
+
 import unittest
 import gc
 
 from webtoolkit import (
-   BaseUrl,
-   RemoteUrl,
-   YouTubeChannelHandler,
-   YouTubeVideoHandler,
-   OdyseeChannelHandler,
-   OdyseeVideoHandler,
-   PageRequestObject,
-   HttpPageHandler,
-   CrawlerInterface,
-   RequestsCrawler,
+    BaseUrl,
+    RemoteUrl,
+    SocialData,
+    YouTubeChannelHandler,
+    YouTubeVideoHandler,
+    OdyseeChannelHandler,
+    OdyseeVideoHandler,
+    PageRequestObject,
+    HttpPageHandler,
+    CrawlerInterface,
+    RequestsCrawler,
 )
 from webtoolkit.utils.memorychecker import MemoryChecker
 from webtoolkit.webconfig import WebConfig
@@ -62,7 +64,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "HttpPageHandler")
-        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+        self.assertEqual(
+            response.request.crawler_type.__class__.__name__, "RequestsCrawler"
+        )
 
         self.assertEqual(handler.get_status_code(), 200)
 
@@ -71,8 +75,11 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(len(list(handler.get_entries())), 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
 
         url.close()
 
@@ -81,7 +88,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeVideoHandler")
-        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+        self.assertEqual(
+            response.request.crawler_type.__class__.__name__, "RequestsCrawler"
+        )
 
         self.assertEqual(handler.get_status_code(), 200)
 
@@ -89,8 +98,11 @@ class TestBaseUrl(unittest.TestCase):
         self.assertEqual(len(list(handler.get_entries())), 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
 
         url.close()
 
@@ -116,7 +128,9 @@ class TestBaseUrl(unittest.TestCase):
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
-        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+        self.assertEqual(
+            response.request.crawler_type.__class__.__name__, "RequestsCrawler"
+        )
 
         self.assertEqual(handler.get_status_code(), 200)
 
@@ -128,15 +142,22 @@ class TestBaseUrl(unittest.TestCase):
 
         self.assertTrue(response.is_valid())
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
+
+        url.close()
 
     def test_baseurl__youtube_channel_by_handle(self):
         test_url = "https://www.youtube.com/@LinusTechTips"
         response, handler, url = self.run_with_base_url(test_url)
 
         self.assertEqual(handler.__class__.__name__, "YouTubeChannelHandler")
-        self.assertEqual(response.request.crawler_type.__class__.__name__, "RequestsCrawler")
+        self.assertEqual(
+            response.request.crawler_type.__class__.__name__, "RequestsCrawler"
+        )
 
         self.assertEqual(handler.get_status_code(), 200)
 
@@ -148,8 +169,13 @@ class TestBaseUrl(unittest.TestCase):
 
         self.assertTrue(response.is_valid())
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
+
+        url.close()
 
     def test_baseurl__odysee_channel(self):
         test_url = "https://odysee.com/$/rss/@BrodieRobertson:5"
@@ -162,8 +188,11 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(len(list(handler.get_entries())) > 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
 
         url.close()
 
@@ -178,8 +207,13 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
+
+        url.close()
 
     def test_baseurl__github(self):
         test_url = "https://github.com/rumca-js/crawler-buddy"
@@ -192,8 +226,11 @@ class TestBaseUrl(unittest.TestCase):
         self.assertTrue(len(list(handler.get_entries())) == 0)
         self.assertTrue(len(list(handler.get_streams())) > 0)
 
-        properties = url.get_social_properties()
+        properties = url.get_properties()
         self.assertTrue(len(properties) > 0)
+
+        social_properties = url.get_social_properties()
+        self.assertIsInstance(social_properties, SocialData)
 
         url.close()
 
@@ -276,7 +313,9 @@ class TestBaseUrl(unittest.TestCase):
         url.close()
 
     def test_baseurl__is_allowed(self):
-        test_url = "https://www.youtube.com/watch?v=Vzgimftolys&pp=ygUPbGludXMgdGVjaCB0aXBz"
+        test_url = (
+            "https://www.youtube.com/watch?v=Vzgimftolys&pp=ygUPbGludXMgdGVjaCB0aXBz"
+        )
 
         url = BaseUrl(url=test_url)
         self.assertTrue(url.is_allowed())
