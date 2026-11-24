@@ -2,6 +2,10 @@
 
 ## High Priority
 
+- [ ] pre-existing memory test failure pollutes CI output
+  - `test_is_valid__warhammer_true` in `test_rsspage.py` — fails in `tearDown` on `memory_increase < 0.1`
+  - investigate whether it's a real leak in RSS parsing or a flaky/environment-sensitive threshold
+
 
 
 ## Medium Priority
