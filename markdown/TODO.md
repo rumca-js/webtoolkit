@@ -2,6 +2,7 @@
 
 ## High Priority
 check if fetching social data works for https://www.youtube.com/watch?v=PwlMKcBtQw8
+PageResponseObject has both binary and text. I think one is not necessary
 
 ## Medium Priority
 
