@@ -254,9 +254,9 @@ class RemoteUrlTest(FakeInternetTestCase):
         self.assertIsInstance(properties, SocialData)
         self.assertTrue(properties.stars)
 
-    def test_get_social_data(self):
+    def test_get_social_properties(self):
         u = RemoteUrl("https://github.com/rumca-js/Django-link-archive")
-        data = u.get_social_data()
+        data = u.get_social_properties()
 
         self.assertIsInstance(data, SocialData)
         self.assertTrue(data.stars)

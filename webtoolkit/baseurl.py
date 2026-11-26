@@ -720,10 +720,6 @@ class BaseUrl(UrlInterface):
         json_data = handler.get_json_data()
         return handler.get_social_data()
 
-    def get_social_data(self) -> SocialData:
-        """Returns social data"""
-        return self.get_social_properties()
-
     def __enter__(self):
         return self
 

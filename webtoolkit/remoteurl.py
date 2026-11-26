@@ -352,9 +352,3 @@ class RemoteUrl(UrlInterface):
             else:
                 self.social_properties = SocialData.from_dict(raw_social)
         return self.social_properties
-
-    def get_social_data(self) -> SocialData:
-        """
-        Returns social data
-        """
-        return self.get_social_properties()

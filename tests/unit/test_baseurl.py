@@ -1549,10 +1549,10 @@ class BaseUrlTest(FakeInternetTestCase):
 
         self.assertEqual(MockRequestCounter.mock_page_requests, 0)
 
-    def test_get_social_data(self):
+    def test_get_social_properties(self):
         test_link = "https://linkedin.com/watch?v=1234"
         url = MockUrl(request=self.get_request(test_link))
-        data = url.get_social_data()
+        data = url.get_social_properties()
         self.assertIsInstance(data, SocialData)
         self.assertIsNone(data.view_count)
 
