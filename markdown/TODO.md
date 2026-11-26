@@ -13,6 +13,7 @@ PageResponseObject has both binary and text. I think one is not necessary
 - [ ] provide API to obtain HEAD information
 - [ ] provide playwright crawler(s)
 - handler contains self.p field (page). seems redundant, but is it?
+- some handlers still use get_social_data instead of properties
 
 ## Low Priority
 
